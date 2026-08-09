@@ -263,6 +263,8 @@ export class InMemoryDurableExecutionAdapter implements DurableExecutionAdapter 
     positiveInteger(input.fence, 'fence');
     const record = this.runs.get(input.runId);
     if (!record) return { outcome: 'missing' };
+    const failure = this.leaseFailure(record, input);
+    if (failure) return failure;
 
     if (record.checkpoint?.checkpointId === input.checkpoint.checkpointId) {
       return sameCheckpoint(record.checkpoint, input.checkpoint)
@@ -270,8 +272,6 @@ export class InMemoryDurableExecutionAdapter implements DurableExecutionAdapter 
         : mutation('idempotency-conflict', record);
     }
 
-    const failure = this.leaseFailure(record, input);
-    if (failure) return failure;
     const expectedSequence = (record.checkpoint?.sequence ?? 0) + 1;
     if (input.checkpoint.sequence !== expectedSequence) {
       return mutation('invalid-state', record);
@@ -295,6 +295,8 @@ export class InMemoryDurableExecutionAdapter implements DurableExecutionAdapter 
     const requestedAt = validDate(input.requestedAt, 'requestedAt');
     const record = this.runs.get(input.runId);
     if (!record) return { outcome: 'missing' };
+    const failure = this.leaseFailure(record, input);
+    if (failure) return failure;
 
     if (record.approval?.approvalId === approvalId) {
       return record.checkpoint &&
@@ -303,8 +305,6 @@ export class InMemoryDurableExecutionAdapter implements DurableExecutionAdapter 
         : mutation('idempotency-conflict', record);
     }
 
-    const failure = this.leaseFailure(record, input);
-    if (failure) return failure;
     const expectedSequence = (record.checkpoint?.sequence ?? 0) + 1;
     if (input.checkpoint.sequence !== expectedSequence) {
       return mutation('invalid-state', record);
