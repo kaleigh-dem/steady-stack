@@ -32,12 +32,12 @@ The repository roadmap in `docs/TODO.md` is authoritative for future sequencing.
 
 The public operations are:
 
-| Operation | Purpose |
-| --- | --- |
-| `generate` | Text generation with normalized finish reason, provider/model identity, token usage, cancellation, timeout, and retry behavior. |
-| `generateStructured` | JSON-Schema-constrained generation plus application-owned parsing before a typed value crosses the boundary. |
-| `embed` | Ordered embedding vectors with normalized provider/model identity and usage. |
-| `stream` | Provider-neutral async runtime events for text deltas, usage, and completion. |
+| Operation            | Purpose                                                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `generate`           | Text generation with normalized finish reason, provider/model identity, token usage, cancellation, timeout, and retry behavior. |
+| `generateStructured` | JSON-Schema-constrained generation plus application-owned parsing before a typed value crosses the boundary.                    |
+| `embed`              | Ordered embedding vectors with normalized provider/model identity and usage.                                                    |
+| `stream`             | Provider-neutral async runtime events for text deltas, usage, and completion.                                                   |
 
 Two adapters are available:
 
