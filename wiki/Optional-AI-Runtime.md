@@ -1,11 +1,11 @@
 # Optional AI Runtime
 
-SteadyStack now includes reusable **optional** runtime AI boundaries for provider-neutral model access, typed tool execution, browser streaming, prompt/evaluation evidence, and durable agent execution. These capabilities are intentionally separate from the repository's coding-agent operating model and are **not composed into the default generated applications**.
+SteadyStack now includes reusable **optional** runtime AI boundaries for provider-neutral model access, typed tool execution, browser streaming, prompt/evaluation evidence, durable agent execution, and safety/governance. These capabilities are intentionally separate from the repository's coding-agent operating model and are **not composed into the default generated applications**.
 
 ## Prerequisites
 
 - Understand [Choosing Workspace Profiles](Choosing-Workspace-Profiles), especially that `--ai=false` remains the default.
-- Treat runtime AI as an application capability with explicit data, provider, authorization, retention, evaluation, durability, and operational ownership.
+- Treat runtime AI as an application capability with explicit data, provider, authorization, retention, evaluation, durability, safety, governance, and operational ownership.
 
 ## Profile boundary and current status
 
@@ -23,7 +23,8 @@ Phase 14 status:
 - **P14-03 — complete:** typed authorized tools and the V1 browser agent-stream contract.
 - **P14-04 — complete:** reviewed prompt/tool-instruction artifacts and CI-enforced evaluation evidence.
 - **P14-05 — complete:** replaceable durable execution with leases/fences, checkpoints, resumable runs, human approval, and interruption recovery.
-- **P14-06 — next:** safety/governance hooks and model/provider fallback policy.
+- **P14-06 — complete:** input/output governance hooks, classification-aware sensitive-data handling, server-owned tool allowlists, approval authorization, payload-safe audit events, and bounded compatible provider/model fallback policy.
+- **P14-07 — next:** generate and test the runnable optional AI profile.
 
 The repository roadmap in `docs/TODO.md` is authoritative for future sequencing.
 
@@ -61,7 +62,7 @@ Fail closed on prohibited data:
 
 Provider and model selection is server-side and allowlisted. Browser input, prompt text, user input, or model output must not directly select an unapproved provider, model, region, credential, or tool set. Credentials remain server-side.
 
-Fallback between models or providers is not yet a complete runtime policy. Any application-specific fallback must preserve data handling, residency, retention, safety, tool capability, and output-contract requirements.
+P14-06 makes fallback an explicit server policy rather than an implicit retry across providers. Every candidate route must preserve the original request's data classification, region, retention, safety, tool, structured-output, and streaming requirements.
 
 ## Typed tool authorization
 
@@ -84,7 +85,7 @@ Invocation is ordered deliberately:
 
 Model output is never an authorization decision. Actor identity, tenant identity, scopes, credentials, provider/model choice, and tool allowlists are trusted application context, not model-controlled arguments.
 
-P14-03 does not automatically retry side-effecting tool execution. P14-05 supplies optional checkpoint/resume and approval lifecycle primitives, but applications remain responsible for deciding which side effects are safe to resume or retry.
+P14-03 does not automatically retry side-effecting tool execution. P14-05 supplies optional checkpoint/resume and approval lifecycle primitives, and P14-06 adds server-owned tool allowlists plus approval authorization, but applications remain responsible for deciding which side effects are safe to resume or retry.
 
 ## V1 browser agent stream
 
@@ -143,6 +144,53 @@ Lifecycle observation reuses the repository correlation context and retains only
 
 `InMemoryDurableExecutionAdapter` is deterministic test support. Its snapshot/restore path proves recovery semantics in tests, but it does not survive process or host loss by itself. Production applications must provide an actual persistent `DurableExecutionAdapter` implementation and own retention, deletion, tenant isolation, encryption/access control, backup/restore, and residency policy for stored checkpoint state.
 
+## Safety and governance hooks
+
+`packages/backend/agent-governance` adds the reusable P14-06 safety boundary without composing a workflow.
+
+The content-policy boundary uses explicit classifications:
+
+```text
+public
+internal
+confidential
+restricted
+credential
+```
+
+`InputPolicy<T>` and `OutputPolicy<T>` return strict runtime decisions: allow, redact, or deny. Malformed policy output and policy exceptions fail closed. Credential-classified content cannot pass unchanged; it must be explicitly redacted to a non-credential classification or denied. Applications still own source classification and concrete detection/redaction rules.
+
+Tool governance is server-owned. `ToolAllowlistPolicy` denies unregistered tools and can mark selected tools as requiring human approval. That control does not replace `backend-agent-tool` actor authorization. Before a durable approval is resolved, `ApprovalAuthorizationPolicy` verifies the trusted approver independently; model output never supplies approval authority.
+
+Every governance guard receives a required `GovernanceAuditSink`. Schema-V1 events carry identifiers, classifications, outcomes, normalized failure classes, route identity, and safe reason codes. Raw prompts, completions, retrieved content, policy payloads, tool arguments/results, checkpoint state, credentials, and provider error bodies are not event fields. If the required audit sink fails, the guarded operation fails closed.
+
+### Provider/model fallback
+
+Routes are configured on the server with provider/model/region identity, allowed classifications, retention posture, and support for tools, structured output, and streaming. `selectPrimaryModelRoute` validates the primary route before dispatch.
+
+Fallback is ordered and bounded by `maxFallbacks`. Only these normalized failures may trigger fallback, and only when explicitly configured:
+
+```text
+timeout
+rate_limited
+unavailable
+provider_error
+```
+
+Caller aborts, authentication failures, permission failures, invalid requests, and invalid responses do not trigger provider fallback. Every fallback candidate is rechecked against the original classification, residency, retention, tool, structured-output, and streaming requirements. If no compatible route remains, fallback stops.
+
+### Threat mitigations
+
+Prompt injection is handled as an authority-boundary problem, not only a prompt-writing problem: external/model text remains untrusted, route/tool/credential/approval choices remain trusted server context, policies run around model boundaries, and typed tools re-authorize the actor immediately before execution.
+
+Data exfiltration controls combine source classification, credential redaction/denial, compatible route selection, retention/residency constraints, minimal durable/evaluation data, and payload-safe logs/audit/streaming.
+
+Excessive agency is bounded by server tool allowlists, optional human approval, independent approval authorization, typed actor authorization, durable fencing/idempotency, and no automatic retries of side-effecting tools.
+
+Runaway cost is bounded with `backend-model` retry limits, finite provider fallback, per-request output-token limits, P14-04 evaluation token/cost budgets, and application-owned caps for workflow/model/tool iterations, wall-clock duration, and aggregate usage/spend.
+
+See `docs/agent-safety-and-governance.md` and ADR 0025 for the full composition contract.
+
 Useful focused checks include:
 
 ```bash
@@ -154,6 +202,8 @@ pnpm nx run backend-agent-eval:test
 pnpm nx run backend-agent-eval:typecheck
 pnpm nx run backend-agent-durable:test
 pnpm nx run backend-agent-durable:typecheck
+pnpm nx run backend-agent-governance:test
+pnpm nx run backend-agent-governance:typecheck
 pnpm agent-eval:check
 ```
 
@@ -161,12 +211,11 @@ pnpm agent-eval:check
 
 The current reusable boundaries should not be described as a complete generated AI application profile. Phase 14 still has explicit gaps:
 
-- **Broader safety and governance (P14-06):** no complete input/output policy orchestration, sensitive-data policy runtime, tool allowlist policy, audit-event policy, approval-authorization policy, or provider/model fallback policy is supplied yet.
 - **Generated runnable AI profile (P14-07):** `ai=true` does not yet install or wire a reference model-backed workflow into generated applications.
 - No production durable persistence adapter is selected by the shared platform; applications that need durable execution choose and operate one explicitly.
 - The repository does not choose a default model provider, orchestration framework, vector database, prompt-management service, or durable-agent framework.
 
-Applications that compose the current primitives must still own provider credentials and allowlisting, data classification and retention decisions, runtime policy, safe tool registration, prompt content, operational budgets, durable persistence selection, production monitoring, and incident response.
+Applications that compose the current primitives must still own provider credentials and allowlisting, source data classification and concrete redaction/detection rules, actor/approver policy, safe tool registration, prompt content, runtime iteration/spend budgets, durable persistence selection, production monitoring, abuse handling, and incident response.
 
 ## Related pages
 
