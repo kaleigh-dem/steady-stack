@@ -42,7 +42,7 @@ Read [Agentic Development Model](Agentic-Development-Model) before establishing 
 - Framework-free Agent Task and rate-limit libraries.
 - Shared UI, contracts, PostgreSQL migrations, environment validation, and observability.
 - Production OCI image builds, a local preview stack, smoke tests, performance budgets, SBOMs, vulnerability policy, signatures, attestations, immutable release manifests, finalized release-record evidence, and production configuration validation.
-- Optional, default-off AI runtime primitives for provider-neutral model access, typed authorized tools, versioned browser streaming, reviewed prompt/evaluation evidence, and replaceable durable execution.
+- Optional, default-off AI runtime primitives for provider-neutral model access, typed authorized tools, versioned browser streaming, reviewed prompt/evaluation evidence, replaceable durable execution, and safety/governance hooks with bounded compatible fallback.
 
 ## What it does not include
 
@@ -53,10 +53,10 @@ The template does not provide:
 - an organization-specific cloud deployment or Kubernetes manifests;
 - identity-provider login, callback, and logout implementation;
 - a production session store or Redis worker adapter;
-- a composed model-backed application in the default profile, a default model provider, provider credentials, a selected production durable-agent persistence adapter, or complete runtime AI safety/fallback policy;
+- a composed model-backed application in the default profile, a default model provider, provider credentials, or a selected production durable-agent persistence adapter;
 - production backups, DNS/TLS, dashboards, alert routing, or incident ownership.
 
-The upstream source now contains optional AI model/tool/stream/evaluation/durable boundaries, but `ai=true` still records product intent rather than generating a runnable AI application. See [Optional AI Runtime](Optional-AI-Runtime).
+The upstream source now contains optional AI model/tool/stream/evaluation/durable/governance boundaries, but `ai=true` still records product intent rather than generating a runnable AI application. See [Optional AI Runtime](Optional-AI-Runtime).
 
 Supported profiles can record some product or platform directions without implementing them.
 
@@ -64,7 +64,7 @@ Supported profiles can record some product or platform directions without implem
 
 1. [Understand the Agentic Development Model](Agentic-Development-Model), including the standard agent workflow and human approval boundaries.
 2. [Choose workspace profiles](Choosing-Workspace-Profiles) for applications, authentication, worker delivery, telemetry, deployment, and optional product AI intent.
-3. If you are composing runtime AI behavior, read [Optional AI Runtime](Optional-AI-Runtime) for the default-off boundary, model/tool contracts, streaming protocol, evaluation evidence, durable execution, and remaining Phase 14 gaps.
+3. If you are composing runtime AI behavior, read [Optional AI Runtime](Optional-AI-Runtime) for the default-off boundary, model/tool contracts, streaming protocol, evaluation evidence, durable execution, safety/governance, and remaining Phase 14 gap.
 4. [Complete the Quick Start](Quick-Start) to create, initialize, map, run, and validate a local workspace.
 5. [Tour the repository](Repository-Tour) and inspect its Nx project graph.
 6. [Learn everyday development](Everyday-Development), [code generation](Code-Generation), and [validation](Validation-and-Testing).
@@ -75,8 +75,8 @@ Supported profiles can record some product or platform directions without implem
 Roadmap status is mirrored from the repository's authoritative [`docs/TODO.md`](https://github.com/kaleigh-dem/steady-stack/blob/main/docs/TODO.md); the wiki does not maintain an independent task ledger.
 
 - **Phase 13 — complete:** P13-01 through P13-06 established supply-chain evidence, immutable digest promotion, CI diagnostics/caching, cache-input and affected-execution validation, documentation integrity, and finalized release/recovery evidence. No additional Phase 13 implementation is planned.
-- **Phase 14 — active and optional:** P14-01 through P14-05 are complete. The repository now has the optional profile boundary, provider-neutral model interfaces and adapters, typed authorized tools plus V1 agent streaming, reviewed prompt/evaluation evidence, and replaceable durable-run checkpoint/approval/recovery primitives without composing runtime AI into the default applications.
-- **Next — P14-06:** add safety and governance hooks, sensitive-data handling, tool allowlists, audit events, and explicit model/provider fallback policy.
+- **Phase 14 — active and optional:** P14-01 through P14-06 are complete. The repository now has the optional profile boundary, provider-neutral model interfaces and adapters, typed authorized tools plus V1 agent streaming, reviewed prompt/evaluation evidence, replaceable durable-run checkpoint/approval/recovery primitives, and reusable safety/governance hooks for content policy, sensitive-data handling, tool allowlists, approval authorization, audit events, and bounded compatible fallback without composing runtime AI into the default applications.
+- **Next — P14-07:** generate and test the optional AI profile, including a reference workflow while proving `ai=false` remains free of model-provider dependencies.
 
 Use `docs/TODO.md` for sequencing, acceptance criteria, and future status changes.
 
@@ -122,7 +122,7 @@ Follow [Quick Start](Quick-Start), customize the root and nested agent guidance 
 
 ### Developing applications
 
-Use [Everyday Development](Everyday-Development), [Code Generation](Code-Generation), [Validation and Testing](Validation-and-Testing), and the root plus closest nested `AGENTS.md` files. For model/tool/prompt/durable-runtime changes, also follow [Optional AI Runtime](Optional-AI-Runtime) and the applicable evaluation/data-retention boundaries.
+Use [Everyday Development](Everyday-Development), [Code Generation](Code-Generation), [Validation and Testing](Validation-and-Testing), and the root plus closest nested `AGENTS.md` files. For model/tool/prompt/durable/governance-runtime changes, also follow [Optional AI Runtime](Optional-AI-Runtime) and the applicable evaluation, data-retention, policy, authority, and fallback boundaries.
 
 ### Configuring infrastructure
 

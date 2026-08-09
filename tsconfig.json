@@ -18,6 +18,9 @@
       "path": "./packages/backend/agent-eval"
     },
     {
+      "path": "./packages/backend/agent-governance"
+    },
+    {
       "path": "./packages/backend/agent-task"
     },
     {
