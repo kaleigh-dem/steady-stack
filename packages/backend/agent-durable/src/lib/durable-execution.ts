@@ -21,11 +21,7 @@ export type DurableCheckpointValue =
   | { readonly [key: string]: DurableCheckpointValue };
 
 export type DurableRunStatus =
-  | 'pending'
-  | 'running'
-  | 'waiting_for_approval'
-  | 'completed'
-  | 'failed';
+  'pending' | 'running' | 'waiting_for_approval' | 'completed' | 'failed';
 
 export interface DurableRunIdentity {
   readonly runId: string;
@@ -74,7 +70,10 @@ export interface CreateDurableRunInput extends DurableRunIdentity {
 }
 
 export type CreateDurableRunResult =
-  | { readonly outcome: 'created' | 'exists'; readonly record: DurableRunRecord }
+  | {
+      readonly outcome: 'created' | 'exists';
+      readonly record: DurableRunRecord;
+    }
   | { readonly outcome: 'conflict'; readonly record: DurableRunRecord };
 
 export interface ClaimDurableRunInput {
@@ -92,10 +91,7 @@ export type ClaimDurableRunResult =
     }
   | {
       readonly outcome:
-        | 'in-progress'
-        | 'waiting-for-approval'
-        | 'completed'
-        | 'failed';
+        'in-progress' | 'waiting-for-approval' | 'completed' | 'failed';
       readonly record: DurableRunRecord;
     }
   | { readonly outcome: 'missing' };
@@ -231,7 +227,11 @@ function validateInput<T>(
   try {
     return callback();
   } catch {
-    throw new DurableExecutionError('invalid_input', safeRunId(runId), operation);
+    throw new DurableExecutionError(
+      'invalid_input',
+      safeRunId(runId),
+      operation,
+    );
   }
 }
 
@@ -240,7 +240,10 @@ function validateIdentity(identity: DurableRunIdentity): DurableRunIdentity {
     runId: durableIdentifier(identity.runId, 'runId'),
     traceId: durableIdentifier(identity.traceId, 'traceId'),
     actorId: durableIdentifier(identity.actorId, 'actorId'),
-    conversationId: durableIdentifier(identity.conversationId, 'conversationId'),
+    conversationId: durableIdentifier(
+      identity.conversationId,
+      'conversationId',
+    ),
   };
 }
 
@@ -285,7 +288,11 @@ function requireMutation(
   if (result.outcome === 'transitioned' || result.outcome === 'duplicate') {
     return { duplicate: result.outcome === 'duplicate', record: result.record };
   }
-  throw new DurableExecutionError(resultErrorCode(result.outcome), runId, operation);
+  throw new DurableExecutionError(
+    resultErrorCode(result.outcome),
+    runId,
+    operation,
+  );
 }
 
 async function emit(
@@ -298,17 +305,18 @@ async function emit(
 ): Promise<void> {
   if (!observer) return;
   const payload: DurableExecutionEvent = {
-    ...record,
     type: event.type,
+    runId: record.runId,
+    traceId: record.traceId,
+    actorId: record.actorId,
+    conversationId: record.conversationId,
     status: record.status,
     attemptCount: record.attemptCount,
     fence: record.fence,
     ...(event.checkpointSequence === undefined
       ? {}
       : { checkpointSequence: event.checkpointSequence }),
-    ...(event.approvalId === undefined
-      ? {}
-      : { approvalId: event.approvalId }),
+    ...(event.approvalId === undefined ? {} : { approvalId: event.approvalId }),
     ...(event.approvalDecision === undefined
       ? {}
       : { approvalDecision: event.approvalDecision }),
@@ -316,14 +324,6 @@ async function emit(
       ? {}
       : { failureCode: event.failureCode }),
   };
-  delete (payload as Partial<DurableRunRecord>).checkpoint;
-  delete (payload as Partial<DurableRunRecord>).approval;
-  delete (payload as Partial<DurableRunRecord>).leaseExpiresAt;
-  delete (payload as Partial<DurableRunRecord>).leaseOwnerId;
-  delete (payload as Partial<DurableRunRecord>).createdAt;
-  delete (payload as Partial<DurableRunRecord>).completedAt;
-  delete (payload as Partial<DurableRunRecord>).failedAt;
-  delete (payload as Partial<DurableRunRecord>).failureCode;
 
   const correlation = createCorrelationContext({
     requestId: record.runId,
@@ -363,10 +363,7 @@ export type ClaimRunOutcome =
     }
   | {
       readonly outcome:
-        | 'in-progress'
-        | 'waiting-for-approval'
-        | 'completed'
-        | 'failed';
+        'in-progress' | 'waiting-for-approval' | 'completed' | 'failed';
       readonly record: DurableRunRecord;
     }
   | { readonly outcome: 'missing' };
@@ -385,7 +382,7 @@ export interface DurableExecutionCoordinatorOptions {
 
 export class DurableExecutionCoordinator {
   private readonly now: () => Date;
-  private readonly observer?: DurableExecutionObserver;
+  private readonly observer: DurableExecutionObserver | undefined;
 
   public constructor(
     private readonly adapter: DurableExecutionAdapter,
@@ -395,7 +392,9 @@ export class DurableExecutionCoordinator {
     this.observer = options.observer;
   }
 
-  public async createRun(identity: DurableRunIdentity): Promise<DurableRunRecord> {
+  public async createRun(
+    identity: DurableRunIdentity,
+  ): Promise<DurableRunRecord> {
     const validated = validateInput('create', identity.runId, () =>
       validateIdentity(identity),
     );
@@ -404,7 +403,11 @@ export class DurableExecutionCoordinator {
     );
     const result = await this.adapter.create({ ...validated, createdAt });
     if (result.outcome === 'conflict') {
-      throw new DurableExecutionError('run_conflict', validated.runId, 'create');
+      throw new DurableExecutionError(
+        'run_conflict',
+        validated.runId,
+        'create',
+      );
     }
     if (result.outcome === 'created') {
       await emit(this.observer, result.record, { type: 'run.created' });
@@ -562,11 +565,15 @@ export class DurableRunSession {
     const now = validateInput('pause-for-approval', this.record.runId, () =>
       validDate(this.now(), 'now'),
     );
-    const validated = validateInput('pause-for-approval', this.record.runId, () => ({
-      checkpoint: validateCheckpointInput(input.checkpoint, now),
-      approvalId: durableIdentifier(input.approvalId, 'approvalId'),
-      reasonCode: durableCode(input.reasonCode, 'reasonCode'),
-    }));
+    const validated = validateInput(
+      'pause-for-approval',
+      this.record.runId,
+      () => ({
+        checkpoint: validateCheckpointInput(input.checkpoint, now),
+        approvalId: durableIdentifier(input.approvalId, 'approvalId'),
+        reasonCode: durableCode(input.reasonCode, 'reasonCode'),
+      }),
+    );
     const mutation = requireMutation(
       await this.adapter.pauseForApproval({
         runId: this.record.runId,

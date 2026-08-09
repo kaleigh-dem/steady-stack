@@ -21,7 +21,6 @@ import {
   cloneCheckpointValue,
   durableCode,
   durableIdentifier,
-  nonNegativeInteger,
   positiveDuration,
   positiveInteger,
   validDate,
@@ -44,7 +43,9 @@ function cloneCheckpoint(
   };
 }
 
-function cloneApproval(approval: DurableApproval | null): DurableApproval | null {
+function cloneApproval(
+  approval: DurableApproval | null,
+): DurableApproval | null {
   if (approval === null) return null;
   return {
     approvalId: approval.approvalId,
@@ -109,9 +110,7 @@ function mutation(
   return { outcome, record: cloneRecord(record) };
 }
 
-export class InMemoryDurableExecutionAdapter
-  implements DurableExecutionAdapter
-{
+export class InMemoryDurableExecutionAdapter implements DurableExecutionAdapter {
   private readonly runs = new Map<string, DurableRunRecord>();
 
   public constructor(snapshot: readonly DurableRunRecord[] = []) {
@@ -277,7 +276,10 @@ export class InMemoryDurableExecutionAdapter
     if (input.checkpoint.sequence !== expectedSequence) {
       return mutation('invalid-state', record);
     }
-    const updated = { ...record, checkpoint: cloneCheckpoint(input.checkpoint) };
+    const updated = {
+      ...record,
+      checkpoint: cloneCheckpoint(input.checkpoint),
+    };
     this.runs.set(input.runId, updated);
     return mutation('transitioned', updated);
   }
@@ -295,7 +297,8 @@ export class InMemoryDurableExecutionAdapter
     if (!record) return { outcome: 'missing' };
 
     if (record.approval?.approvalId === approvalId) {
-      return record.checkpoint && sameCheckpoint(record.checkpoint, input.checkpoint)
+      return record.checkpoint &&
+        sameCheckpoint(record.checkpoint, input.checkpoint)
         ? mutation('duplicate', record)
         : mutation('idempotency-conflict', record);
     }
@@ -403,7 +406,9 @@ export class InMemoryDurableExecutionAdapter
     return mutation('transitioned', completed);
   }
 
-  public async fail(input: FailDurableRunInput): Promise<DurableMutationResult> {
+  public async fail(
+    input: FailDurableRunInput,
+  ): Promise<DurableMutationResult> {
     durableIdentifier(input.runId, 'runId');
     durableIdentifier(input.leaseOwnerId, 'leaseOwnerId');
     positiveInteger(input.fence, 'fence');

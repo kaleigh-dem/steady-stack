@@ -140,11 +140,14 @@ export function canonicalCheckpointValue(
   if (Array.isArray(value)) {
     return `[${value.map(canonicalCheckpointValue).join(',')}]`;
   }
-  return `{${Object.keys(value)
+  const objectValue = value as {
+    readonly [key: string]: DurableCheckpointValue;
+  };
+  return `{${Object.keys(objectValue)
     .sort()
     .map(
       (key) =>
-        `${JSON.stringify(key)}:${canonicalCheckpointValue(value[key]!)}`,
+        `${JSON.stringify(key)}:${canonicalCheckpointValue(objectValue[key]!)}`,
     )
     .join(',')}}`;
 }

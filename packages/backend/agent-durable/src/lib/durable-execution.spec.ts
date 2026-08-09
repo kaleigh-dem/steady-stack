@@ -201,9 +201,11 @@ describe('durable execution lifecycle', () => {
     } as const;
 
     await claimed.session.checkpoint(checkpoint);
-    await expect(claimed.session.checkpoint(checkpoint)).resolves.toMatchObject({
-      checkpoint: { checkpointId: 'checkpoint-idempotent', sequence: 1 },
-    });
+    await expect(claimed.session.checkpoint(checkpoint)).resolves.toMatchObject(
+      {
+        checkpoint: { checkpointId: 'checkpoint-idempotent', sequence: 1 },
+      },
+    );
     await expect(
       claimed.session.checkpoint({
         ...checkpoint,
