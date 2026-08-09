@@ -55,6 +55,8 @@ flowchart TB
   OptionalAI[Optional AI composition] -.-> Model[packages/backend/model]
   OptionalAI -.-> Tools[packages/backend/agent-tool]
   OptionalAI -.-> Eval[packages/backend/agent-eval]
+  OptionalAI -.-> Durable[packages/backend/agent-durable]
+  Durable --> Obs
   OptionalAI -.-> Contracts
 ```
 
@@ -121,10 +123,13 @@ Phase 14 adds reusable AI-facing libraries without turning the default applicati
 - `packages/backend/agent-tool` defines typed tool invocation with runtime input/output validation and mandatory invocation-time authorization against the authenticated application actor.
 - `packages/contracts/src/agent-stream` defines strict versioned NDJSON browser events that preserve trace, actor, conversation, provider, model, tool, and tool-call identifiers without exposing raw prompt or tool payload fields.
 - `packages/backend/agent-eval` defines reviewed prompt/tool-instruction artifacts, deterministic and application-supplied grading boundaries, quality/latency/token/cost budgets, and CI-enforced evidence manifests.
+- `packages/backend/agent-durable` defines a replaceable durable-run adapter with renewable lease/fence semantics, ordered idempotent checkpoints, atomic approval pauses, resume/rejection transitions, interruption recovery, and payload-safe lifecycle observation through the shared correlation context.
 
-These projects are backend/shared primitives, not composition roots. Provider/model selection remains server-side and allowlisted. Secrets and authentication material must not be sent to providers, and sensitive or residency-constrained data requires explicit application policy. Model output is never an authorization decision.
+These projects are backend/shared primitives, not composition roots. Provider/model selection remains server-side and allowlisted. Secrets and authentication material must not be sent to providers, and sensitive or residency-constrained data requires explicit application policy. Model output is never an authorization decision or a human approval decision.
 
-The `ai` workspace profile remains default-off and does not yet generate a runnable model-backed workflow. Durable execution is next; broader safety/fallback policy and generated AI-profile composition remain later Phase 14 work. See [Optional AI Runtime](Optional-AI-Runtime).
+The durable project's in-memory adapter is deterministic test support only. Production checkpoint state requires an application-selected persistent adapter plus explicit ownership, retention, deletion, tenant isolation, encryption/access control, backup/restore, and regional policy.
+
+The `ai` workspace profile remains default-off and does not yet generate a runnable model-backed workflow. Broader safety/governance and fallback policy are next; generated AI-profile composition remains later Phase 14 work. See [Optional AI Runtime](Optional-AI-Runtime).
 
 ## Database and migrations
 
@@ -137,6 +142,8 @@ PostgreSQL is the durable baseline. `packages/database` owns:
 - PostgreSQL rate-limit counters
 
 The Agent Task create use case writes the task and outbox event in one transaction, preventing a committed task from losing its execution request.
+
+P14-05 deliberately does not add durable-agent tables to this default schema. An application that opts into durable agent execution chooses and composes a production `DurableExecutionAdapter` explicitly.
 
 ## Worker delivery and outbox behavior
 
@@ -151,6 +158,8 @@ stateDiagram-v2
 ```
 
 Delivery is at least once. A worker claims rows with a lease and ownership token. The outbox row ID is the idempotency identity; receive count is the execution fence. Duplicate terminal delivery is a no-op. A stale worker cannot acknowledge work owned by a newer lease.
+
+Optional durable runs deliberately reuse that ownership model: expired run leases can be reclaimed with a higher fence, and an older run session cannot overwrite newer checkpoint or terminal state.
 
 This design handles process crashes without requiring exactly-once transport.
 
@@ -168,7 +177,7 @@ Policies include anonymous, authenticated subject, route, and optional tenant li
 
 The repository provides structured logging, OpenTelemetry traces/metrics, health endpoints, and worker metrics. Local telemetry is optional through the Compose collector. Production teams own exporter credentials, sampling, redaction, retention, dashboards, alerts, and support.
 
-Optional AI composition should preserve identifier-oriented observability by default. Do not log raw prompts, completions, retrieved sensitive context, tool arguments, or tool results merely to make model behavior easier to inspect.
+Optional AI composition should preserve identifier-oriented observability by default. Durable lifecycle events reuse the existing correlation context and omit checkpoint state. Do not log raw prompts, completions, retrieved sensitive context, checkpoint payloads, tool arguments, or tool results merely to make model behavior easier to inspect.
 
 ## Containers and preview architecture
 
@@ -200,17 +209,17 @@ Do not weaken a boundary to make one import pass. Move behavior to the correct p
 
 ## Out of the box versus adopter responsibility
 
-| Area           | Out of the box                                       | Adopter responsibility                                                                                  |
-| -------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Web/API/worker | Reference applications and composition               | Product behavior and scaling                                                                            |
-| Contracts      | Generation, runtime validation, agent-stream V1      | API/protocol lifecycle and compatibility decisions                                                      |
-| PostgreSQL     | Local Compose, migrations, adapters                  | Managed service, TLS, capacity, backups                                                                 |
-| Authentication | Development verifier, OIDC verifier, browser adapter | Provider login/session integration and operations                                                       |
-| Worker         | PostgreSQL outbox baseline                           | Capacity, alerting, business handlers                                                                   |
-| Rate limits    | Memory local, PostgreSQL production adapter          | Thresholds and ingress trust                                                                            |
-| Telemetry      | Instrumentation and local collector                  | Backend, retention, redaction, dashboards                                                               |
-| Optional AI    | Model/tool/stream/evaluation primitives              | Runtime composition, provider policy, credentials, data handling, safety, durable execution, monitoring |
-| Deployment     | Images, preview, release plan                        | Real platform, ingress, DNS, TLS, rollout                                                               |
+| Area           | Out of the box                                            | Adopter responsibility                                                                                           |
+| -------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Web/API/worker | Reference applications and composition                    | Product behavior and scaling                                                                                     |
+| Contracts      | Generation, runtime validation, agent-stream V1           | API/protocol lifecycle and compatibility decisions                                                               |
+| PostgreSQL     | Local Compose, migrations, adapters                       | Managed service, TLS, capacity, backups                                                                          |
+| Authentication | Development verifier, OIDC verifier, browser adapter      | Provider login/session integration and operations                                                                |
+| Worker         | PostgreSQL outbox baseline                                | Capacity, alerting, business handlers                                                                            |
+| Rate limits    | Memory local, PostgreSQL production adapter               | Thresholds and ingress trust                                                                                     |
+| Telemetry      | Instrumentation and local collector                       | Backend, retention, redaction, dashboards                                                                        |
+| Optional AI    | Model/tool/stream/evaluation/durable lifecycle primitives | Runtime composition, provider policy, credentials, data handling, durable storage, safety/governance, monitoring |
+| Deployment     | Images, preview, release plan                             | Real platform, ingress, DNS, TLS, rollout                                                                        |
 
 ## Related pages
 
