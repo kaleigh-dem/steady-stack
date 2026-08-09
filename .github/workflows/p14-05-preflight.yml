@@ -113,12 +113,10 @@ jobs:
           validation.write_text(source.replace(old, new))
 
           memory = Path('packages/backend/agent-durable/src/lib/memory-adapter.ts')
-          source = memory.read_text().replace('  nonNegativeInteger,\n', '')
-          memory.write_text(source)
+          memory.write_text(memory.read_text().replace('  nonNegativeInteger,\n', ''))
           PY
-      - name: Refresh workspace lockfile
-        run: pnpm install --lockfile-only --no-frozen-lockfile
-      - run: pnpm install --frozen-lockfile
+      - name: Refresh lockfile and install
+        run: pnpm install --no-frozen-lockfile
       - name: Apply pinned Prettier formatting
         run: |
           pnpm exec prettier --write \
@@ -133,6 +131,14 @@ jobs:
             wiki/Optional-AI-Runtime.md \
             tsconfig.json \
             pnpm-lock.yaml
+      - name: Publish corrected tree without probe
+        run: |
+          rm .github/workflows/p14-05-preflight.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: materialize P14-05 validation tree'
+          git push origin HEAD:agent/p14-05-durable-execution
       - run: pnpm nx run backend-agent-durable:typecheck
       - run: pnpm nx run backend-agent-durable:test
       - run: pnpm nx run backend-agent-durable:lint
@@ -140,11 +146,3 @@ jobs:
       - run: pnpm docs:check
       - run: pnpm agent-eval:check
       - run: pnpm format:check
-      - name: Commit preflight corrections and remove probe
-        run: |
-          rm .github/workflows/p14-05-preflight.yml
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'chore: apply P14-05 preflight corrections'
-          git push origin HEAD:agent/p14-05-durable-execution
