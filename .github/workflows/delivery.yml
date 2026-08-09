@@ -17,13 +17,39 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  p14-05-doc-materialize:
+    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'agent/p14-05-durable-execution' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: agent/p14-05-durable-execution
+          fetch-depth: 0
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10.13.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm docs:architecture
+      - run: pnpm exec prettier --write docs/architecture/project-graph.md wiki/Architecture.md
+      - name: Push materialized docs tree
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/architecture/project-graph.md wiki/Architecture.md
+          git commit -m 'chore: materialize P14-05 documentation output'
+          git push --force origin HEAD:refs/heads/agent/p14-05-doc-materialized
+
   preview:
     runs-on: ubuntu-latest
     timeout-minutes: 30
