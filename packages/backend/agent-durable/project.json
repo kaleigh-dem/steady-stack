@@ -1,0 +1,34 @@
+{
+  "name": "backend-agent-durable",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/backend/agent-durable/src",
+  "projectType": "library",
+  "tags": ["scope:backend", "type:util", "runtime:node"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/packages/backend/agent-durable"],
+      "options": {
+        "command": "tsc -p packages/backend/agent-durable/tsconfig.lib.json"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/backend/agent-durable/tsconfig.lib.json --noEmit"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint packages/backend/agent-durable"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run packages/backend/agent-durable/src --passWithNoTests"
+      }
+    }
+  }
+}

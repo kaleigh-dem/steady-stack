@@ -1,11 +1,11 @@
 # Optional AI Runtime
 
-SteadyStack now includes reusable **optional** runtime AI boundaries for provider-neutral model access, typed tool execution, browser streaming, and prompt/evaluation evidence. These capabilities are intentionally separate from the repository's coding-agent operating model and are **not composed into the default generated applications**.
+SteadyStack now includes reusable **optional** runtime AI boundaries for provider-neutral model access, typed tool execution, browser streaming, prompt/evaluation evidence, and durable agent execution. These capabilities are intentionally separate from the repository's coding-agent operating model and are **not composed into the default generated applications**.
 
 ## Prerequisites
 
 - Understand [Choosing Workspace Profiles](Choosing-Workspace-Profiles), especially that `--ai=false` remains the default.
-- Treat runtime AI as an application capability with explicit data, provider, authorization, retention, evaluation, and operational ownership.
+- Treat runtime AI as an application capability with explicit data, provider, authorization, retention, evaluation, durability, and operational ownership.
 
 ## Profile boundary and current status
 
@@ -22,7 +22,8 @@ Phase 14 status:
 - **P14-02 — complete:** provider-neutral `ModelClient`, OpenAI native-`fetch` adapter, and deterministic no-network adapter.
 - **P14-03 — complete:** typed authorized tools and the V1 browser agent-stream contract.
 - **P14-04 — complete:** reviewed prompt/tool-instruction artifacts and CI-enforced evaluation evidence.
-- **P14-05 — next:** optional durable execution for checkpoints, resumable runs, human approval, and interruption recovery.
+- **P14-05 — complete:** replaceable durable execution with leases/fences, checkpoints, resumable runs, human approval, and interruption recovery.
+- **P14-06 — next:** safety/governance hooks and model/provider fallback policy.
 
 The repository roadmap in `docs/TODO.md` is authoritative for future sequencing.
 
@@ -48,7 +49,7 @@ The model project is stateless. It does not persist prompts, completions, vector
 
 ## Data classification, retention, and provider selection
 
-AI data inherits the strictest classification of the source data it contains. Prompts, retrieved context, attachments, structured model input/output, tool arguments, and tool results must be evaluated under the application's data policy.
+AI data inherits the strictest classification of the source data it contains. Prompts, retrieved context, attachments, structured model input/output, tool arguments, tool results, and durable checkpoints must be evaluated under the application's data policy.
 
 Fail closed on prohibited data:
 
@@ -56,6 +57,7 @@ Fail closed on prohibited data:
 - Sensitive, regulated, tenant-confidential, or residency-constrained data requires an explicit policy allowing that classification for the selected provider and region.
 - Provider-side retention, training use, abuse-review storage, and regional processing must be compatible with the application's policy before that provider is allowed.
 - Production-derived evaluation fixtures require the same classification and retention review as production model traffic; synthetic or redacted fixtures are preferred.
+- Production durable adapters require explicit ownership, purpose, retention, deletion, tenant isolation, encryption/access control, backup/restore, and regional policy for checkpoint state.
 
 Provider and model selection is server-side and allowlisted. Browser input, prompt text, user input, or model output must not directly select an unapproved provider, model, region, credential, or tool set. Credentials remain server-side.
 
@@ -82,7 +84,7 @@ Invocation is ordered deliberately:
 
 Model output is never an authorization decision. Actor identity, tenant identity, scopes, credentials, provider/model choice, and tool allowlists are trusted application context, not model-controlled arguments.
 
-P14-03 does not automatically retry side-effecting tool execution. Checkpoints, approval workflows, resumable execution, and recovery belong to P14-05.
+P14-03 does not automatically retry side-effecting tool execution. P14-05 supplies optional checkpoint/resume and approval lifecycle primitives, but applications remain responsible for deciding which side effects are safe to resume or retry.
 
 ## V1 browser agent stream
 
@@ -127,6 +129,20 @@ pnpm agent-eval:check
 
 The root `pnpm check` runs this immediately after `pnpm docs:check`. In CI, the evidence checker inspects the diff and requires changed evidence to cover governed prompt artifacts and non-test model/tool runtime behavior changes. A governed prompt, model, or tool behavior change must therefore include reviewed evaluation evidence rather than only code and tests.
 
+## Durable execution
+
+`packages/backend/agent-durable` adds a backend-only replaceable lifecycle for checkpointed/resumable runs without selecting a workflow framework or persistence product.
+
+A durable run preserves `runId`, `traceId`, `actorId`, and `conversationId`. Claims use a bounded lease, a server-owned lease-owner identifier, an attempt count, and a monotonically increasing fence. Every mutating session operation must still own the current lease and fence. When an interrupted lease expires, another worker can reclaim the run with a higher fence and resume from the latest checkpoint; the stale session cannot overwrite newer progress.
+
+Checkpoints use contiguous sequence numbers and stable checkpoint identifiers as idempotency keys. Replaying the same identifier with identical state is a duplicate success; changing content behind the same identifier fails closed. Checkpoint state must be JSON-compatible application data.
+
+`pauseForApproval` atomically persists the resume checkpoint and a pending approval before releasing the lease. A waiting run cannot be reclaimed until the application resolves that approval. Approval returns the run to `pending`; rejection terminates it with the safe `approval_rejected` code. Model output never supplies the trusted approver identity.
+
+Lifecycle observation reuses the repository correlation context and retains only identifiers, status, attempt/fence, checkpoint sequence, approval identifiers/decisions, and safe failure codes. Raw checkpoint state is not an observer event field.
+
+`InMemoryDurableExecutionAdapter` is deterministic test support. Its snapshot/restore path proves recovery semantics in tests, but it does not survive process or host loss by itself. Production applications must provide an actual persistent `DurableExecutionAdapter` implementation and own retention, deletion, tenant isolation, encryption/access control, backup/restore, and residency policy for stored checkpoint state.
+
 Useful focused checks include:
 
 ```bash
@@ -136,6 +152,8 @@ pnpm nx run backend-agent-tool:test
 pnpm nx run backend-agent-tool:typecheck
 pnpm nx run backend-agent-eval:test
 pnpm nx run backend-agent-eval:typecheck
+pnpm nx run backend-agent-durable:test
+pnpm nx run backend-agent-durable:typecheck
 pnpm agent-eval:check
 ```
 
@@ -143,12 +161,12 @@ pnpm agent-eval:check
 
 The current reusable boundaries should not be described as a complete generated AI application profile. Phase 14 still has explicit gaps:
 
-- **Durable execution (P14-05):** no shared checkpointing, resumable run, human-approval, or interruption-recovery adapter is composed yet.
-- **Broader safety and governance (P14-06):** no complete input/output policy orchestration, sensitive-data policy runtime, tool allowlist policy, audit-event policy, or provider/model fallback policy is supplied yet.
+- **Broader safety and governance (P14-06):** no complete input/output policy orchestration, sensitive-data policy runtime, tool allowlist policy, audit-event policy, approval-authorization policy, or provider/model fallback policy is supplied yet.
 - **Generated runnable AI profile (P14-07):** `ai=true` does not yet install or wire a reference model-backed workflow into generated applications.
+- No production durable persistence adapter is selected by the shared platform; applications that need durable execution choose and operate one explicitly.
 - The repository does not choose a default model provider, orchestration framework, vector database, prompt-management service, or durable-agent framework.
 
-Applications that compose the current primitives must still own provider credentials and allowlisting, data classification and retention decisions, runtime policy, safe tool registration, prompt content, operational budgets, production monitoring, and incident response.
+Applications that compose the current primitives must still own provider credentials and allowlisting, data classification and retention decisions, runtime policy, safe tool registration, prompt content, operational budgets, durable persistence selection, production monitoring, and incident response.
 
 ## Related pages
 
