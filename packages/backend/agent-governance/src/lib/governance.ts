@@ -2,11 +2,7 @@ const SAFE_CODE = /^[a-z][a-z0-9_]{0,63}$/;
 const SAFE_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 
 export type AgentDataClassification =
-  | 'public'
-  | 'internal'
-  | 'confidential'
-  | 'restricted'
-  | 'credential';
+  'public' | 'internal' | 'confidential' | 'restricted' | 'credential';
 
 const DATA_CLASSIFICATIONS: readonly AgentDataClassification[] = [
   'public',
@@ -293,7 +289,9 @@ function exactKeys(
   return Object.keys(value).every((key) => allowedSet.has(key));
 }
 
-function parseContentPolicyDecision<T>(value: unknown): ContentPolicyDecision<T> {
+function parseContentPolicyDecision<T>(
+  value: unknown,
+): ContentPolicyDecision<T> {
   const decision = requireObject(value, 'policy decision');
   if (decision.action === 'allow' && exactKeys(decision, ['action'])) {
     return { action: 'allow' };
@@ -327,10 +325,7 @@ function parseContentPolicyDecision<T>(value: unknown): ContentPolicyDecision<T>
       reasonCode: requireCode(decision.reasonCode, 'reasonCode'),
     };
   }
-  throw new GovernanceError(
-    'policy decision was malformed.',
-    'invalid_input',
-  );
+  throw new GovernanceError('policy decision was malformed.', 'invalid_input');
 }
 
 function parseApprovalAuthorizationDecision(
@@ -674,9 +669,14 @@ function validatedRoute(route: ModelRoute): ModelRoute {
   return route;
 }
 
-function validatedRoutes(routes: readonly ModelRoute[]): Map<string, ModelRoute> {
+function validatedRoutes(
+  routes: readonly ModelRoute[],
+): Map<string, ModelRoute> {
   if (routes.length === 0) {
-    throw new GovernanceError('At least one model route is required.', 'invalid_input');
+    throw new GovernanceError(
+      'At least one model route is required.',
+      'invalid_input',
+    );
   }
   const byId = new Map<string, ModelRoute>();
   for (const route of routes) {
@@ -833,7 +833,10 @@ export async function selectPrimaryModelRoute(
   const requirements = validatedRequirements(requirementsValue);
   const route = byId.get(policy.primaryRouteId);
   if (!route) {
-    throw new GovernanceError('Primary model route was missing.', 'invalid_input');
+    throw new GovernanceError(
+      'Primary model route was missing.',
+      'invalid_input',
+    );
   }
   const reasonCode = routeCompatibilityReason(route, requirements);
   const auditBase = routeAuditBase(context);
@@ -877,10 +880,7 @@ function modelFailureCode(value: ModelFailureCode): ModelFailureCode {
     'provider_error',
   ];
   if (!all.includes(value)) {
-    throw new GovernanceError(
-      'failureCode is not supported.',
-      'invalid_input',
-    );
+    throw new GovernanceError('failureCode is not supported.', 'invalid_input');
   }
   return value;
 }
@@ -898,7 +898,10 @@ export async function selectFallbackModelRoute(input: {
   const byId = validatedRoutes(input.routes);
   validatedFallbackPolicy(input.policy, byId);
   const requirements = validatedRequirements(input.requirements);
-  const currentRouteId = requireIdentifier(input.currentRouteId, 'currentRouteId');
+  const currentRouteId = requireIdentifier(
+    input.currentRouteId,
+    'currentRouteId',
+  );
   const failureCode = modelFailureCode(input.failureCode);
   const chain = [input.policy.primaryRouteId, ...input.policy.fallbackRouteIds];
   const currentIndex = chain.indexOf(currentRouteId);
