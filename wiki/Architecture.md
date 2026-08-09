@@ -200,17 +200,17 @@ Do not weaken a boundary to make one import pass. Move behavior to the correct p
 
 ## Out of the box versus adopter responsibility
 
-| Area           | Out of the box                                       | Adopter responsibility                            |
-| -------------- | ---------------------------------------------------- | ------------------------------------------------- |
-| Web/API/worker | Reference applications and composition               | Product behavior and scaling                      |
-| Contracts      | Generation, runtime validation, agent-stream V1      | API/protocol lifecycle and compatibility decisions |
-| PostgreSQL     | Local Compose, migrations, adapters                  | Managed service, TLS, capacity, backups           |
-| Authentication | Development verifier, OIDC verifier, browser adapter | Provider login/session integration and operations |
-| Worker         | PostgreSQL outbox baseline                           | Capacity, alerting, business handlers             |
-| Rate limits    | Memory local, PostgreSQL production adapter          | Thresholds and ingress trust                      |
-| Telemetry      | Instrumentation and local collector                  | Backend, retention, redaction, dashboards         |
+| Area           | Out of the box                                       | Adopter responsibility                                                                                  |
+| -------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Web/API/worker | Reference applications and composition               | Product behavior and scaling                                                                            |
+| Contracts      | Generation, runtime validation, agent-stream V1      | API/protocol lifecycle and compatibility decisions                                                      |
+| PostgreSQL     | Local Compose, migrations, adapters                  | Managed service, TLS, capacity, backups                                                                 |
+| Authentication | Development verifier, OIDC verifier, browser adapter | Provider login/session integration and operations                                                       |
+| Worker         | PostgreSQL outbox baseline                           | Capacity, alerting, business handlers                                                                   |
+| Rate limits    | Memory local, PostgreSQL production adapter          | Thresholds and ingress trust                                                                            |
+| Telemetry      | Instrumentation and local collector                  | Backend, retention, redaction, dashboards                                                               |
 | Optional AI    | Model/tool/stream/evaluation primitives              | Runtime composition, provider policy, credentials, data handling, safety, durable execution, monitoring |
-| Deployment     | Images, preview, release plan                        | Real platform, ingress, DNS, TLS, rollout         |
+| Deployment     | Images, preview, release plan                        | Real platform, ingress, DNS, TLS, rollout                                                               |
 
 ## Related pages
 
