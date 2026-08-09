@@ -24,6 +24,60 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  p14-06-materialize:
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 71
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: agent/p14-06-safety-governance
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10.13.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - name: Apply pinned formatting and architecture generation
+        run: |
+          pnpm exec prettier --write \
+            packages/backend/agent-governance \
+            docs/adr/0025-agent-safety-and-governance-hooks.md \
+            docs/agent-safety-and-governance.md \
+            docs/architecture/overview.md \
+            docs/TODO.md \
+            wiki/Architecture.md \
+            wiki/Home.md \
+            wiki/Optional-AI-Runtime.md \
+            tsconfig.json
+          pnpm docs:architecture
+      - name: Push materialized tree
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -C agent/p14-06-materialized
+          git add \
+            packages/backend/agent-governance \
+            docs/adr/0025-agent-safety-and-governance-hooks.md \
+            docs/agent-safety-and-governance.md \
+            docs/architecture/overview.md \
+            docs/architecture/project-graph.md \
+            docs/TODO.md \
+            wiki/Architecture.md \
+            wiki/Home.md \
+            wiki/Optional-AI-Runtime.md \
+            tsconfig.json
+          git commit -m 'chore: materialize P14-06 generated files' || true
+          git push --force origin HEAD:refs/heads/agent/p14-06-materialized
+
   preview:
     runs-on: ubuntu-latest
     timeout-minutes: 30
