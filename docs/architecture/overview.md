@@ -29,6 +29,7 @@ Applications are composition roots. HTTP, framework, process lifecycle, and tran
 ## Current libraries
 
 ```text
+packages/backend/agent-durable       optional durable-run leases, checkpoints, approval pauses, recovery, and adapter contract
 packages/backend/agent-eval          reviewed prompt artifacts, deterministic evaluations, budgets, and evidence enforcement
 packages/backend/agent-task          framework-free Agent Task domain and use cases
 packages/backend/agent-tool          framework-neutral typed tool invocation and authorization boundary
@@ -47,6 +48,8 @@ The model project is backend-only and is not composed into the default API, work
 The P14-03 tool and browser-stream boundaries remain optional runtime primitives rather than default application composition. `backend-agent-tool` validates model-controlled input and handler output and requires authorization against application-supplied actor context before execution. `contracts` owns strict V1 NDJSON agent-stream events, while the Agent Tasks web feature incrementally consumes that universal contract and enforces sequence plus stream-identity continuity. Raw prompts and tool payloads are not V1 transport fields. See `docs/typed-tools-and-streaming.md` and ADR 0022.
 
 The P14-04 evaluation boundary is also backend-only and uncomposed. `backend-agent-eval` owns strict reviewed prompt/tool-instruction artifacts, deterministic fixture and grader contracts, quality/latency/token/cost budgets, and payload-safe evidence manifests. CI requires changed evidence for governed prompt artifacts plus non-test model and typed-tool runtime changes. Model grading remains an application-supplied callback, so this boundary does not choose a provider or add provider dependencies. See `docs/prompt-evaluation-lifecycle.md` and ADR 0023.
+
+The P14-05 durable-execution boundary remains backend-only and uncomposed. `backend-agent-durable` owns a replaceable persistence adapter plus renewable lease/fence, idempotent checkpoint, atomic approval-pause, resume, and interruption-recovery semantics. It reuses the shared correlation context for payload-safe lifecycle observation. Its in-memory adapter is deterministic test support only; production applications must opt into a persistent adapter with explicit retention, deletion, tenant isolation, encryption, and access controls. See `docs/durable-agent-execution.md` and ADR 0024.
 
 `tools/workspace-plugin` owns the released preset, structural generators, and downstream upgrade tooling. `tools/delivery`, `infra`, and `performance` own production-image preparation, environment validation, preview orchestration, release manifests and plans, and performance budgets. `tools/documentation` validates documented links, paths, commands, environment names, identity and authentication descriptions, architecture evidence, and change records.
 
@@ -70,6 +73,7 @@ The graph check fails when the committed diagram differs from Nx. See `docs/docu
 - Provider-specific model protocol translation stays behind the provider-neutral model boundary and is not a default application dependency.
 - Tool authorization uses trusted application actor context at the invocation boundary; model output is never an authorization decision.
 - Prompt and tool-instruction changes use reviewed versioned artifacts and changed evaluation evidence; model grading does not select providers inside the shared evaluation boundary.
+- Durable run mutations require the current lease owner and fence; approval decisions come from trusted application context, and checkpoint state never becomes an observability payload.
 - Browser-facing AI events use the shared versioned agent-stream contract rather than provider-native streaming frames.
 - HTTP contracts originate in `packages/contracts/openapi/source`; generated artifacts are consumed at API and browser boundaries.
 - The API persists Agent Tasks and outbox events transactionally. The worker claims outbox rows at least once and executes fenced, idempotent handlers.
