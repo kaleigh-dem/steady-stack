@@ -7,6 +7,13 @@ import {
   configureAiProfile,
 } from './ai-profile';
 
+const materializedCapabilities = [
+  ['backend-agent-eval', 'packages/backend/agent-eval'],
+  ['backend-agent-governance', 'packages/backend/agent-governance'],
+  ['backend-agent-tool', 'packages/backend/agent-tool'],
+  ['backend-model', 'packages/backend/model'],
+] as const;
+
 function createProfileTree() {
   const tree = createTreeWithEmptyWorkspace();
   writeJson(tree, 'apps/api/package.json', {
@@ -41,6 +48,12 @@ function createProfileTree() {
       '  apps/web:',
       '    dependencies: {}',
       '',
+      '  packages/backend/agent-durable:',
+      '    dependencies: {}',
+      '',
+      '  packages/backend/agent-task:',
+      '    dependencies: {}',
+      '',
     ].join('\n'),
   );
   return tree;
@@ -54,6 +67,9 @@ function generatedSnapshot(tree: ReturnType<typeof createProfileTree>) {
     tree.read('apps/api/src/app/ai/reference-workflow.ts', 'utf-8'),
     tree.read('apps/api/src/app/ai/reference-workflow.spec.ts', 'utf-8'),
     tree.read('apps/api/src/app/ai/README.md', 'utf-8'),
+    ...materializedCapabilities.map(([, root]) =>
+      tree.read(`${root}/package.json`, 'utf-8'),
+    ),
   ];
 }
 
@@ -90,9 +106,20 @@ describe('AI profile generation', () => {
     expect(tree.exists('apps/api/src/app/ai/reference-workflow.spec.ts')).toBe(
       true,
     );
-    expect(tree.read('pnpm-lock.yaml', 'utf-8')).toContain(
+
+    const lockfile = tree.read('pnpm-lock.yaml', 'utf-8');
+    expect(lockfile).toContain(
       "'@acme/backend-model':\n        specifier: workspace:*\n        version: link:../../packages/backend/model",
     );
+    for (const [suffix, root] of materializedCapabilities) {
+      expect(
+        readJson<{ name: string; private: boolean }>(
+          tree,
+          `${root}/package.json`,
+        ),
+      ).toMatchObject({ name: `@acme/${suffix}`, private: true });
+      expect(lockfile).toContain(`\n  ${root}: {}\n`);
+    }
   });
 
   it('is deterministic and removes AI runtime composition when disabled', () => {
@@ -124,6 +151,12 @@ describe('AI profile generation', () => {
     for (const suffix of aiCapabilityPackageSuffixes) {
       expect(tree.read('pnpm-lock.yaml', 'utf-8')).not.toContain(
         `@acme/${suffix}`,
+      );
+    }
+    for (const [, root] of materializedCapabilities) {
+      expect(tree.exists(`${root}/package.json`)).toBe(false);
+      expect(tree.read('pnpm-lock.yaml', 'utf-8')).not.toContain(
+        `\n  ${root}: {}\n`,
       );
     }
   });
