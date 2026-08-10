@@ -6,6 +6,7 @@ on:
       - '.github/workflows/delivery.yml'
       - 'packages/**'
       - 'tools/p14-06-review-materialize.py'
+      - 'tools/p14-06-review-materialize-followup.py'
 
 permissions:
   contents: write
@@ -32,7 +33,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Apply review fix
-        run: python tools/p14-06-review-materialize.py
+        run: |
+          python tools/p14-06-review-materialize.py
+          python tools/p14-06-review-materialize-followup.py
       - name: Format review fix
         run: pnpm exec prettier --write packages/backend/agent-governance/src/lib/governance.ts packages/backend/agent-governance/src/lib/review-regressions.spec.ts
       - name: Validate governance project
