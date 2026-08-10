@@ -41,6 +41,8 @@ describe('preset generator', () => {
     tree.write('docs/template-validation.md', '# Validation\n');
     tree.write('docs/template-upgrades.md', '# Upgrades\n');
     tree.write('tools/template/fixtures/upgrade-0.1.0/package.json', '{}\n');
+    tree.write('tools/template/ai-profile-isolation-check.mjs', 'export {};\n');
+    tree.write('tools/template/generated-ai-profile-e2e.mjs', 'export {};\n');
     tree.write('tools/template/generated-workspace-e2e.mjs', 'export {};\n');
     tree.write('tools/template/release.mjs', 'export {};\n');
     tree.write('tools/template/smoke-release-artifact.mjs', 'export {};\n');
@@ -99,6 +101,12 @@ describe('preset generator', () => {
     expect(tree.exists('docs/template-releases.md')).toBe(false);
     expect(tree.exists('docs/template-validation.md')).toBe(false);
     expect(tree.exists('tools/template/fixtures')).toBe(false);
+    expect(tree.exists('tools/template/ai-profile-isolation-check.mjs')).toBe(
+      false,
+    );
+    expect(tree.exists('tools/template/generated-ai-profile-e2e.mjs')).toBe(
+      false,
+    );
     expect(tree.exists('tools/template/generated-workspace-e2e.mjs')).toBe(
       false,
     );
