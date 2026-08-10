@@ -1,4 +1,4 @@
-name: P13-07 lockfile remediation
+name: P13-07 remaining advisory diagnostic
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  remediate:
+  diagnostic:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -18,11 +18,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Skip sentinel output head
+      - name: Skip diagnostic output head
         id: sentinel
         shell: bash
         run: |
-          if git log -1 --pretty=%B | grep -Fq '[lockfile-output]'; then
+          if git log -1 --pretty=%B | grep -Fq '[remaining-output]'; then
             echo 'skip=true' >> "$GITHUB_OUTPUT"
           else
             echo 'skip=false' >> "$GITHUB_OUTPUT"
@@ -42,42 +42,50 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Generate lockfile and audit
+      - name: Capture remaining advisories
         if: steps.sentinel.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p .tmp
-          pnpm install --lockfile-only
+          pnpm install --frozen-lockfile
           pnpm audit --json > /tmp/audit.json || true
-          node <<'NODE' > .tmp/p13-07-remediation-audit.txt
+          node <<'NODE' > .tmp/p13-07-remaining-advisories.txt
           const fs = require('node:fs');
           const report = JSON.parse(fs.readFileSync('/tmp/audit.json', 'utf8'));
-          console.log(`SOURCE_HEAD=${process.env.GITHUB_SHA}`);
-          const vulnerabilities = report.vulnerabilities ?? {};
-          for (const [pkg, value] of Object.entries(vulnerabilities).sort()) {
-            console.log(`PACKAGE ${pkg} severity=${value.severity} range=${value.range ?? ''} fix=${JSON.stringify(value.fixAvailable ?? null)}`);
-            for (const via of value.via ?? []) {
-              if (typeof via === 'string') {
-                console.log(`  VIA ${via}`);
-              } else {
-                console.log(`  VIA severity=${via.severity ?? ''} range=${via.range ?? ''} title=${via.title ?? ''} url=${via.url ?? ''}`);
+          const ghsa = /GHSA-[0-9A-Za-z-]+/g;
+          const seen = new Set();
+          function visit(value, path = []) {
+            if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
+            if (!value || typeof value !== 'object') return;
+            const severity = typeof value.severity === 'string' ? value.severity : '';
+            if (['low', 'moderate', 'high', 'critical'].includes(severity)) {
+              const ids = [...JSON.stringify(value).matchAll(ghsa)].map((m) => m[0]);
+              const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
+              for (const id of ids) {
+                const key = `${id}|${name}|${severity}`;
+                if (!seen.has(key)) {
+                  seen.add(key);
+                  console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+                }
               }
             }
+            for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
           }
-          console.log(`COUNTS ${JSON.stringify(report.metadata?.vulnerabilities ?? {})}`);
+          visit(report);
+          console.log(`COUNTS=${JSON.stringify(report.metadata?.vulnerabilities ?? {})}`);
           NODE
+          for package in sharp postcss brace-expansion js-yaml image-size less axios fast-uri nanoid; do
+            echo "===== ${package} =====" >> .tmp/p13-07-remaining-advisories.txt
+            pnpm why "$package" --recursive >> .tmp/p13-07-remaining-advisories.txt 2>&1 || true
+          done
 
-      - name: Persist remediated lockfile
+      - name: Persist compact diagnostic
         if: steps.sentinel.outputs.skip != 'true'
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add pnpm-lock.yaml .tmp/p13-07-remediation-audit.txt
-          if git diff --cached --quiet; then
-            echo 'No lockfile changes to persist.'
-            exit 0
-          fi
-          git commit -m 'fix(security): regenerate patched lockfile [lockfile-output]'
+          git add .tmp/p13-07-remaining-advisories.txt
+          git commit -m 'chore(security): capture remaining advisories [remaining-output]'
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
