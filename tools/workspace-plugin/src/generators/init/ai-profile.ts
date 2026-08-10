@@ -189,7 +189,7 @@ function configureLockfile(tree: Tree, options: AiProfileOptions): void {
   const importerSearchStart = importerStart + apiImporterMarker.length;
   const nextImporterOffset = content
     .slice(importerSearchStart)
-    .search(/\n  \S[^\n]*:\n/);
+    .search(/\n {2}\S[^\n]*:\n/);
   const importerEnd =
     nextImporterOffset < 0
       ? content.length
