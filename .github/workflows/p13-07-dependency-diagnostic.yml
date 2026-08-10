@@ -1,100 +1,83 @@
-name: P13-07 audit remediation diagnostic
+name: P13-07 lockfile remediation
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/p13-07-dependency-vulnerability-remediation
+      - main
 
 permissions:
   contents: write
 
 jobs:
-  diagnostic:
-    if: ${{ !contains(github.event.head_commit.message, '[audit-fix-output]') }}
+  remediate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout
+      - name: Checkout PR head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Skip sentinel output head
+        id: sentinel
+        shell: bash
+        run: |
+          if git log -1 --pretty=%B | grep -Fq '[lockfile-output]'; then
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'skip=false' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up pnpm
+        if: steps.sentinel.outputs.skip != 'true'
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 10.13.1
           run_install: false
 
       - name: Set up Node.js
+        if: steps.sentinel.outputs.skip != 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
 
-      - name: Install frozen graph
-        run: pnpm install --frozen-lockfile
-
-      - name: Test pnpm audit remediation
+      - name: Generate lockfile and audit
+        if: steps.sentinel.outputs.skip != 'true'
         shell: bash
         run: |
-          set -uo pipefail
+          set -euo pipefail
           mkdir -p .tmp
-          pnpm audit --json > /tmp/audit-before.json || true
-          node <<'NODE' > .tmp/p13-07-audit-remediation.txt
+          pnpm install --lockfile-only
+          pnpm audit --json > /tmp/audit.json || true
+          node <<'NODE' > .tmp/p13-07-remediation-audit.txt
           const fs = require('node:fs');
-          const report = JSON.parse(fs.readFileSync('/tmp/audit-before.json', 'utf8'));
-          console.log(`BASE_HEAD=${process.env.GITHUB_SHA}`);
-          console.log('===== AUDIT BEFORE =====');
+          const report = JSON.parse(fs.readFileSync('/tmp/audit.json', 'utf8'));
+          console.log(`SOURCE_HEAD=${process.env.GITHUB_SHA}`);
           const vulnerabilities = report.vulnerabilities ?? {};
           for (const [pkg, value] of Object.entries(vulnerabilities).sort()) {
             console.log(`PACKAGE ${pkg} severity=${value.severity} range=${value.range ?? ''} fix=${JSON.stringify(value.fixAvailable ?? null)}`);
             for (const via of value.via ?? []) {
               if (typeof via === 'string') {
                 console.log(`  VIA ${via}`);
-                continue;
+              } else {
+                console.log(`  VIA severity=${via.severity ?? ''} range=${via.range ?? ''} title=${via.title ?? ''} url=${via.url ?? ''}`);
               }
-              console.log(`  VIA severity=${via.severity ?? ''} range=${via.range ?? ''} title=${via.title ?? ''} url=${via.url ?? ''}`);
             }
           }
           console.log(`COUNTS ${JSON.stringify(report.metadata?.vulnerabilities ?? {})}`);
           NODE
 
-          cp package.json /tmp/package-before.json
-          cp pnpm-lock.yaml /tmp/lock-before.yaml
-          set +e
-          pnpm audit --fix >> .tmp/p13-07-audit-remediation.txt 2>&1
-          fix_exit=$?
-          set -e
-          echo "AUDIT_FIX_EXIT=${fix_exit}" >> .tmp/p13-07-audit-remediation.txt
-          echo '===== AUDIT FIX DIFF =====' >> .tmp/p13-07-audit-remediation.txt
-          git diff -- package.json pnpm-lock.yaml >> .tmp/p13-07-audit-remediation.txt || true
-
-          pnpm audit --json > /tmp/audit-after.json || true
-          node <<'NODE' >> .tmp/p13-07-audit-remediation.txt
-          const fs = require('node:fs');
-          const report = JSON.parse(fs.readFileSync('/tmp/audit-after.json', 'utf8'));
-          console.log('===== AUDIT AFTER =====');
-          const vulnerabilities = report.vulnerabilities ?? {};
-          for (const [pkg, value] of Object.entries(vulnerabilities).sort()) {
-            console.log(`PACKAGE ${pkg} severity=${value.severity} range=${value.range ?? ''} fix=${JSON.stringify(value.fixAvailable ?? null)}`);
-            for (const via of value.via ?? []) {
-              if (typeof via === 'string') {
-                console.log(`  VIA ${via}`);
-                continue;
-              }
-              console.log(`  VIA severity=${via.severity ?? ''} range=${via.range ?? ''} title=${via.title ?? ''} url=${via.url ?? ''}`);
-            }
-          }
-          console.log(`COUNTS ${JSON.stringify(report.metadata?.vulnerabilities ?? {})}`);
-          NODE
-
-      - name: Persist diagnostic output
+      - name: Persist remediated lockfile
+        if: steps.sentinel.outputs.skip != 'true'
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add package.json pnpm-lock.yaml .tmp/p13-07-audit-remediation.txt
+          git add pnpm-lock.yaml .tmp/p13-07-remediation-audit.txt
           if git diff --cached --quiet; then
-            echo 'No remediation output changes to persist.'
+            echo 'No lockfile changes to persist.'
             exit 0
           fi
-          git commit -m 'chore(security): capture audit remediation [audit-fix-output]'
-          git push origin HEAD:${GITHUB_REF_NAME}
+          git commit -m 'fix(security): regenerate patched lockfile [lockfile-output]'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
