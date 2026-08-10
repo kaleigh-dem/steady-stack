@@ -1,6 +1,6 @@
 # Template Roadmap
 
-Last updated: 2026-08-09
+Last updated: 2026-08-10
 
 This file tracks active work required to evolve the repository as a reusable, upgradeable application platform. Completed implementation history remains available in merged pull requests, ADRs, and Git history instead of being repeated as a separate historical roadmap.
 
@@ -42,6 +42,7 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 
 1. Phase 13 is active; P13-01 through P13-06 are complete, and no additional Phase 13 implementation is planned.
 2. Phase 14 is optional; P14-01 through P14-06 are complete, P14-07 is next, and the default workspace profile must remain free of AI runtime dependencies.
+3. Phase 15 follows the current Phase 14 work and strengthens development-time agent portability independently of runtime AI; P15-01 is planned.
 
 ## Phase 13 — Supply chain, CI scale, and documentation integrity
 
@@ -132,6 +133,19 @@ Phase 14 progress record (2026-08-09): P14-01 is completed by ADR 0020. It separ
   - Verify that the default non-AI profile contains no model-provider dependencies.
 
 Exit criteria: the optional profile generates a provider-replaceable, observable, evaluated AI workflow with typed tools and explicit safety boundaries, while the base template remains free of AI runtime dependencies.
+
+## Phase 15 — Portable agent ergonomics
+
+Goal: make repository-specific operating knowledge discoverable on demand across maintained coding-agent hosts while keeping `AGENTS.md`, executable repository contracts, and human approval boundaries authoritative.
+
+- [ ] **P15-01 Add portable agent skills and version-matched framework guidance.**
+  - Keep root and nested `AGENTS.md` as concise always-on, agent-agnostic rules; move detailed repeatable procedures into portable Agent Skills rather than expanding global instructions.
+  - Add repository-owned skills for high-value multi-step workflows such as architecture discovery, validation/debugging, release evidence, and downstream upgrades, using only reviewed repository commands and least-privilege tool access.
+  - Prefer framework-provided, version-matched documentation and diagnostics when available (including Next.js packaged agent guidance and Nx MCP/project-graph context) instead of copying framework knowledge into long-lived prompts.
+  - Validate skill metadata, referenced files, and executable commands deterministically, and include the portable skills in generated workspaces without requiring a specific commercial coding-agent product.
+  - Document provenance and review rules for third-party skills; do not install unreviewed skills or scripts automatically.
+
+Exit criteria: a capable unfamiliar agent on at least two maintained agent hosts can discover the same repository rules and task-specific procedures, the generated workspace contains the validated portable skill set, framework guidance is tied to installed versions rather than stale copied prose, and no skill grants production authority or weakens existing human approval gates.
 
 ## Definition of done for roadmap tasks
 
