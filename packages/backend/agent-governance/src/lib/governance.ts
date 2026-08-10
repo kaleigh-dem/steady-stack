@@ -237,8 +237,8 @@ function requireObject(value: unknown, label: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-function requireIdentifier(value: string, label: string): string {
-  if (!SAFE_IDENTIFIER.test(value)) {
+function requireIdentifier(value: unknown, label: string): string {
+  if (typeof value !== 'string' || !SAFE_IDENTIFIER.test(value)) {
     throw new GovernanceError(
       `${label} must be a payload-safe identifier up to 128 characters.`,
       'invalid_input',
@@ -247,8 +247,8 @@ function requireIdentifier(value: string, label: string): string {
   return value;
 }
 
-function requireCode(value: string, label: string): string {
-  if (!SAFE_CODE.test(value)) {
+function requireCode(value: unknown, label: string): string {
+  if (typeof value !== 'string' || !SAFE_CODE.test(value)) {
     throw new GovernanceError(
       `${label} must be a lowercase snake-case identifier up to 64 characters.`,
       'invalid_input',
@@ -285,8 +285,29 @@ function exactKeys(
   value: Record<string, unknown>,
   allowed: readonly string[],
 ): boolean {
+  const keys = Object.keys(value);
+  if (keys.length !== allowed.length) return false;
   const allowedSet = new Set(allowed);
-  return Object.keys(value).every((key) => allowedSet.has(key));
+  return (
+    keys.every((key) => allowedSet.has(key)) &&
+    allowed.every((key) => Object.prototype.hasOwnProperty.call(value, key))
+  );
+}
+
+function requireStringArray(value: unknown, label: string): readonly string[] {
+  if (!Array.isArray(value)) {
+    throw new GovernanceError(`${label} must be an array.`, 'invalid_input');
+  }
+  for (const item of value) {
+    requireIdentifier(item, label);
+  }
+  return value as readonly string[];
+}
+
+function requireOptionalBoolean(value: unknown, label: string): void {
+  if (value !== undefined && typeof value !== 'boolean') {
+    throw new GovernanceError(`${label} must be a boolean.`, 'invalid_input');
+  }
 }
 
 function parseContentPolicyDecision<T>(
@@ -494,8 +515,16 @@ function validatedToolPolicy(policy: ToolAllowlistPolicy): {
   allowed: Set<string>;
   approval: Set<string>;
 } {
+  const allowedToolIds = requireStringArray(
+    policy.allowedToolIds,
+    'allowedToolIds',
+  );
+  const humanApprovalToolIds =
+    policy.humanApprovalToolIds === undefined
+      ? []
+      : requireStringArray(policy.humanApprovalToolIds, 'humanApprovalToolIds');
   const allowed = new Set<string>();
-  for (const toolId of policy.allowedToolIds) {
+  for (const toolId of allowedToolIds) {
     requireIdentifier(toolId, 'allowedToolId');
     if (allowed.has(toolId)) {
       throw new GovernanceError(
@@ -506,7 +535,7 @@ function validatedToolPolicy(policy: ToolAllowlistPolicy): {
     allowed.add(toolId);
   }
   const approval = new Set<string>();
-  for (const toolId of policy.humanApprovalToolIds ?? []) {
+  for (const toolId of humanApprovalToolIds) {
     requireIdentifier(toolId, 'humanApprovalToolId');
     if (approval.has(toolId)) {
       throw new GovernanceError(
@@ -633,10 +662,30 @@ export async function authorizeApprovalDecision(
 }
 
 function validatedRoute(route: ModelRoute): ModelRoute {
+  const routeValue = requireObject(route, 'model route');
+  if (
+    !exactKeys(routeValue, [
+      'routeId',
+      'providerId',
+      'modelId',
+      'region',
+      'allowedClassifications',
+      'retention',
+      'capabilities',
+    ])
+  ) {
+    throw new GovernanceError('model route was malformed.', 'invalid_input');
+  }
   requireIdentifier(route.routeId, 'routeId');
   requireIdentifier(route.providerId, 'providerId');
   requireIdentifier(route.modelId, 'modelId');
   requireIdentifier(route.region, 'region');
+  if (!Array.isArray(route.allowedClassifications)) {
+    throw new GovernanceError(
+      'allowedClassifications must be an array.',
+      'invalid_input',
+    );
+  }
   if (route.allowedClassifications.length === 0) {
     throw new GovernanceError(
       'allowedClassifications must not be empty.',
@@ -666,12 +715,27 @@ function validatedRoute(route: ModelRoute): ModelRoute {
       'invalid_input',
     );
   }
+  const capabilities = requireObject(route.capabilities, 'route capabilities');
+  if (
+    !exactKeys(capabilities, ['tools', 'structuredOutput', 'streaming']) ||
+    typeof capabilities.tools !== 'boolean' ||
+    typeof capabilities.structuredOutput !== 'boolean' ||
+    typeof capabilities.streaming !== 'boolean'
+  ) {
+    throw new GovernanceError(
+      'route capabilities must contain boolean tools, structuredOutput, and streaming fields.',
+      'invalid_input',
+    );
+  }
   return route;
 }
 
 function validatedRoutes(
   routes: readonly ModelRoute[],
 ): Map<string, ModelRoute> {
+  if (!Array.isArray(routes)) {
+    throw new GovernanceError('routes must be an array.', 'invalid_input');
+  }
   if (routes.length === 0) {
     throw new GovernanceError(
       'At least one model route is required.',
@@ -696,6 +760,15 @@ function validatedFallbackPolicy(
   policy: ModelFallbackPolicy,
   routes: Map<string, ModelRoute>,
 ): void {
+  if (!Array.isArray(policy.fallbackRouteIds)) {
+    throw new GovernanceError(
+      'fallbackRouteIds must be an array.',
+      'invalid_input',
+    );
+  }
+  if (!Array.isArray(policy.fallbackOn)) {
+    throw new GovernanceError('fallbackOn must be an array.', 'invalid_input');
+  }
   requireIdentifier(policy.primaryRouteId, 'primaryRouteId');
   if (!routes.has(policy.primaryRouteId)) {
     throw new GovernanceError(
@@ -754,7 +827,23 @@ function validatedRequirements(
   requirements: ModelRouteRequirements,
 ): ModelRouteRequirements {
   requireClassification(requirements.classification);
+  requireOptionalBoolean(
+    requirements.requireNoProviderRetention,
+    'requireNoProviderRetention',
+  );
+  requireOptionalBoolean(requirements.requiresTools, 'requiresTools');
+  requireOptionalBoolean(
+    requirements.requiresStructuredOutput,
+    'requiresStructuredOutput',
+  );
+  requireOptionalBoolean(requirements.requiresStreaming, 'requiresStreaming');
   if (requirements.allowedRegions !== undefined) {
+    if (!Array.isArray(requirements.allowedRegions)) {
+      throw new GovernanceError(
+        'allowedRegions must be an array when supplied.',
+        'invalid_input',
+      );
+    }
     if (requirements.allowedRegions.length === 0) {
       throw new GovernanceError(
         'allowedRegions must not be empty when supplied.',
@@ -867,7 +956,7 @@ export async function selectPrimaryModelRoute(
   return route;
 }
 
-function modelFailureCode(value: ModelFailureCode): ModelFailureCode {
+function modelFailureCode(value: unknown): ModelFailureCode {
   const all: readonly ModelFailureCode[] = [
     'aborted',
     'timeout',
@@ -879,10 +968,10 @@ function modelFailureCode(value: ModelFailureCode): ModelFailureCode {
     'unavailable',
     'provider_error',
   ];
-  if (!all.includes(value)) {
+  if (typeof value !== 'string' || !all.includes(value as ModelFailureCode)) {
     throw new GovernanceError('failureCode is not supported.', 'invalid_input');
   }
-  return value;
+  return value as ModelFailureCode;
 }
 
 export async function selectFallbackModelRoute(input: {
