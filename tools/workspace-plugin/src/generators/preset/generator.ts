@@ -13,6 +13,8 @@ const templateMaintainerPaths = [
   'docs/template-releases.md',
   'docs/template-validation.md',
   'tools/template/fixtures',
+  'tools/template/ai-profile-isolation-check.mjs',
+  'tools/template/generated-ai-profile-e2e.mjs',
   'tools/template/generated-workspace-e2e.mjs',
   'tools/template/release.mjs',
   'tools/template/smoke-release-artifact.mjs',
