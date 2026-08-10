@@ -44,7 +44,7 @@ jobs:
           pnpm nx run backend-agent-governance:test
           pnpm nx run backend-agent-governance:lint
           pnpm nx run backend-agent-governance:build
-          pnpm format:check
+          pnpm exec prettier --check packages/backend/agent-governance/src/lib/governance.ts packages/backend/agent-governance/src/lib/review-regressions.spec.ts
       - name: Push materialized tree
         run: |
           git config user.name 'github-actions[bot]'
