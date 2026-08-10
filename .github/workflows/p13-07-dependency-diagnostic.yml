@@ -1,4 +1,4 @@
-name: P13-07 remaining advisory diagnostic
+name: P13-07 patched graph generator
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  diagnostic:
+  generate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -18,11 +18,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Skip diagnostic output head
+      - name: Skip generated output head
         id: sentinel
         shell: bash
         run: |
-          if git log -1 --pretty=%B | grep -Fq '[remaining-output]'; then
+          if git log -1 --pretty=%B | grep -Fq '[patched-graph-output]'; then
             echo 'skip=true' >> "$GITHUB_OUTPUT"
           else
             echo 'skip=false' >> "$GITHUB_OUTPUT"
@@ -42,15 +42,15 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Capture remaining advisories
+      - name: Generate and audit patched graph
         if: steps.sentinel.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p .tmp
-          pnpm install --frozen-lockfile
+          pnpm install --lockfile-only
           pnpm audit --json > /tmp/audit.json || true
-          node <<'NODE' > .tmp/p13-07-remaining-advisories.txt
+          node <<'NODE' > .tmp/p13-07-final-audit.txt
           const fs = require('node:fs');
           const report = JSON.parse(fs.readFileSync('/tmp/audit.json', 'utf8'));
           const ghsa = /GHSA-[0-9A-Za-z-]+/g;
@@ -66,7 +66,7 @@ jobs:
                 const key = `${id}|${name}|${severity}`;
                 if (!seen.has(key)) {
                   seen.add(key);
-                  console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+                  console.log(`${id}\t${name}\t${severity}`);
                 }
               }
             }
@@ -75,17 +75,13 @@ jobs:
           visit(report);
           console.log(`COUNTS=${JSON.stringify(report.metadata?.vulnerabilities ?? {})}`);
           NODE
-          for package in sharp postcss brace-expansion js-yaml image-size less axios fast-uri nanoid; do
-            echo "===== ${package} =====" >> .tmp/p13-07-remaining-advisories.txt
-            pnpm why "$package" --recursive >> .tmp/p13-07-remaining-advisories.txt 2>&1 || true
-          done
 
-      - name: Persist compact diagnostic
+      - name: Persist patched graph
         if: steps.sentinel.outputs.skip != 'true'
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .tmp/p13-07-remaining-advisories.txt
-          git commit -m 'chore(security): capture remaining advisories [remaining-output]'
+          git add pnpm-lock.yaml .tmp/p13-07-final-audit.txt
+          git commit -m 'fix(security): generate patched dependency graph [patched-graph-output]'
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
