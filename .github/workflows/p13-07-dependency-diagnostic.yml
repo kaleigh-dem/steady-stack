@@ -1,4 +1,4 @@
-name: P13-07 dependency diagnostic
+name: P13-07 audit remediation diagnostic
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   diagnostic:
-    if: ${{ !contains(github.event.head_commit.message, '[diagnostic-output]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[audit-fix-output]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -32,88 +32,58 @@ jobs:
       - name: Install frozen graph
         run: pnpm install --frozen-lockfile
 
-      - name: Capture dependency diagnostic and compatible refresh
+      - name: Test pnpm audit remediation
         shell: bash
         run: |
           set -uo pipefail
           mkdir -p .tmp
-          : > .tmp/p13-07-dependency-diagnostic.txt
-          exec > >(tee -a .tmp/p13-07-dependency-diagnostic.txt) 2>&1
-
-          echo "BASE_HEAD=${GITHUB_SHA}"
-          echo "===== CURRENT HIGH/CRITICAL AUDIT ====="
           pnpm audit --json > /tmp/audit-before.json || true
-          node <<'NODE'
+          node <<'NODE' > .tmp/p13-07-audit-remediation.txt
           const fs = require('node:fs');
           const report = JSON.parse(fs.readFileSync('/tmp/audit-before.json', 'utf8'));
-          summarize(report, 'high_or_critical_before');
-          function summarize(report, label) {
-            const seen = new Set();
-            const ghsa = /GHSA-[0-9A-Za-z-]+/g;
-            function visit(value, path = []) {
-              if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
-              if (!value || typeof value !== 'object') return;
-              const severity = typeof value.severity === 'string' ? value.severity : '';
-              if (severity === 'high' || severity === 'critical') {
-                const found = [...JSON.stringify(value).matchAll(ghsa)].map((match) => match[0]);
-                const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
-                for (const id of found) {
-                  const key = `${id}|${name}|${severity}`;
-                  if (!seen.has(key)) {
-                    seen.add(key);
-                    console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
-                  }
-                }
+          console.log(`BASE_HEAD=${process.env.GITHUB_SHA}`);
+          console.log('===== AUDIT BEFORE =====');
+          const vulnerabilities = report.vulnerabilities ?? {};
+          for (const [pkg, value] of Object.entries(vulnerabilities).sort()) {
+            console.log(`PACKAGE ${pkg} severity=${value.severity} range=${value.range ?? ''} fix=${JSON.stringify(value.fixAvailable ?? null)}`);
+            for (const via of value.via ?? []) {
+              if (typeof via === 'string') {
+                console.log(`  VIA ${via}`);
+                continue;
               }
-              for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
+              console.log(`  VIA severity=${via.severity ?? ''} range=${via.range ?? ''} title=${via.title ?? ''} url=${via.url ?? ''}`);
             }
-            visit(report);
-            console.log(`${label}=${seen.size}`);
           }
+          console.log(`COUNTS ${JSON.stringify(report.metadata?.vulnerabilities ?? {})}`);
           NODE
 
-          echo "===== VULNERABLE PACKAGE PATHS ====="
-          for package in brace-expansion axios fast-uri sharp postcss js-yaml image-size nanoid; do
-            echo "----- pnpm why ${package} -----"
-            pnpm why "${package}" --recursive || true
-          done
+          cp package.json /tmp/package-before.json
+          cp pnpm-lock.yaml /tmp/lock-before.yaml
+          set +e
+          pnpm audit --fix >> .tmp/p13-07-audit-remediation.txt 2>&1
+          fix_exit=$?
+          set -e
+          echo "AUDIT_FIX_EXIT=${fix_exit}" >> .tmp/p13-07-audit-remediation.txt
+          echo '===== AUDIT FIX DIFF =====' >> .tmp/p13-07-audit-remediation.txt
+          git diff -- package.json pnpm-lock.yaml >> .tmp/p13-07-audit-remediation.txt || true
 
-          cp pnpm-lock.yaml /tmp/pnpm-lock.before.yaml
-          echo "===== COMPATIBLE RECURSIVE LOCKFILE REFRESH ====="
-          pnpm update --recursive --lockfile-only
-          git diff --stat -- pnpm-lock.yaml package.json || true
-          echo "----- vulnerable-package diff lines -----"
-          diff -u /tmp/pnpm-lock.before.yaml pnpm-lock.yaml | grep -E '^[+-].*(brace-expansion|axios|fast-uri|sharp|postcss|js-yaml|image-size|nanoid)' || true
-
-          echo "===== HIGH/CRITICAL AUDIT AFTER REFRESH ====="
           pnpm audit --json > /tmp/audit-after.json || true
-          node <<'NODE'
+          node <<'NODE' >> .tmp/p13-07-audit-remediation.txt
           const fs = require('node:fs');
           const report = JSON.parse(fs.readFileSync('/tmp/audit-after.json', 'utf8'));
-          summarize(report, 'high_or_critical_after_refresh');
-          function summarize(report, label) {
-            const seen = new Set();
-            const ghsa = /GHSA-[0-9A-Za-z-]+/g;
-            function visit(value, path = []) {
-              if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
-              if (!value || typeof value !== 'object') return;
-              const severity = typeof value.severity === 'string' ? value.severity : '';
-              if (severity === 'high' || severity === 'critical') {
-                const found = [...JSON.stringify(value).matchAll(ghsa)].map((match) => match[0]);
-                const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
-                for (const id of found) {
-                  const key = `${id}|${name}|${severity}`;
-                  if (!seen.has(key)) {
-                    seen.add(key);
-                    console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
-                  }
-                }
+          console.log('===== AUDIT AFTER =====');
+          const vulnerabilities = report.vulnerabilities ?? {};
+          for (const [pkg, value] of Object.entries(vulnerabilities).sort()) {
+            console.log(`PACKAGE ${pkg} severity=${value.severity} range=${value.range ?? ''} fix=${JSON.stringify(value.fixAvailable ?? null)}`);
+            for (const via of value.via ?? []) {
+              if (typeof via === 'string') {
+                console.log(`  VIA ${via}`);
+                continue;
               }
-              for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
+              console.log(`  VIA severity=${via.severity ?? ''} range=${via.range ?? ''} title=${via.title ?? ''} url=${via.url ?? ''}`);
             }
-            visit(report);
-            console.log(`${label}=${seen.size}`);
           }
+          console.log(`COUNTS ${JSON.stringify(report.metadata?.vulnerabilities ?? {})}`);
           NODE
 
       - name: Persist diagnostic output
@@ -121,10 +91,10 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add pnpm-lock.yaml .tmp/p13-07-dependency-diagnostic.txt
+          git add package.json pnpm-lock.yaml .tmp/p13-07-audit-remediation.txt
           if git diff --cached --quiet; then
-            echo 'No diagnostic output changes to persist.'
+            echo 'No remediation output changes to persist.'
             exit 0
           fi
-          git commit -m 'chore(security): capture dependency diagnostic [diagnostic-output]'
+          git commit -m 'chore(security): capture audit remediation [audit-fix-output]'
           git push origin HEAD:${GITHUB_REF_NAME}
