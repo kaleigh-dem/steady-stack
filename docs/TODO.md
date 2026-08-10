@@ -1,6 +1,6 @@
 # Template Roadmap
 
-Last updated: 2026-08-09
+Last updated: 2026-08-10
 
 This file tracks active work required to evolve the repository as a reusable, upgradeable application platform. Completed implementation history remains available in merged pull requests, ADRs, and Git history instead of being repeated as a separate historical roadmap.
 
@@ -40,14 +40,15 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 
 ## Execution order
 
-1. Phase 13 maintenance is active; P13-01 through P13-06 are complete and P13-07 is the current dependency-remediation task.
-2. Phase 14 is optional; P14-01 through P14-06 are complete, P14-07 is next after the active maintenance PR, and the default workspace profile must remain free of AI runtime dependencies.
+1. Phase 13 is complete through P13-07; ongoing dependency/security maintenance is tracked through the repository's normal security and issue workflows.
+2. Phase 14 is optional; P14-01 through P14-06 are complete, P14-07 is next, and the default workspace profile must remain free of AI runtime dependencies.
+3. Phase 15 follows the current Phase 14 work and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 through P15-03 are planned.
 
 ## Phase 13 — Supply chain, CI scale, and documentation integrity
 
 Goal: promote tested immutable artifacts with verifiable provenance while keeping CI fast and failures diagnosable.
 
-Phase 13 progress record (2026-08-09): P13-01 is completed in reviewed PR #50 and squash commit `d4766a30d2e39f308a830ce4c6099edfe3ed045c`. P13-02 is completed in PR #52 and was hardened in PR #53. P13-03 is completed in PR #55 and merge commit `fe8a8644458803ca35d35e4262ccd39a9b02e825`; it adds pull-request cancellation, optional persisted BuildKit caches with deterministic local fallback, and retained failure diagnostics. P13-04 audits environment, Docker, generator, contract, and delivery cache inputs; adds deterministic invalidation fixtures; records a representative CI sample; moves required typecheck and build to affected execution; and retains explicit generator and generated-workspace coverage. P13-05 adds fail-closed documentation checks for links, paths, commands, environment names, identity and authentication descriptions, a generated Nx project-graph diagram, and roadmap-plus-ADR evidence for generator or boundary changes. P13-06 adds tamper-evident release records that bind immutable digests to SBOM and attestation verification, migration plans, backup identifiers, rollback-window and schema-compatibility decisions, and deployed smoke evidence; it also adds a quarterly isolated PostgreSQL restore exercise with retained recovery evidence. P13-07 is in progress in PR #72 to replace vulnerable dependency paths with patched owner releases or narrowly scoped overrides, clear resolved audit exceptions, and harden baseline validation against duplicate exceptions.
+Phase 13 progress record (2026-08-10): P13-01 is completed in reviewed PR #50 and squash commit `d4766a30d2e39f308a830ce4c6099edfe3ed045c`. P13-02 is completed in PR #52 and was hardened in PR #53. P13-03 is completed in PR #55 and merge commit `fe8a8644458803ca35d35e4262ccd39a9b02e825`; it adds pull-request cancellation, optional persisted BuildKit caches with deterministic local fallback, and retained failure diagnostics. P13-04 audits environment, Docker, generator, contract, and delivery cache inputs; adds deterministic invalidation fixtures; records a representative CI sample; moves required typecheck and build to affected execution; and retains explicit generator and generated-workspace coverage. P13-05 adds fail-closed documentation checks for links, paths, commands, environment names, identity and authentication descriptions, a generated Nx project-graph diagram, and roadmap-plus-ADR evidence for generator or boundary changes. P13-06 adds tamper-evident release records that bind immutable digests to SBOM and attestation verification, migration plans, backup identifiers, rollback-window and schema-compatibility decisions, and deployed smoke evidence; it also adds a quarterly isolated PostgreSQL restore exercise with retained recovery evidence. P13-07 is completed in reviewed PR #72 and merge commit `aa2cc96c14ede69f9f84e2465fb91304fbde2454`; it upgrades vulnerable owner dependencies, adds narrowly scoped transitive overrides where necessary, clears resolved audit exceptions, and rejects duplicate audit-baseline entries.
 
 - [x] **P13-01 Add image and dependency supply-chain artifacts.**
   - Generate an SBOM for each production image.
@@ -86,7 +87,7 @@ Phase 13 progress record (2026-08-09): P13-01 is completed in reviewed PR #50 an
   - Add automated checks that the rollback window and schema-compatibility decision are recorded.
   - Exercise disaster recovery and restore procedures on a scheduled basis.
 
-- [-] **P13-07 Remediate dependency vulnerabilities.**
+- [x] **P13-07 Remediate dependency vulnerabilities.**
   - Upgrade owning direct dependencies to patched compatible releases where available.
   - Use narrowly scoped transitive overrides only when the owning package cannot yet select the required patched release.
   - Remove resolved and duplicate dependency-audit baseline exceptions instead of extending them.
@@ -138,6 +139,33 @@ Phase 14 progress record (2026-08-09): P14-01 is completed by ADR 0020. It separ
   - Verify that the default non-AI profile contains no model-provider dependencies.
 
 Exit criteria: the optional profile generates a provider-replaceable, observable, evaluated AI workflow with typed tools and explicit safety boundaries, while the base template remains free of AI runtime dependencies.
+
+## Phase 15 — Portable agent ergonomics
+
+Goal: make repository-specific operating knowledge discoverable on demand across maintained coding-agent hosts while keeping `AGENTS.md`, executable repository contracts, human-facing wiki documentation, and human approval boundaries clearly separated and authoritative for their audiences.
+
+- [ ] **P15-01 Establish the portable Agent Skills contract.**
+  - Keep root and nested `AGENTS.md` as concise always-on, agent-agnostic rules; use progressively disclosed skills for detailed repeatable procedures.
+  - Use `.agents/skills` as the canonical repository-owned skill location and avoid maintaining vendor-specific duplicate skill sources.
+  - Define deterministic validation for skill metadata, referenced files, repository commands, provenance, and least-privilege tool expectations.
+  - Add initial repository-owned skills for architecture discovery and validation/debugging using only reviewed repository commands.
+  - Require review and provenance for imported third-party skills; never auto-install unreviewed scripts.
+
+- [ ] **P15-02 Generate and verify portable agent skills.**
+  - Add maintained skills for release evidence and downstream upgrades after the core skill contract is proven.
+  - Include the validated portable skill set in generated workspaces without requiring a specific commercial coding-agent product.
+  - Prefer framework-provided, version-matched documentation and diagnostics, including Next.js packaged agent guidance and Nx MCP/project-graph context, over copied framework prose.
+  - Demonstrate that at least two maintained agent hosts can discover the same repository rules and task procedures.
+  - Preserve all existing human approval boundaries; no skill may grant production authority, credentials, or an alternate path around repository checks.
+
+- [ ] **P15-03 Separate human and agent documentation surfaces.**
+  - Establish the published GitHub Wiki, sourced from reviewed `wiki/` files, as the primary home for human-facing product, operator, onboarding, and explanatory documentation.
+  - Keep repository-resident documentation focused on agent/machine-facing source-of-truth material needed for implementation, validation, governance, and review, including `AGENTS.md`, ADRs, contracts, generated evidence, and executable runbooks.
+  - Keep the root `README.md` as the human landing page for the repository site, routing people to the Wiki and contributors/agents to the appropriate repository control surfaces; retain `docs/TODO.md` as the roadmap/control-plane exception unless a later migration explicitly replaces it.
+  - Inventory root Markdown, `docs/`, and `wiki/`; classify each document by audience and authority, migrate or cull duplicated human-facing prose from repository documentation, and preserve only repository copies that have an implementation, automation, governance, or review reason to live beside the code.
+  - Extend documentation-integrity checks so links and ownership rules prevent the Wiki and repository documentation from silently becoming competing sources of truth.
+
+Exit criteria: portable agent procedures are validated and generated without vendor lock-in, at least two maintained agent hosts can discover the same repository rules and procedures, framework guidance is tied to installed versions rather than stale copied prose, human-facing documentation has one clear Wiki home with only explicit repository exceptions, agent/machine-facing guidance remains versioned beside the code, and no skill or documentation path weakens existing human approval gates.
 
 ## Definition of done for roadmap tasks
 
