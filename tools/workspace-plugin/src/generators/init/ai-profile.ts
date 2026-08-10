@@ -23,35 +23,47 @@ interface ApiTsconfig {
 
 interface AiCapability {
   readonly packageSuffix: string;
+  readonly projectRoot: string;
   readonly projectReference: string;
   readonly lockfileLink: string;
+  readonly materializePackage: boolean;
 }
 
 const aiCapabilities: readonly AiCapability[] = [
   {
     packageSuffix: 'backend-agent-durable',
+    projectRoot: 'packages/backend/agent-durable',
     projectReference: '../../packages/backend/agent-durable/tsconfig.lib.json',
     lockfileLink: '../../packages/backend/agent-durable',
+    materializePackage: false,
   },
   {
     packageSuffix: 'backend-agent-eval',
+    projectRoot: 'packages/backend/agent-eval',
     projectReference: '../../packages/backend/agent-eval/tsconfig.lib.json',
     lockfileLink: '../../packages/backend/agent-eval',
+    materializePackage: true,
   },
   {
     packageSuffix: 'backend-agent-governance',
+    projectRoot: 'packages/backend/agent-governance',
     projectReference: '../../packages/backend/agent-governance/tsconfig.lib.json',
     lockfileLink: '../../packages/backend/agent-governance',
+    materializePackage: true,
   },
   {
     packageSuffix: 'backend-agent-tool',
+    projectRoot: 'packages/backend/agent-tool',
     projectReference: '../../packages/backend/agent-tool/tsconfig.lib.json',
     lockfileLink: '../../packages/backend/agent-tool',
+    materializePackage: true,
   },
   {
     packageSuffix: 'backend-model',
+    projectRoot: 'packages/backend/model',
     projectReference: '../../packages/backend/model/tsconfig.lib.json',
     lockfileLink: '../../packages/backend/model',
+    materializePackage: true,
   },
 ] as const;
 
@@ -68,6 +80,34 @@ function removeTreePath(tree: Tree, path: string): void {
   }
   for (const child of tree.children(path)) {
     removeTreePath(tree, `${path}/${child}`);
+  }
+}
+
+function configureCapabilityPackages(
+  tree: Tree,
+  options: AiProfileOptions,
+): void {
+  for (const capability of aiCapabilities) {
+    if (!capability.materializePackage) continue;
+    const path = `${capability.projectRoot}/package.json`;
+    if (!options.ai) {
+      if (tree.exists(path)) tree.delete(path);
+      continue;
+    }
+    writeJson(tree, path, {
+      name: packageName(options.packageScope, capability.packageSuffix),
+      version: '0.1.0',
+      private: true,
+      main: './src/index.ts',
+      types: './src/index.ts',
+      exports: {
+        '.': {
+          types: './src/index.ts',
+          import: './src/index.ts',
+          default: './src/index.ts',
+        },
+      },
+    });
   }
 }
 
@@ -121,7 +161,7 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function configureApiLockfile(tree: Tree, options: AiProfileOptions): void {
+function configureLockfile(tree: Tree, options: AiProfileOptions): void {
   const path = 'pnpm-lock.yaml';
   if (!tree.exists(path)) return;
 
@@ -132,7 +172,7 @@ function configureApiLockfile(tree: Tree, options: AiProfileOptions): void {
     throw new Error('pnpm-lock.yaml must contain apps/api and apps/web importers.');
   }
 
-  let importer = content.slice(importerStart, importerEnd);
+  let apiImporter = content.slice(importerStart, importerEnd);
   for (const capability of aiCapabilities) {
     const dependency = packageName(
       options.packageScope,
@@ -142,9 +182,9 @@ function configureApiLockfile(tree: Tree, options: AiProfileOptions): void {
       `\\n      '${escapeRegExp(dependency)}':\\n        specifier: workspace:\\*\\n        version: link:${escapeRegExp(capability.lockfileLink)}\\n`,
       'g',
     );
-    importer = importer.replace(block, '\n');
+    apiImporter = apiImporter.replace(block, '\n');
   }
-  importer = importer.replace(/\n{3,}$/g, '\n\n');
+  apiImporter = apiImporter.replace(/\n{3,}$/g, '\n\n');
 
   if (options.ai) {
     const blocks = aiCapabilities
@@ -156,10 +196,29 @@ function configureApiLockfile(tree: Tree, options: AiProfileOptions): void {
         return `      '${dependency}':\n        specifier: workspace:*\n        version: link:${capability.lockfileLink}\n`;
       })
       .join('');
-    importer = `${importer.replace(/\n+$/g, '\n')}${blocks}\n`;
+    apiImporter = `${apiImporter.replace(/\n+$/g, '\n')}${blocks}\n`;
+  }
+  content = `${content.slice(0, importerStart)}${apiImporter}${content.slice(importerEnd)}`;
+
+  for (const capability of aiCapabilities) {
+    if (!capability.materializePackage) continue;
+    content = content.replace(`\n  ${capability.projectRoot}: {}\n`, '\n');
+  }
+  content = content.replace(/\n{3,}/g, '\n\n');
+
+  if (options.ai) {
+    const marker = '\n  packages/backend/agent-task:\n';
+    const markerIndex = content.indexOf(marker);
+    if (markerIndex < 0) {
+      throw new Error('pnpm-lock.yaml must contain the agent-task importer.');
+    }
+    const capabilityImporters = aiCapabilities
+      .filter((capability) => capability.materializePackage)
+      .map((capability) => `\n  ${capability.projectRoot}: {}\n`)
+      .join('');
+    content = `${content.slice(0, markerIndex)}${capabilityImporters}${content.slice(markerIndex)}`;
   }
 
-  content = `${content.slice(0, importerStart)}${importer}${content.slice(importerEnd)}`;
   tree.write(path, content);
 }
 
@@ -180,9 +239,10 @@ function writeReferenceFiles(tree: Tree, options: AiProfileOptions): void {
 }
 
 export function configureAiProfile(tree: Tree, options: AiProfileOptions): void {
+  configureCapabilityPackages(tree, options);
   configureApiDependencies(tree, options);
   configureApiReferences(tree, options);
-  configureApiLockfile(tree, options);
+  configureLockfile(tree, options);
   writeReferenceFiles(tree, options);
 }
 
