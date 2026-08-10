@@ -73,7 +73,7 @@
     "@nestjs/common": "^11.1.0",
     "@nestjs/core": "^11.1.0",
     "@nestjs/platform-express": "^11.1.0",
-    "next": "~16.2.10",
+    "next": "~16.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "reflect-metadata": "^0.2.2",
@@ -84,7 +84,7 @@
   "devDependencies": {
     "@steadystack/workspace-plugin": "workspace:*",
     "@eslint/js": "^9.8.0",
-    "@next/eslint-plugin-next": "^16.1.6",
+    "@next/eslint-plugin-next": "^16.3.0",
     "@nx/devkit": "23.1.1",
     "@nx/eslint": "23.1.1",
     "@nx/eslint-plugin": "23.1.1",
@@ -101,7 +101,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.8.0",
-    "eslint-config-next": "^16.1.6",
+    "eslint-config-next": "^16.3.0",
     "eslint-config-prettier": "^10.0.0",
     "nx": "23.1.1",
     "prettier": "~3.9.6",
@@ -109,5 +109,12 @@
     "typescript": "6.0.3",
     "typescript-eslint": "^8.40.0",
     "vitest": "^4.1.10"
+  },
+  "pnpm": {
+    "overrides": {
+      "brace-expansion@>=4.0.0 <5.0.9": "5.0.9",
+      "js-yaml@>=4.0.0 <4.3.1": "4.3.1",
+      "less@<=4.5.1": "4.8.1"
+    }
   }
 }
