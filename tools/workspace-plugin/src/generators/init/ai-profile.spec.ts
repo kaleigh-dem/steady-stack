@@ -2,10 +2,7 @@ import { readJson, writeJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { describe, expect, it } from 'vitest';
 
-import {
-  aiCapabilityPackageSuffixes,
-  configureAiProfile,
-} from './ai-profile';
+import { aiCapabilityPackageSuffixes, configureAiProfile } from './ai-profile';
 
 const materializedCapabilities = [
   ['backend-agent-eval', 'packages/backend/agent-eval'],
