@@ -42,11 +42,7 @@ jobs:
       - run: pnpm contracts:compat
       - run: pnpm nx sync:check
       - run: pnpm agent-eval:check
-      - name: Print canonical formatting diff
-        run: |
-          pnpm format
-          git diff -- docs/getting-started.md tools/template/ai-profile-isolation-check.mjs tools/template/generated-ai-profile-e2e.mjs tools/workspace-plugin/src/generators/init/ai-profile.spec.ts tools/workspace-plugin/src/generators/init/ai-profile.ts
-          exit 1
+      - run: pnpm format:check
       - name: Check documentation integrity
         run: pnpm docs:check
       - name: Audit Nx cache inputs
