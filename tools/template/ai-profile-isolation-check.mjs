@@ -48,10 +48,13 @@ async function packageJsonPaths(root, directory = root) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     if (entry.isDirectory()) {
       if (ignoredDirectories.has(entry.name)) continue;
-      files.push(...(await packageJsonPaths(root, path.join(directory, entry.name))));
+      files.push(
+        ...(await packageJsonPaths(root, path.join(directory, entry.name))),
+      );
       continue;
     }
-    if (entry.name === 'package.json') files.push(path.join(directory, entry.name));
+    if (entry.name === 'package.json')
+      files.push(path.join(directory, entry.name));
   }
   return files;
 }
@@ -68,12 +71,19 @@ async function main() {
   const workspace = process.argv[2] ? path.resolve(process.argv[2]) : null;
   if (!workspace) throw new Error('Workspace path is required.');
 
-  const manifest = await readJson(path.join(workspace, 'workspace.template.json'));
-  const apiPackage = await readJson(path.join(workspace, 'apps/api/package.json'));
+  const manifest = await readJson(
+    path.join(workspace, 'workspace.template.json'),
+  );
+  const apiPackage = await readJson(
+    path.join(workspace, 'apps/api/package.json'),
+  );
   const apiTsconfig = await readJson(
     path.join(workspace, 'apps/api/tsconfig.app.json'),
   );
-  const lockfile = await readFile(path.join(workspace, 'pnpm-lock.yaml'), 'utf-8');
+  const lockfile = await readFile(
+    path.join(workspace, 'pnpm-lock.yaml'),
+    'utf-8',
+  );
 
   assert.equal(manifest.profiles.ai, false);
   assert.equal(
@@ -105,7 +115,12 @@ async function main() {
     await assert.rejects(stat(path.join(workspace, relativePath)), {
       code: 'ENOENT',
     });
-    assert.doesNotMatch(lockfile, new RegExp(`\\n  ${relativePath.replace('/package.json', '')}: \\{\\}\\n`));
+    assert.doesNotMatch(
+      lockfile,
+      new RegExp(
+        `\\n  ${relativePath.replace('/package.json', '')}: \\{\\}\\n`,
+      ),
+    );
   }
 
   for (const filePath of await packageJsonPaths(workspace)) {
