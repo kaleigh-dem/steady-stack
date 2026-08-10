@@ -47,7 +47,8 @@ const aiCapabilities: readonly AiCapability[] = [
   {
     packageSuffix: 'backend-agent-governance',
     projectRoot: 'packages/backend/agent-governance',
-    projectReference: '../../packages/backend/agent-governance/tsconfig.lib.json',
+    projectReference:
+      '../../packages/backend/agent-governance/tsconfig.lib.json',
     lockfileLink: '../../packages/backend/agent-governance',
     materializePackage: true,
   },
@@ -169,7 +170,9 @@ function configureLockfile(tree: Tree, options: AiProfileOptions): void {
   const importerStart = content.indexOf('\n  apps/api:\n');
   const importerEnd = content.indexOf('\n  apps/web:\n', importerStart + 1);
   if (importerStart < 0 || importerEnd < 0) {
-    throw new Error('pnpm-lock.yaml must contain apps/api and apps/web importers.');
+    throw new Error(
+      'pnpm-lock.yaml must contain apps/api and apps/web importers.',
+    );
   }
 
   let apiImporter = content.slice(importerStart, importerEnd);
@@ -238,7 +241,10 @@ function writeReferenceFiles(tree: Tree, options: AiProfileOptions): void {
   tree.write(`${aiReferenceRoot}/README.md`, referenceReadme());
 }
 
-export function configureAiProfile(tree: Tree, options: AiProfileOptions): void {
+export function configureAiProfile(
+  tree: Tree,
+  options: AiProfileOptions,
+): void {
   configureCapabilityPackages(tree, options);
   configureApiDependencies(tree, options);
   configureApiReferences(tree, options);
