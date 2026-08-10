@@ -167,13 +167,31 @@ function configureLockfile(tree: Tree, options: AiProfileOptions): void {
   if (!tree.exists(path)) return;
 
   let content = tree.read(path, 'utf-8') ?? '';
-  const importerStart = content.indexOf('\n  apps/api:\n');
-  const importerEnd = content.indexOf('\n  apps/web:\n', importerStart + 1);
-  if (importerStart < 0 || importerEnd < 0) {
-    throw new Error(
-      'pnpm-lock.yaml must contain apps/api and apps/web importers.',
-    );
+
+  for (const capability of aiCapabilities) {
+    if (!capability.materializePackage) continue;
+    content = content.replace(`\n  ${capability.projectRoot}: {}\n`, '\n');
   }
+  content = content.replace(/\n{3,}/g, '\n\n');
+
+  const apiImporterMarker = '\n  apps/api:\n';
+  const importerStart = content.indexOf(apiImporterMarker);
+  if (importerStart < 0) {
+    if (options.ai) {
+      throw new Error('pnpm-lock.yaml must contain an apps/api importer for ai=true.');
+    }
+    tree.write(path, content);
+    return;
+  }
+
+  const importerSearchStart = importerStart + apiImporterMarker.length;
+  const nextImporterOffset = content
+    .slice(importerSearchStart)
+    .search(/\n  \S[^\n]*:\n/);
+  const importerEnd =
+    nextImporterOffset < 0
+      ? content.length
+      : importerSearchStart + nextImporterOffset;
 
   let apiImporter = content.slice(importerStart, importerEnd);
   for (const capability of aiCapabilities) {
@@ -202,12 +220,6 @@ function configureLockfile(tree: Tree, options: AiProfileOptions): void {
     apiImporter = `${apiImporter.replace(/\n+$/g, '\n')}${blocks}\n`;
   }
   content = `${content.slice(0, importerStart)}${apiImporter}${content.slice(importerEnd)}`;
-
-  for (const capability of aiCapabilities) {
-    if (!capability.materializePackage) continue;
-    content = content.replace(`\n  ${capability.projectRoot}: {}\n`, '\n');
-  }
-  content = content.replace(/\n{3,}/g, '\n\n');
 
   if (options.ai) {
     const marker = '\n  packages/backend/agent-task:\n';
