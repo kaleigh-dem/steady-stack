@@ -1,0 +1,108 @@
+name: P13-07 dependency diagnostic
+
+on:
+  push:
+    branches:
+      - agent/p13-07-dependency-vulnerability-remediation
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10.13.1
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install frozen graph
+        run: pnpm install --frozen-lockfile
+
+      - name: Show vulnerable dependency paths
+        shell: bash
+        run: |
+          for package in brace-expansion axios fast-uri sharp postcss js-yaml image-size nanoid; do
+            echo "===== pnpm why ${package} ====="
+            pnpm why "${package}" --recursive || true
+          done
+
+      - name: Summarize current audit
+        shell: bash
+        run: |
+          pnpm audit --json > /tmp/audit-before.json || true
+          node <<'NODE'
+          const fs = require('node:fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/audit-before.json', 'utf8'));
+          const ids = new Set();
+          const ghsa = /GHSA-[0-9A-Za-z-]+/g;
+          function visit(value, path = []) {
+            if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
+            if (!value || typeof value !== 'object') return;
+            const severity = typeof value.severity === 'string' ? value.severity : '';
+            if (severity === 'high' || severity === 'critical') {
+              const text = JSON.stringify(value);
+              const found = [...text.matchAll(ghsa)].map((match) => match[0]);
+              const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
+              for (const id of found) {
+                const key = `${id}|${name}|${severity}`;
+                if (!ids.has(key)) {
+                  ids.add(key);
+                  console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+                }
+              }
+            }
+            for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
+          }
+          visit(report);
+          console.log(`high_or_critical=${ids.size}`);
+          NODE
+
+      - name: Test compatible lockfile refresh
+        shell: bash
+        run: |
+          cp pnpm-lock.yaml /tmp/pnpm-lock.before.yaml
+          pnpm update --recursive --lockfile-only
+          echo "===== refresh diff stat ====="
+          git diff --stat -- pnpm-lock.yaml package.json
+          echo "===== changed package keys ====="
+          diff -u /tmp/pnpm-lock.before.yaml pnpm-lock.yaml | grep -E '^[+-].*(brace-expansion|axios|fast-uri|sharp|postcss|js-yaml|image-size|nanoid)' || true
+          pnpm audit --json > /tmp/audit-after.json || true
+          node <<'NODE'
+          const fs = require('node:fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/audit-after.json', 'utf8'));
+          const ids = new Set();
+          const ghsa = /GHSA-[0-9A-Za-z-]+/g;
+          function visit(value, path = []) {
+            if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
+            if (!value || typeof value !== 'object') return;
+            const severity = typeof value.severity === 'string' ? value.severity : '';
+            if (severity === 'high' || severity === 'critical') {
+              const text = JSON.stringify(value);
+              const found = [...text.matchAll(ghsa)].map((match) => match[0]);
+              const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
+              for (const id of found) {
+                const key = `${id}|${name}|${severity}`;
+                if (!ids.has(key)) {
+                  ids.add(key);
+                  console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+                }
+              }
+            }
+            for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
+          }
+          visit(report);
+          console.log(`high_or_critical_after_refresh=${ids.size}`);
+          NODE
