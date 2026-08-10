@@ -4,15 +4,13 @@ on:
   push:
     branches:
       - agent/p13-07-dependency-vulnerability-remediation
-  pull_request:
-    branches:
-      - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   diagnostic:
+    if: ${{ !contains(github.event.head_commit.message, '[diagnostic-output]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -34,78 +32,99 @@ jobs:
       - name: Install frozen graph
         run: pnpm install --frozen-lockfile
 
-      - name: Show vulnerable dependency paths
+      - name: Capture dependency diagnostic and compatible refresh
         shell: bash
         run: |
-          for package in brace-expansion axios fast-uri sharp postcss js-yaml image-size nanoid; do
-            echo "===== pnpm why ${package} ====="
-            pnpm why "${package}" --recursive || true
-          done
+          set -uo pipefail
+          mkdir -p .tmp
+          : > .tmp/p13-07-dependency-diagnostic.txt
+          exec > >(tee -a .tmp/p13-07-dependency-diagnostic.txt) 2>&1
 
-      - name: Summarize current audit
-        shell: bash
-        run: |
+          echo "BASE_HEAD=${GITHUB_SHA}"
+          echo "===== CURRENT HIGH/CRITICAL AUDIT ====="
           pnpm audit --json > /tmp/audit-before.json || true
           node <<'NODE'
           const fs = require('node:fs');
           const report = JSON.parse(fs.readFileSync('/tmp/audit-before.json', 'utf8'));
-          const ids = new Set();
-          const ghsa = /GHSA-[0-9A-Za-z-]+/g;
-          function visit(value, path = []) {
-            if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
-            if (!value || typeof value !== 'object') return;
-            const severity = typeof value.severity === 'string' ? value.severity : '';
-            if (severity === 'high' || severity === 'critical') {
-              const text = JSON.stringify(value);
-              const found = [...text.matchAll(ghsa)].map((match) => match[0]);
-              const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
-              for (const id of found) {
-                const key = `${id}|${name}|${severity}`;
-                if (!ids.has(key)) {
-                  ids.add(key);
-                  console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+          summarize(report, 'high_or_critical_before');
+          function summarize(report, label) {
+            const seen = new Set();
+            const ghsa = /GHSA-[0-9A-Za-z-]+/g;
+            function visit(value, path = []) {
+              if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
+              if (!value || typeof value !== 'object') return;
+              const severity = typeof value.severity === 'string' ? value.severity : '';
+              if (severity === 'high' || severity === 'critical') {
+                const found = [...JSON.stringify(value).matchAll(ghsa)].map((match) => match[0]);
+                const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
+                for (const id of found) {
+                  const key = `${id}|${name}|${severity}`;
+                  if (!seen.has(key)) {
+                    seen.add(key);
+                    console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+                  }
                 }
               }
+              for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
             }
-            for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
+            visit(report);
+            console.log(`${label}=${seen.size}`);
           }
-          visit(report);
-          console.log(`high_or_critical=${ids.size}`);
           NODE
 
-      - name: Test compatible lockfile refresh
-        shell: bash
-        run: |
+          echo "===== VULNERABLE PACKAGE PATHS ====="
+          for package in brace-expansion axios fast-uri sharp postcss js-yaml image-size nanoid; do
+            echo "----- pnpm why ${package} -----"
+            pnpm why "${package}" --recursive || true
+          done
+
           cp pnpm-lock.yaml /tmp/pnpm-lock.before.yaml
+          echo "===== COMPATIBLE RECURSIVE LOCKFILE REFRESH ====="
           pnpm update --recursive --lockfile-only
-          echo "===== refresh diff stat ====="
-          git diff --stat -- pnpm-lock.yaml package.json
-          echo "===== changed package keys ====="
+          git diff --stat -- pnpm-lock.yaml package.json || true
+          echo "----- vulnerable-package diff lines -----"
           diff -u /tmp/pnpm-lock.before.yaml pnpm-lock.yaml | grep -E '^[+-].*(brace-expansion|axios|fast-uri|sharp|postcss|js-yaml|image-size|nanoid)' || true
+
+          echo "===== HIGH/CRITICAL AUDIT AFTER REFRESH ====="
           pnpm audit --json > /tmp/audit-after.json || true
           node <<'NODE'
           const fs = require('node:fs');
           const report = JSON.parse(fs.readFileSync('/tmp/audit-after.json', 'utf8'));
-          const ids = new Set();
-          const ghsa = /GHSA-[0-9A-Za-z-]+/g;
-          function visit(value, path = []) {
-            if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
-            if (!value || typeof value !== 'object') return;
-            const severity = typeof value.severity === 'string' ? value.severity : '';
-            if (severity === 'high' || severity === 'critical') {
-              const text = JSON.stringify(value);
-              const found = [...text.matchAll(ghsa)].map((match) => match[0]);
-              const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
-              for (const id of found) {
-                const key = `${id}|${name}|${severity}`;
-                if (!ids.has(key)) {
-                  ids.add(key);
-                  console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+          summarize(report, 'high_or_critical_after_refresh');
+          function summarize(report, label) {
+            const seen = new Set();
+            const ghsa = /GHSA-[0-9A-Za-z-]+/g;
+            function visit(value, path = []) {
+              if (Array.isArray(value)) return value.forEach((item, i) => visit(item, [...path, String(i)]));
+              if (!value || typeof value !== 'object') return;
+              const severity = typeof value.severity === 'string' ? value.severity : '';
+              if (severity === 'high' || severity === 'critical') {
+                const found = [...JSON.stringify(value).matchAll(ghsa)].map((match) => match[0]);
+                const name = value.name ?? value.module_name ?? value.package ?? path.at(-1) ?? 'unknown';
+                for (const id of found) {
+                  const key = `${id}|${name}|${severity}`;
+                  if (!seen.has(key)) {
+                    seen.add(key);
+                    console.log(`${id}\t${name}\t${severity}\trange=${value.range ?? ''}`);
+                  }
                 }
               }
+              for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
             }
-            for (const [key, child] of Object.entries(value)) visit(child, [...path, key]);
+            visit(report);
+            console.log(`${label}=${seen.size}`);
           }
-          visit(report);
-          console.log(`high_or_critical_after_refresh=${ids.size}`);
           NODE
+
+      - name: Persist diagnostic output
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pnpm-lock.yaml .tmp/p13-07-dependency-diagnostic.txt
+          if git diff --cached --quiet; then
+            echo 'No diagnostic output changes to persist.'
+            exit 0
+          fi
+          git commit -m 'chore(security): capture dependency diagnostic [diagnostic-output]'
+          git push origin HEAD:${GITHUB_REF_NAME}
