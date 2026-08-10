@@ -178,7 +178,9 @@ function configureLockfile(tree: Tree, options: AiProfileOptions): void {
   const importerStart = content.indexOf(apiImporterMarker);
   if (importerStart < 0) {
     if (options.ai) {
-      throw new Error('pnpm-lock.yaml must contain an apps/api importer for ai=true.');
+      throw new Error(
+        'pnpm-lock.yaml must contain an apps/api importer for ai=true.',
+      );
     }
     tree.write(path, content);
     return;
