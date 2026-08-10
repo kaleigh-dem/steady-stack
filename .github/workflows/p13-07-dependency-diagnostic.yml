@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/p13-07-dependency-vulnerability-remediation
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
