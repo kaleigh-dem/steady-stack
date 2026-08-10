@@ -40,14 +40,14 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 
 ## Execution order
 
-1. Phase 13 is active; P13-01 through P13-06 are complete, and no additional Phase 13 implementation is planned.
-2. Phase 14 is optional; P14-01 through P14-06 are complete, P14-07 is next, and the default workspace profile must remain free of AI runtime dependencies.
+1. Phase 13 maintenance is active; P13-01 through P13-06 are complete and P13-07 is the current dependency-remediation task.
+2. Phase 14 is optional; P14-01 through P14-06 are complete, P14-07 is next after the active maintenance PR, and the default workspace profile must remain free of AI runtime dependencies.
 
 ## Phase 13 — Supply chain, CI scale, and documentation integrity
 
 Goal: promote tested immutable artifacts with verifiable provenance while keeping CI fast and failures diagnosable.
 
-Phase 13 progress record (2026-08-07): P13-01 is completed in reviewed PR #50 and squash commit `d4766a30d2e39f308a830ce4c6099edfe3ed045c`. P13-02 is completed in PR #52 and was hardened in PR #53. P13-03 is completed in PR #55 and merge commit `fe8a8644458803ca35d35e4262ccd39a9b02e825`; it adds pull-request cancellation, optional persisted BuildKit caches with deterministic local fallback, and retained failure diagnostics. P13-04 audits environment, Docker, generator, contract, and delivery cache inputs; adds deterministic invalidation fixtures; records a representative CI sample; moves required typecheck and build to affected execution; and retains explicit generator and generated-workspace coverage. P13-05 adds fail-closed documentation checks for links, paths, commands, environment names, identity and authentication descriptions, a generated Nx project-graph diagram, and roadmap-plus-ADR evidence for generator or boundary changes. P13-06 adds tamper-evident release records that bind immutable digests to SBOM and attestation verification, migration plans, backup identifiers, rollback-window and schema-compatibility decisions, and deployed smoke evidence; it also adds a quarterly isolated PostgreSQL restore exercise with retained recovery evidence.
+Phase 13 progress record (2026-08-09): P13-01 is completed in reviewed PR #50 and squash commit `d4766a30d2e39f308a830ce4c6099edfe3ed045c`. P13-02 is completed in PR #52 and was hardened in PR #53. P13-03 is completed in PR #55 and merge commit `fe8a8644458803ca35d35e4262ccd39a9b02e825`; it adds pull-request cancellation, optional persisted BuildKit caches with deterministic local fallback, and retained failure diagnostics. P13-04 audits environment, Docker, generator, contract, and delivery cache inputs; adds deterministic invalidation fixtures; records a representative CI sample; moves required typecheck and build to affected execution; and retains explicit generator and generated-workspace coverage. P13-05 adds fail-closed documentation checks for links, paths, commands, environment names, identity and authentication descriptions, a generated Nx project-graph diagram, and roadmap-plus-ADR evidence for generator or boundary changes. P13-06 adds tamper-evident release records that bind immutable digests to SBOM and attestation verification, migration plans, backup identifiers, rollback-window and schema-compatibility decisions, and deployed smoke evidence; it also adds a quarterly isolated PostgreSQL restore exercise with retained recovery evidence. P13-07 is in progress in PR #72 to replace vulnerable dependency paths with patched owner releases or narrowly scoped overrides, clear resolved audit exceptions, and harden baseline validation against duplicate exceptions.
 
 - [x] **P13-01 Add image and dependency supply-chain artifacts.**
   - Generate an SBOM for each production image.
@@ -86,7 +86,13 @@ Phase 13 progress record (2026-08-07): P13-01 is completed in reviewed PR #50 an
   - Add automated checks that the rollback window and schema-compatibility decision are recorded.
   - Exercise disaster recovery and restore procedures on a scheduled basis.
 
-Exit criteria: production uses the exact image digests validated in preview, each artifact has scan results, SBOM, provenance, and signature, finalized production releases retain validated backup, migration, rollback, schema-compatibility, and smoke evidence, scheduled restore exercises prove the baseline recovery path, CI failures retain actionable evidence, and documentation checks prevent known forms of drift.
+- [-] **P13-07 Remediate dependency vulnerabilities.**
+  - Upgrade owning direct dependencies to patched compatible releases where available.
+  - Use narrowly scoped transitive overrides only when the owning package cannot yet select the required patched release.
+  - Remove resolved and duplicate dependency-audit baseline exceptions instead of extending them.
+  - Verify frozen installation, dependency audit, affected Nx targets, delivery checks, and generated-workspace behavior on the exact PR head.
+
+Exit criteria: production uses the exact image digests validated in preview, each artifact has scan results, SBOM, provenance, and signature, finalized production releases retain validated backup, migration, rollback, schema-compatibility, and smoke evidence, scheduled restore exercises prove the baseline recovery path, CI failures retain actionable evidence, dependency exceptions remain explicit, expiring, and non-duplicated, and documentation checks prevent known forms of drift.
 
 ## Phase 14 — Optional agentic application profile
 
