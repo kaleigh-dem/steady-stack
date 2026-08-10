@@ -1,7 +1,8 @@
 import { readJson, type Tree, writeJson } from '@nx/devkit';
 
 import { templateVersion } from '../../template-version';
-import initGenerator from '../init/generator';
+import { configureAiProfile } from '../init/ai-profile';
+import initGenerator, { normalizeInitOptions } from '../init/generator';
 import type { InitGeneratorSchema } from '../init/schema';
 import { formatGeneratorFiles } from '../shared';
 
@@ -95,7 +96,12 @@ export default async function presetGenerator(
   tree: Tree,
   schema: InitGeneratorSchema,
 ): Promise<void> {
+  const options = normalizeInitOptions(schema);
   await initGenerator(tree, { ...schema, skipFormat: true });
+  configureAiProfile(tree, {
+    ai: options.ai,
+    packageScope: options.packageScope,
+  });
 
   recordTemplateVersion(tree);
   removeTemplateMaintainerFiles(tree);
