@@ -31,6 +31,7 @@ Applications are composition roots. HTTP, framework, process lifecycle, and tran
 ```text
 packages/backend/agent-durable       optional durable-run leases, checkpoints, approval pauses, recovery, and adapter contract
 packages/backend/agent-eval          reviewed prompt artifacts, deterministic evaluations, budgets, and evidence enforcement
+packages/backend/agent-governance    optional content/tool/approval policy hooks, payload-safe audit events, and compatible model fallback
 packages/backend/agent-task          framework-free Agent Task domain and use cases
 packages/backend/agent-tool          framework-neutral typed tool invocation and authorization boundary
 packages/backend/model               provider-neutral model contracts, execution policy, and optional adapters
@@ -50,6 +51,8 @@ The P14-03 tool and browser-stream boundaries remain optional runtime primitives
 The P14-04 evaluation boundary is also backend-only and uncomposed. `backend-agent-eval` owns strict reviewed prompt/tool-instruction artifacts, deterministic fixture and grader contracts, quality/latency/token/cost budgets, and payload-safe evidence manifests. CI requires changed evidence for governed prompt artifacts plus non-test model and typed-tool runtime changes. Model grading remains an application-supplied callback, so this boundary does not choose a provider or add provider dependencies. See `docs/prompt-evaluation-lifecycle.md` and ADR 0023.
 
 The P14-05 durable-execution boundary remains backend-only and uncomposed. `backend-agent-durable` owns a replaceable persistence adapter plus renewable lease/fence, idempotent checkpoint, atomic approval-pause, resume, and interruption-recovery semantics. It reuses the shared correlation context for payload-safe lifecycle observation. Its in-memory adapter is deterministic test support only; production applications must opt into a persistent adapter with explicit retention, deletion, tenant isolation, encryption, and access controls. See `docs/durable-agent-execution.md` and ADR 0024.
+
+The P14-06 governance boundary is backend-only and uncomposed. `backend-agent-governance` owns runtime-validated input/output policy hooks, explicit data classifications, server-owned tool allowlists, trusted approval-authorization hooks, schema-V1 payload-safe audit events, and server-configured provider/model route compatibility plus bounded fallback. Credential-classified content cannot pass unchanged, tool allowlists do not replace actor authorization, approval authorization remains independent of model output, and fallback is limited to configured transient failures and revalidates classification, region, retention, and capability requirements. See `docs/agent-safety-and-governance.md` and ADR 0025.
 
 `tools/workspace-plugin` owns the released preset, structural generators, and downstream upgrade tooling. `tools/delivery`, `infra`, and `performance` own production-image preparation, environment validation, preview orchestration, release manifests and plans, and performance budgets. `tools/documentation` validates documented links, paths, commands, environment names, identity and authentication descriptions, architecture evidence, and change records.
 
@@ -72,6 +75,9 @@ The graph check fails when the committed diagram differs from Nx. See `docs/docu
 - Infrastructure adapters implement ports owned by domain or policy libraries.
 - Provider-specific model protocol translation stays behind the provider-neutral model boundary and is not a default application dependency.
 - Tool authorization uses trusted application actor context at the invocation boundary; model output is never an authorization decision.
+- Governance policy uses explicit classification and trusted server configuration; prompt/model/browser data cannot expand tool allowlists, choose credentials/providers, or authorize approvals.
+- Provider/model fallback is explicit and bounded, is triggered only by configured transient failures, and must preserve classification, residency, retention, and required capability constraints for every selected route.
+- Governance audit events retain identifiers, classifications, outcomes, and safe reason codes rather than raw prompts, completions, retrieved content, policy payloads, tool payloads, checkpoint state, or credentials.
 - Prompt and tool-instruction changes use reviewed versioned artifacts and changed evaluation evidence; model grading does not select providers inside the shared evaluation boundary.
 - Durable run mutations require the current lease owner and fence; approval decisions come from trusted application context, and checkpoint state never becomes an observability payload.
 - Browser-facing AI events use the shared versioned agent-stream contract rather than provider-native streaming frames.
