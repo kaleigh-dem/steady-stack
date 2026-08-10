@@ -157,4 +157,34 @@ describe('AI profile generation', () => {
       );
     }
   });
+
+  it('allows a non-AI preset with no API importer', () => {
+    const tree = createTreeWithEmptyWorkspace();
+    tree.write(
+      'pnpm-lock.yaml',
+      [
+        "lockfileVersion: '9.0'",
+        '',
+        'importers:',
+        '',
+        '  .:',
+        '    dependencies: {}',
+        '',
+        '  apps/web:',
+        '    dependencies: {}',
+        '',
+        '  packages/backend/model: {}',
+        '',
+      ].join('\n'),
+    );
+
+    expect(() =>
+      configureAiProfile(tree, { ai: false, packageScope: '@acme' }),
+    ).not.toThrow();
+    expect(tree.read('pnpm-lock.yaml', 'utf-8')).toContain('\n  apps/web:\n');
+    expect(tree.read('pnpm-lock.yaml', 'utf-8')).not.toContain(
+      '\n  packages/backend/model: {}\n',
+    );
+    expect(tree.exists('apps/api/src/app/ai')).toBe(false);
+  });
 });
