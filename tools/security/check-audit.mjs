@@ -1,15 +1,29 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-const baseline = JSON.parse(
-  readFileSync(new URL('./audit-baseline.json', import.meta.url), 'utf8'),
-);
+const baselinePath =
+  process.env.STEADYSTACK_AUDIT_BASELINE ??
+  fileURLToPath(new URL('./audit-baseline.json', import.meta.url));
+const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'));
 const expiresAt = Date.parse(`${baseline.expiresOn}T23:59:59Z`);
 if (!Number.isFinite(expiresAt) || expiresAt < Date.now()) {
   console.error(
     `The security audit baseline expired on ${baseline.expiresOn}.`,
   );
   process.exit(1);
+}
+
+const baselineEntries = new Set();
+for (const advisory of baseline.advisories) {
+  const key = `${advisory.id}\0${advisory.package}`;
+  if (baselineEntries.has(key)) {
+    console.error(
+      `Duplicate security audit baseline entry: ${advisory.id} (${advisory.package}).`,
+    );
+    process.exit(1);
+  }
+  baselineEntries.add(key);
 }
 
 const audit = spawnSync('pnpm', ['audit', '--json'], {
