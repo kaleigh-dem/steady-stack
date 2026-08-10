@@ -32,7 +32,8 @@ function parseArguments(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const entry = argv[index];
     if (entry === '--') continue;
-    if (!entry.startsWith('--')) throw new Error(`Unexpected argument: ${entry}`);
+    if (!entry.startsWith('--'))
+      throw new Error(`Unexpected argument: ${entry}`);
     const [key, inlineValue] = entry.slice(2).split('=', 2);
     if (inlineValue !== undefined) {
       options[key] = inlineValue;
@@ -149,9 +150,16 @@ async function generatedFingerprint(workspace) {
 }
 
 async function assertAiContract(workspace, expectedVersion) {
-  const manifest = await readJson(path.join(workspace, 'workspace.template.json'));
-  const apiPackage = await readJson(path.join(workspace, 'apps/api/package.json'));
-  const lockfile = await readFile(path.join(workspace, 'pnpm-lock.yaml'), 'utf-8');
+  const manifest = await readJson(
+    path.join(workspace, 'workspace.template.json'),
+  );
+  const apiPackage = await readJson(
+    path.join(workspace, 'apps/api/package.json'),
+  );
+  const lockfile = await readFile(
+    path.join(workspace, 'pnpm-lock.yaml'),
+    'utf-8',
+  );
   const reference = await readFile(
     path.join(workspace, 'apps/api/src/app/ai/reference-workflow.ts'),
     'utf-8',
@@ -160,10 +168,15 @@ async function assertAiContract(workspace, expectedVersion) {
   assert.equal(manifest.upstream.version, expectedVersion);
   assert.equal(manifest.profiles.ai, true);
   for (const [suffix, root] of aiCapabilities) {
-    assert.equal(apiPackage.dependencies[`@generated-ai/${suffix}`], 'workspace:*');
+    assert.equal(
+      apiPackage.dependencies[`@generated-ai/${suffix}`],
+      'workspace:*',
+    );
     assert.match(lockfile, new RegExp(`'@generated-ai/${suffix}':`));
     if (suffix === 'backend-agent-durable') continue;
-    const capabilityPackage = await readJson(path.join(workspace, root, 'package.json'));
+    const capabilityPackage = await readJson(
+      path.join(workspace, root, 'package.json'),
+    );
     assert.equal(capabilityPackage.name, `@generated-ai/${suffix}`);
     assert.equal(capabilityPackage.private, true);
     assert.match(lockfile, new RegExp(`\\n  ${root}: \\{\\}\\n`));
@@ -196,7 +209,11 @@ async function assertProjectGraph(workspace) {
     'backend-agent-tool',
     'backend-model',
   ]) {
-    assert.equal(dependencies.has(project), true, `API graph is missing ${project}.`);
+    assert.equal(
+      dependencies.has(project),
+      true,
+      `API graph is missing ${project}.`,
+    );
   }
 }
 
@@ -206,7 +223,9 @@ async function main() {
   const expectedVersion = options['expected-version'];
   const workspace = options.workspace ? path.resolve(options.workspace) : null;
   if (!artifact || !expectedVersion || !workspace) {
-    throw new Error('--artifact, --expected-version, and --workspace are required.');
+    throw new Error(
+      '--artifact, --expected-version, and --workspace are required.',
+    );
   }
   await stat(artifact);
 
@@ -247,10 +266,22 @@ async function main() {
   await assertAiContract(workspace, expectedVersion);
 
   execute('git', ['init', '-b', 'main'], workspace);
-  execute('git', ['config', 'user.email', 'generated-ai-ci@example.invalid'], workspace);
-  execute('git', ['config', 'user.name', 'Generated AI Workspace CI'], workspace);
+  execute(
+    'git',
+    ['config', 'user.email', 'generated-ai-ci@example.invalid'],
+    workspace,
+  );
+  execute(
+    'git',
+    ['config', 'user.name', 'Generated AI Workspace CI'],
+    workspace,
+  );
   execute('git', ['add', '--all'], workspace);
-  execute('git', ['commit', '-m', 'Generated AI workspace baseline'], workspace);
+  execute(
+    'git',
+    ['commit', '-m', 'Generated AI workspace baseline'],
+    workspace,
+  );
 
   execute('pnpm', ['check'], workspace, {
     env: { NEXT_PUBLIC_AUTHENTICATION_PROFILE: 'none' },
