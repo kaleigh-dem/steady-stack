@@ -65,7 +65,7 @@ Naming uses title case for page headings and hyphenated GitHub Wiki filenames. C
 | PostgreSQL, migrations, seed, reset, backups                              | Database and Data Management        |
 | Outbox, leasing, retries, replay, metrics, drain                          | Worker and Background Jobs          |
 | `pnpm check`, focused commands, budgets, clean tree                       | Validation and Testing              |
-| AI evaluation gate and focused model/tool/eval/durable/governance checks | Validation and Testing              |
+| AI evaluation gate and focused model/tool/eval/durable/governance checks  | Validation and Testing              |
 | Documentation-integrity commands, upstream-only audit scope, graph checks | Validation and Testing              |
 | Documentation-integrity failure artifact and graph remediation            | CI Diagnostics                      |
 | Cancellation, failure artifacts, traces, logs, cache fallback             | CI Diagnostics                      |
