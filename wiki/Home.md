@@ -74,9 +74,9 @@ Supported profiles can record some product or platform directions without implem
 
 Roadmap status is mirrored from the repository's authoritative [`docs/TODO.md`](https://github.com/kaleigh-dem/steady-stack/blob/main/docs/TODO.md); the wiki does not maintain an independent task ledger.
 
-- **Phase 13 — complete:** P13-01 through P13-06 established supply-chain evidence, immutable digest promotion, CI diagnostics/caching, cache-input and affected-execution validation, documentation integrity, and finalized release/recovery evidence. No additional Phase 13 implementation is planned.
+- **Phase 13 — active maintenance:** P13-01 through P13-06 are complete. P13-07 is the current dependency-vulnerability remediation task in PR #72 and remains in progress until that PR merges after its required exact-head checks pass.
 - **Phase 14 — active and optional:** P14-01 through P14-06 are complete. The repository now has the optional profile boundary, provider-neutral model interfaces and adapters, typed authorized tools plus V1 agent streaming, reviewed prompt/evaluation evidence, replaceable durable-run checkpoint/approval/recovery primitives, and reusable safety/governance hooks for content policy, sensitive-data handling, tool allowlists, approval authorization, audit events, and bounded compatible fallback without composing runtime AI into the default applications.
-- **Next — P14-07:** generate and test the optional AI profile, including a reference workflow while proving `ai=false` remains free of model-provider dependencies.
+- **Next after P13-07 — P14-07:** generate and test the optional AI profile, including a reference workflow while proving `ai=false` remains free of model-provider dependencies.
 
 Use `docs/TODO.md` for sequencing, acceptance criteria, and future status changes.
 

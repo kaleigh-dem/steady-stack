@@ -17,6 +17,7 @@ Do not open a public issue for a suspected vulnerability, exposed credential, or
 - Update documentation when commands, configuration, generated output, ownership, or operational behavior changes.
 - Update `docs/TODO.md` only when a pull request changes roadmap status, scope, sequencing, or exit criteria. Keep task IDs stable.
 - Record architectural boundary changes in an ADR or explain the rationale explicitly in the pull request.
+- For dependency vulnerabilities, prefer upgrading the owning direct dependency first. Use narrowly scoped pnpm overrides only when the owner cannot yet select a patched transitive release, regenerate the lockfile with pnpm, and remove resolved audit-baseline exceptions instead of extending them.
 - Never commit secrets, production environment files, or sensitive logs.
 
 ## Validation
@@ -34,7 +35,7 @@ pnpm format:check
 pnpm nx affected -t lint typecheck test build
 ```
 
-Run the relevant contract, security, delivery, database, preview, or generated-workspace checks when those surfaces change. Use `pnpm check` for the complete repository validation contract before review when the environment supports it. Document any unavailable OS-level or external-service validation in the pull request and rely on exact-head CI for that gate.
+Run the relevant contract, security, delivery, database, preview, or generated-workspace checks when those surfaces change. Dependency remediation must include `pnpm security:audit`; duplicate audit-baseline exceptions fail closed. Use `pnpm check` for the complete repository validation contract before review when the environment supports it. Document any unavailable OS-level or external-service validation in the pull request and rely on exact-head CI for that gate.
 
 ## Pull requests
 

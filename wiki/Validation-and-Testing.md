@@ -227,8 +227,14 @@ pnpm nx run backend-agent-tool:test
 pnpm nx run backend-agent-tool:typecheck
 pnpm nx run backend-agent-eval:test
 pnpm nx run backend-agent-eval:typecheck
+pnpm nx run backend-agent-durable:test
+pnpm nx run backend-agent-durable:typecheck
+pnpm nx run backend-agent-governance:test
+pnpm nx run backend-agent-governance:typecheck
 pnpm agent-eval:check
 ```
+
+All of these projects also expose the standard `lint` and `build` targets shown in the generic focused-command pattern above.
 
 Security integration without cache:
 
