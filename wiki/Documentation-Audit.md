@@ -14,10 +14,10 @@ The wiki was derived from implementation and maintained repository documents, in
 - application and database `project.json` files
 - workspace plugin generator registry, schemas, shared utilities, and implementations
 - GitHub Actions CI, Security, Delivery, Generated workspace, image release, digest promotion, release-record finalization, disaster-recovery, and wiki publication workflows
-- getting started, initialization, architecture, authentication, rate limiting, database, worker, delivery, production readiness, upgrade, release, validation, runtime, security, migration, model/tool/stream/evaluation, and runbook documentation
-- nested `AGENTS.md` files for web, API, worker, contracts, database, Agent Task domain, web feature, worker job, backend model, backend agent-tool, and backend agent-eval projects
+- getting started, initialization, architecture, authentication, rate limiting, database, worker, delivery, production readiness, upgrade, release, validation, runtime, security, migration, model/tool/stream/evaluation, durable-agent-execution, agent-safety-and-governance, and runbook documentation
+- nested `AGENTS.md` files for web, API, worker, contracts, database, Agent Task domain, web feature, worker job, backend model, backend agent-tool, backend agent-eval, backend-agent-durable, and backend-agent-governance projects
 - performance budget and smoke-test implementation
-- merged PR #50 supply-chain evidence, PR #52 immutable promotion, PR #55 CI diagnostics, PR #59 cache-input auditing, PR #61 SteadyStack identity rebrand, PR #64 release records/recovery evidence, and PRs #65–#68 for the Phase 14 profile, model, tool/stream, and evaluation boundaries
+- merged PR #50 supply-chain evidence, PR #52 immutable promotion, PR #55 CI diagnostics, PR #59 cache-input auditing, PR #61 SteadyStack identity rebrand, PR #64 release records/recovery evidence, PRs #65–#68 for the Phase 14 profile, model, tool/stream, and evaluation boundaries, PR #70 durable execution, and PR #71 safety/governance hooks
 
 The hidden GitHub wiki Git repository is not exposed through the ordinary repository contents API and does not support the main repository's pull-request workflow. Reviewed source is maintained under `wiki/`. After a reviewed wiki change reaches `main`, `.github/workflows/wiki-publish.yml` synchronizes it to `steady-stack.wiki.git`, preserves wiki-only pages except those explicitly listed in `wiki/deletions.txt`, and rejects every unapproved deletion. `docs/wiki-publication.md` documents the manual fallback.
 
@@ -60,12 +60,12 @@ Naming uses title case for page headings and hyphenated GitHub Wiki filenames. C
 | Common Nx workflows                                                       | Everyday Development                |
 | Domain/feature/job/contract generators                                    | Code Generation                     |
 | Monorepo, request/data/worker flows, boundaries                           | Architecture                        |
-| Optional AI profile/model/tool/stream/evaluation boundaries               | Optional AI Runtime                 |
+| Optional AI model/tool/stream/eval/durable/governance boundaries          | Optional AI Runtime                 |
 | Development, none, OIDC, session, claims, outage                          | Authentication and Authorization    |
 | PostgreSQL, migrations, seed, reset, backups                              | Database and Data Management        |
 | Outbox, leasing, retries, replay, metrics, drain                          | Worker and Background Jobs          |
 | `pnpm check`, focused commands, budgets, clean tree                       | Validation and Testing              |
-| AI evaluation-evidence gate and focused model/tool/eval checks            | Validation and Testing              |
+| AI evaluation gate and focused model/tool/eval/durable/governance checks | Validation and Testing              |
 | Documentation-integrity commands, upstream-only audit scope, graph checks | Validation and Testing              |
 | Documentation-integrity failure artifact and graph remediation            | CI Diagnostics                      |
 | Cancellation, failure artifacts, traces, logs, cache fallback             | CI Diagnostics                      |
@@ -176,6 +176,14 @@ pnpm nx run backend-agent-eval:typecheck
 pnpm nx run backend-agent-eval:test
 pnpm nx run backend-agent-eval:build
 pnpm nx run backend-agent-eval:evidence-check
+pnpm nx run backend-agent-durable:lint
+pnpm nx run backend-agent-durable:typecheck
+pnpm nx run backend-agent-durable:test
+pnpm nx run backend-agent-durable:build
+pnpm nx run backend-agent-governance:lint
+pnpm nx run backend-agent-governance:typecheck
+pnpm nx run backend-agent-governance:test
+pnpm nx run backend-agent-governance:build
 ```
 
 ### Generator options confirmed
@@ -206,7 +214,7 @@ Checked-in Markdown remains the authoritative reviewed page set. Pages that exis
 
 Agentic compatibility is a baseline repository property implemented through `AGENTS.md`, Nx graph and MCP context, generators, executable boundaries, validation, and upgrades. The `ai` initialization flag only records product intent to add AI-powered application features.
 
-Phase 14 now adds reusable runtime primitives in the upstream source: provider-neutral model interfaces, OpenAI native-`fetch` plus deterministic adapters, typed authorization-enforced tools, a strict V1 NDJSON browser stream, and reviewed prompt/evaluation evidence. These capabilities remain uncomposed in the default applications. `ai=false` is still the default, and `ai=true` does not yet generate a runnable AI workflow. The wiki therefore documents both the implemented boundaries and the remaining durable-execution, broader safety/fallback, and generated-profile work.
+Phase 14 now provides the reusable upstream runtime boundaries through P14-06: provider-neutral model interfaces and adapters, typed authorization-enforced tools, a strict V1 NDJSON browser stream, reviewed prompt/evaluation evidence, replaceable durable execution with leases, fencing, checkpoints, human-approval pauses, and interruption recovery, plus safety/governance hooks for runtime policy, sensitive-data handling, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded compatible provider/model fallback. These capabilities remain uncomposed in the default applications. `ai=false` is still the default, and `ai=true` does not yet generate a runnable AI workflow. P14-07 generated-profile and reference-workflow composition is the only remaining future Phase 14 implementation task.
 
 ### Worker operations port exposure
 
@@ -386,7 +394,7 @@ The page set provides a direct path to:
 - make and validate a focused change
 - generate a domain, feature, contract, or job
 - understand synchronous and asynchronous architecture
-- understand and safely compose the current optional AI model/tool/stream/evaluation boundaries
+- understand and safely compose the current optional AI model/tool/stream/evaluation/durable/governance boundaries
 - build and validate the preview environment
 - identify production replacement points
 - publish/promote immutable images and finalize production release evidence
