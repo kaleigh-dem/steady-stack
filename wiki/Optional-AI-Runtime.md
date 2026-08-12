@@ -13,7 +13,7 @@ The optional AI profile describes the product being built; it does not control w
 
 - `ai=false` remains the default profile and keeps the generated application graph free of optional AI package dependencies and model-provider runtime packages.
 - Coding-agent support through `AGENTS.md`, Nx/MCP discovery, generators, validation, delivery controls, and review handoffs remains available regardless of the AI profile.
-- `ai=true` requires web and API, materializes the selected Phase 14 AI capability package entry points, adds the API workspace dependencies and project references, and generates a provider-neutral reference workflow with focused tests under `apps/api/src/app/ai/`.
+- `ai=true` requires web and API, materializes the selected Phase 14 AI capability package entry points, adds the API workspace dependencies and project references, and generates a provider-neutral reference workflow with focused tests. The reviewed generator source is `tools/workspace-plugin/src/generators/init/ai-reference-template.ts`.
 - The generated AI reference uses the deterministic model adapter and in-memory durable adapter in tests; it does not install a provider SDK, select production credentials, or choose production persistence.
 
 Phase 14 status:
