@@ -297,7 +297,6 @@ export async function* runReferenceAiWorkflow(
     }),
   );
   yield { ...streamBase(sequence++, request, route, now), type: 'started' };
-
   try {
     for (;;) {
       const safeInput = await runWithCorrelationContext(correlation, () =>
@@ -594,7 +593,14 @@ export async function evaluateReferenceAiEvents(
         : {
             providerId: completed.providerId,
             modelId: completed.modelId,
-            usage: completed.usage,
+            usage: {
+              inputTokens: completed.usage.inputTokens,
+              outputTokens: completed.usage.outputTokens,
+              totalTokens: completed.usage.totalTokens,
+              ...(completed.usage.cachedInputTokens === undefined
+                ? {}
+                : { cachedInputTokens: completed.usage.cachedInputTokens }),
+            },
           }),
     }),
     evaluators: [
