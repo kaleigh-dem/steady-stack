@@ -4,7 +4,7 @@ SteadyStack is a production-minded TypeScript web-application template designed 
 
 The workspace includes a Next.js web application, NestJS API, PostgreSQL-backed worker, shared contracts, validated configuration, deterministic generators, and production-shaped delivery controls in one Nx monorepo. Its defining goal is not simply to provide these technologies together. It is to make the repository legible, constrained, and verifiable enough that an agent can enter with no prior conversation history, find the correct change boundary, create approved structure, receive fast feedback, and produce a reviewable handoff.
 
-> **Important:** Agentic-compatible development is a repository operating model, not an AI feature in the product. The optional `--ai=true` profile records product intent to add AI capabilities; it is unrelated to whether coding agents can work effectively in the repository.
+> **Important:** Agentic-compatible development is a repository operating model, not an AI feature in the product. The optional `--ai=true` profile selects generated product AI capabilities; it is unrelated to whether coding agents can work effectively in the repository.
 
 > **Production warning:** A generated workspace that starts locally, passes validation, or was largely implemented by agents is **not automatically production-ready**. The adopting team must still own identity-provider integration, production data services, secrets, telemetry, deployment infrastructure, risk acceptance, rollback, disaster recovery, and operational support.
 
@@ -43,6 +43,7 @@ Read [Agentic Development Model](Agentic-Development-Model) before establishing 
 - Shared UI, contracts, PostgreSQL migrations, environment validation, and observability.
 - Production OCI image builds, a local preview stack, smoke tests, performance budgets, SBOMs, vulnerability policy, signatures, attestations, immutable release manifests, finalized release-record evidence, and production configuration validation.
 - Optional, default-off AI runtime primitives for provider-neutral model access, typed authorized tools, versioned browser streaming, reviewed prompt/evaluation evidence, replaceable durable execution, and safety/governance hooks with bounded compatible fallback.
+- An `ai=true` generated API reference profile that composes those Phase 14 boundaries with deterministic tests while leaving provider SDKs and production infrastructure optional.
 
 ## What it does not include
 
@@ -53,18 +54,18 @@ The template does not provide:
 - an organization-specific cloud deployment or Kubernetes manifests;
 - identity-provider login, callback, and logout implementation;
 - a production session store or Redis worker adapter;
-- a composed model-backed application in the default profile, a default model provider, provider credentials, or a selected production durable-agent persistence adapter;
+- a composed model-backed application in the **default** profile, a default model provider, provider credentials, or a selected production durable-agent persistence adapter;
 - production backups, DNS/TLS, dashboards, alert routing, or incident ownership.
 
-The upstream source now contains optional AI model/tool/stream/evaluation/durable/governance boundaries, but `ai=true` still records product intent rather than generating a runnable AI application. See [Optional AI Runtime](Optional-AI-Runtime).
+Selecting `ai=true` generates and tests a provider-neutral reference workflow under the API, but adopters still choose production providers/credentials, durable persistence, concrete data and tool policy, operational budgets, monitoring, and incident ownership. See [Optional AI Runtime](Optional-AI-Runtime).
 
-Supported profiles can record some product or platform directions without implementing them.
+Supported profiles can record some product or platform directions without implementing them; the optional AI profile is now an implemented generated profile rather than metadata-only intent.
 
 ## Start here
 
 1. [Understand the Agentic Development Model](Agentic-Development-Model), including the standard agent workflow and human approval boundaries.
-2. [Choose workspace profiles](Choosing-Workspace-Profiles) for applications, authentication, worker delivery, telemetry, deployment, and optional product AI intent.
-3. If you are composing runtime AI behavior, read [Optional AI Runtime](Optional-AI-Runtime) for the default-off boundary, model/tool contracts, streaming protocol, evaluation evidence, durable execution, safety/governance, and remaining Phase 14 gap.
+2. [Choose workspace profiles](Choosing-Workspace-Profiles) for applications, authentication, worker delivery, telemetry, deployment, and the optional generated product AI profile.
+3. If you select or extend runtime AI behavior, read [Optional AI Runtime](Optional-AI-Runtime) for the default-off boundary, generated reference workflow, model/tool contracts, streaming protocol, evaluation evidence, durable execution, safety/governance, and production replacement points.
 4. [Complete the Quick Start](Quick-Start) to create, initialize, map, run, and validate a local workspace.
 5. [Tour the repository](Repository-Tour) and inspect its Nx project graph.
 6. [Learn everyday development](Everyday-Development), [code generation](Code-Generation), and [validation](Validation-and-Testing).
@@ -74,9 +75,9 @@ Supported profiles can record some product or platform directions without implem
 
 Roadmap status is mirrored from the repository's authoritative [`docs/TODO.md`](https://github.com/kaleigh-dem/steady-stack/blob/main/docs/TODO.md); the wiki does not maintain an independent task ledger.
 
-- **Phase 13 — active maintenance:** P13-01 through P13-06 are complete. P13-07 is the current dependency-vulnerability remediation task in PR #72 and remains in progress until that PR merges after its required exact-head checks pass.
-- **Phase 14 — active and optional:** P14-01 through P14-06 are complete. The repository now has the optional profile boundary, provider-neutral model interfaces and adapters, typed authorized tools plus V1 agent streaming, reviewed prompt/evaluation evidence, replaceable durable-run checkpoint/approval/recovery primitives, and reusable safety/governance hooks for content policy, sensitive-data handling, tool allowlists, approval authorization, audit events, and bounded compatible fallback without composing runtime AI into the default applications.
-- **Next after P13-07 — P14-07:** generate and test the optional AI profile, including a reference workflow while proving `ai=false` remains free of model-provider dependencies.
+- **Phase 13 — completed baseline plus maintenance:** P13-01 through P13-07 are complete; ongoing dependency and security maintenance continues through the repository's normal workflows.
+- **Phase 14 — complete and optional:** P14-01 through P14-07 are complete. The repository has the optional profile boundary, provider-neutral model interfaces and adapters, typed authorized tools plus V1 agent streaming, reviewed prompt/evaluation evidence, replaceable durable-run checkpoint/approval/recovery primitives, reusable safety/governance hooks, and `ai=true` generated reference composition with exact-head generated-workspace validation. `ai=false` remains the default and is validated to contain no model-provider runtime dependencies.
+- **Phase 15 — planned:** portable agent ergonomics follows completed Phase 14 and remains separate from runtime AI.
 
 Use `docs/TODO.md` for sequencing, acceptance criteria, and future status changes.
 
@@ -167,7 +168,7 @@ flowchart LR
 
 The web application obtains an access token through the configured browser authentication adapter and calls the API through generated client code. The API validates transport contracts, authenticates and authorizes the request, executes framework-free application behavior, and writes application data plus outbox events transactionally. The worker leases outbox records, executes handlers at least once, and uses fencing and idempotency to make duplicate or stale delivery safe.
 
-Optional AI primitives sit outside this default request/data flow until an application explicitly composes them.
+In the default profile, optional AI primitives sit outside this request/data flow. Selecting `ai=true` generates a reference API composition that demonstrates how to connect those primitives without making them mandatory for ordinary workspaces.
 
 ## Source of truth
 
