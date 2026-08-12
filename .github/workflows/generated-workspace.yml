@@ -117,10 +117,12 @@ jobs:
         env:
           CI_DIAGNOSTICS_DIR: ${{ runner.temp }}/generated-workspace-ai/test-output
         run: |
+          mkdir -p "$CI_DIAGNOSTICS_DIR"
           node tools/template/generated-ai-profile-e2e.mjs \
             --artifact "${{ steps.artifact.outputs.path }}" \
             --expected-version "${{ steps.artifact.outputs.version }}" \
-            --workspace "$RUNNER_TEMP/generated-workspace-ai"
+            --workspace "$RUNNER_TEMP/generated-workspace-ai" \
+            2>&1 | tee "$CI_DIAGNOSTICS_DIR/ai-profile-lifecycle.log"
 
       - name: Upload generated-workspace diagnostics
         if: failure()
