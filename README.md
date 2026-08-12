@@ -18,9 +18,9 @@ The template makes the preferred engineering path explicit enough for a capable 
 - produce reviewable validation and release evidence;
 - upgrade a long-lived generated project without treating every file as replaceable.
 
-Agentic compatibility is independent of product AI features. The optional `ai` workspace profile records product intent and does not add a model provider. Every generated workspace retains the agent-facing repository controls.
+Agentic compatibility is independent of product AI features. The optional `ai` workspace profile defaults to disabled. When selected, `ai=true` materializes the Phase 14 capability package entry points, adds the generated API dependencies and project references, and creates a provider-neutral reference workflow with focused tests; `ai=false` keeps the ordinary generated application isolated from those optional AI application dependencies. The generated reference does not select a provider SDK, provider credentials, or production persistence.
 
-See `docs/agentic-development.md` for the standard workflow, human approval boundaries, and maintenance guidance.
+Human-facing product, onboarding, operator, and explanatory guidance is published in the [SteadyStack Wiki](https://github.com/kaleigh-dem/steady-stack/wiki). See [Optional AI Runtime](https://github.com/kaleigh-dem/steady-stack/wiki/Optional-AI-Runtime) for the generated AI profile and its production replacement points. Contributors and coding agents should also read `docs/agentic-development.md` for the repository workflow, human approval boundaries, and maintenance controls.
 
 ## Why Nx
 
@@ -44,6 +44,7 @@ Nx supplies the project graph, generators, architectural boundary enforcement, c
 - Node.js worker with PostgreSQL outbox polling, lease fencing, retries, dead-letter inspection, and bounded shutdown
 - framework-free Agent Task and rate-limit backend libraries
 - shared UI, contracts, database, environment, observability, and web-feature packages
+- optional generated AI profile with provider-neutral model access, typed tools and streaming, evaluation evidence, durable execution, governance hooks, and a generated reference workflow while the default profile stays isolated
 - pnpm workspaces
 - enforced scope, runtime, and project-type boundaries
 - Nx project graph, caching, affected commands, local generators, MCP configuration, and agent instructions
@@ -75,7 +76,7 @@ pnpm template:identity:check
 
 Initialization rewrites package scopes, service and image names, Compose projects and labels, database defaults, telemetry identifiers, TypeScript conditions, CODEOWNERS, and other text-based identity surfaces. The generated `workspace.template.json` records the exact upstream template version and upgrade ownership-policy version.
 
-Start with `docs/agentic-development.md` and `docs/getting-started.md`. See `docs/template-initialization.md` for every generator option and validation rule.
+Start with the Wiki's [Quick Start](https://github.com/kaleigh-dem/steady-stack/wiki/Quick-Start) and [Choosing Workspace Profiles](https://github.com/kaleigh-dem/steady-stack/wiki/Choosing-Workspace-Profiles). Contributors and coding agents can use `docs/agentic-development.md` and `docs/template-initialization.md` as repository-local implementation and review references.
 
 ## Standard contributor or agent workflow
 
@@ -135,7 +136,7 @@ pnpm db:seed
 pnpm dev
 ```
 
-The complete first-run and shutdown sequence is documented in `docs/getting-started.md`.
+The complete first-run and shutdown sequence is documented in the Wiki's [Quick Start](https://github.com/kaleigh-dem/steady-stack/wiki/Quick-Start).
 
 ## Authentication and distributed controls
 
@@ -149,7 +150,7 @@ Production API replicas share anonymous, authenticated, route, and tenant rate-l
 pnpm check
 ```
 
-The validation contract includes workspace synchronization, generated contracts, formatting, security policy, delivery configuration, release-manifest and supply-chain policy, performance budgets, linting, type checking, tests, and production builds. A production build must leave the Git working tree clean.
+The validation contract includes workspace synchronization, generated contracts and compatibility, formatting, documentation integrity, AI evaluation evidence, security policy, delivery configuration, release-manifest and supply-chain policy, performance budgets, linting, type checking, tests, and production builds. A production build must leave the Git working tree clean.
 
 ## Build and validate release artifacts
 

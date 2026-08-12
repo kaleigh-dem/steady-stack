@@ -17,7 +17,7 @@ The wiki was derived from implementation and maintained repository documents, in
 - getting started, initialization, architecture, authentication, rate limiting, database, worker, delivery, production readiness, upgrade, release, validation, runtime, security, migration, model/tool/stream/evaluation, durable-agent-execution, agent-safety-and-governance, and runbook documentation
 - nested `AGENTS.md` files for web, API, worker, contracts, database, Agent Task domain, web feature, worker job, backend model, backend agent-tool, backend agent-eval, backend-agent-durable, and backend-agent-governance projects
 - performance budget and smoke-test implementation
-- merged PR #50 supply-chain evidence, PR #52 immutable promotion, PR #55 CI diagnostics, PR #59 cache-input auditing, PR #61 SteadyStack identity rebrand, PR #64 release records/recovery evidence, PRs #65–#68 for the Phase 14 profile, model, tool/stream, and evaluation boundaries, PR #70 durable execution, PR #71 safety/governance hooks, and the P14-07 generated AI-profile implementation and exact-head validation in PR #80
+- merged PR #50 supply-chain evidence, PR #52 immutable promotion, PR #55 CI diagnostics, PR #59 cache-input auditing, PR #61 SteadyStack identity rebrand, PR #64 release records/recovery evidence, PRs #65–#68 for the Phase 14 profile, model, tool/stream, and evaluation boundaries, PR #70 durable execution, PR #71 safety/governance hooks, PR #72 dependency-vulnerability remediation, PR #73 the Phase 15 agent-portability and documentation-ownership roadmap, and PR #80 the P14-07 generated AI-profile implementation and exact-head validation
 
 The hidden GitHub wiki Git repository is not exposed through the ordinary repository contents API and does not support the main repository's pull-request workflow. Reviewed source is maintained under `wiki/`. After a reviewed wiki change reaches `main`, `.github/workflows/wiki-publish.yml` synchronizes it to `steady-stack.wiki.git`, preserves wiki-only pages except those explicitly listed in `wiki/deletions.txt`, and rejects every unapproved deletion. `docs/wiki-publication.md` documents the manual fallback.
 
@@ -76,6 +76,7 @@ Naming uses title case for page headings and hyphenated GitHub Wiki filenames. C
 | Release promotion, finalization, recovery evidence, upgrade walkthrough   | Releases and Upgrades               |
 | Symptom-based diagnostics                                                 | Troubleshooting                     |
 | Audit, discrepancies, verified commands, gaps                             | Documentation Audit                 |
+| Planned Wiki-first documentation ownership and repository exceptions      | Documentation Audit                 |
 
 ## Verified commands
 
@@ -138,7 +139,7 @@ pnpm telemetry:down
 pnpm telemetry:check
 ```
 
-`pnpm docs:architecture` and `pnpm docs:check` are P13-05 template-maintainer commands. In `@steadystack/source`, they generate/check the committed Nx architecture graph and run the documentation content/topology audit. Initialized products retain the deterministic checker tests but skip the upstream content/topology audit; product teams must add product-specific rules if they want equivalent enforcement.
+`pnpm docs:architecture` and `pnpm docs:check` are P13-05 template-maintainer commands. In `@steadystack/source`, they generate/check the committed Nx architecture graph and run the documentation content/topology audit. Initialized products retain the deterministic checker tests but skip the upstream content/topology audit; product teams must add product-specific rules if they want equivalent enforcement. P15-03 plans to extend upstream documentation-integrity enforcement with explicit audience/ownership rules after the Wiki-first migration is implemented; that future ownership policy is not yet enforced by the current checker.
 
 `pnpm agent-eval:check` is the P14-04 evidence gate. It validates committed evidence manifests and, when Nx supplies a comparison range in CI, requires evidence updates for governed prompt artifacts and non-test model/tool runtime behavior changes.
 
@@ -210,6 +211,14 @@ The repository had no released generated users before the SteadyStack public ide
 
 Checked-in Markdown remains the authoritative reviewed page set. Pages that exist only in the rendered wiki are preserved by default. A rendered page is deleted only when its top-level `.md` filename is listed in `wiki/deletions.txt`, the corresponding reviewed source is absent, navigation no longer references it, and no unapproved deletion is staged. The manifest remains as an auditable, idempotent record.
 
+### Planned documentation ownership transition
+
+The current model remains in force until P15-03 is implemented: reviewed Wiki source lives under `wiki/`, repository-local documentation remains versioned beside the code, and documentation-integrity checks validate the present source topology. PR #73 added the planned Phase 15 ownership transition rather than changing that model immediately.
+
+P15-03 is intended to make the published GitHub Wiki the primary human-facing product, operator, onboarding, and explanatory surface. The root `README.md` remains the repository landing page, and `docs/TODO.md` remains the roadmap/control-plane exception unless a later explicit migration replaces it. Repository-resident prose should then remain only when it has a clear implementation, automation, governance, agent/machine, or review reason to live beside the code; duplicated human-facing prose is expected to be migrated, culled, or consolidated as part of that implementation.
+
+Documentation-integrity enforcement is expected to evolve with that migration. P15-03 plans explicit ownership/link rules so the Wiki and repository documentation cannot silently become competing human-facing sources of truth. Until that work lands and passes its required checks, the audit must not treat planned removals or ownership changes as already implemented.
+
 ### Agentic compatibility versus optional product AI
 
 Agentic compatibility is a baseline repository property implemented through `AGENTS.md`, Nx graph and MCP context, generators, executable boundaries, validation, and upgrades. The `ai` initialization flag selects an optional product AI profile; it does not control repository agent readiness.
@@ -266,7 +275,7 @@ The quarterly isolated PostgreSQL restore exercise proves the repository baselin
 
 | Existing content                      | Disposition                                                                                                              |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Root README                           | Reframed around the agentic-development thesis and SteadyStack identity while retaining concise operating guidance.      |
+| Root README                           | Human landing page routing readers to the Wiki and contributors/agents to repository controls.                           |
 | `docs/agentic-development.md`         | Repository-local source for agent workflow, control surfaces, approval boundaries, and anti-patterns.                    |
 | `docs/getting-started.md`             | Expanded for agent-ready onboarding and merged into Quick Start, Profiles, Production Readiness.                         |
 | `docs/template-initialization.md`     | Merged into Profiles and Releases/Upgrades.                                                                              |
@@ -286,7 +295,7 @@ The quarterly isolated PostgreSQL restore exercise proves the repository baselin
 | Runbooks                              | Summarized and linked conceptually from Production Readiness and Troubleshooting.                                        |
 | Existing first wiki page              | Replaced by the authored Home source; its exact remote content could not be retrieved through the contents API.          |
 
-No source documentation should be deleted solely because it is represented in the wiki; repository-local docs remain versioned evidence and implementation-adjacent references.
+Under the current pre-P15-03 model, source documentation is not deleted solely because it is represented in the Wiki; repository-local docs remain versioned evidence and implementation-adjacent references. P15-03 explicitly plans to revisit that retention rule by classifying audience and authority, migrating/culling duplicated human-facing prose, and retaining repository copies only when an implementation, automation, governance, agent/machine, or review reason justifies them beside the code.
 
 ## Topics not confidently documentable from implementation
 
