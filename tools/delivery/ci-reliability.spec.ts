@@ -105,7 +105,7 @@ describe('CI cancellation, caching, and diagnostics', () => {
       'Validate default generated workspace lifecycle\n        env:\n          CI_DIAGNOSTICS_DIR: ${{ runner.temp }}/generated-workspace/test-output',
     );
     expect(generated).toContain(
-      'CI_DIAGNOSTICS_DIR: ${{ runner.temp }}/generated-workspace-ai/test-output',
+      'CI_DIAGNOSTICS_DIR: ${{ runner.temp }}/generated-workspace-ai-diagnostics',
     );
     for (const workflow of [ci, delivery]) {
       expect(workflow).not.toContain('CI_DIAGNOSTICS_DIR: ${{ runner.temp }}');
