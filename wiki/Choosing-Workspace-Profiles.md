@@ -113,7 +113,7 @@ This setting describes the **product being built**, not the development process.
 
 `false` is the ordinary profile. It removes the optional AI reference workflow, AI-specific API dependencies/project references, and optional AI package entry points, keeping the generated workspace free of model-provider runtime dependencies.
 
-`true` requires web plus API and composes the completed Phase 14 capabilities into an optional generated API profile. Initialization materializes the selected model, typed-tool, evaluation, durable-execution, and governance package entry points; adds the corresponding API workspace dependencies and TypeScript project references; and generates a provider-neutral reference workflow with focused tests under `apps/api/src/app/ai/`. The reference demonstrates V1 streaming, one runtime-validated authorized tool, durable checkpoints and human approval, evaluation, correlated observability, content policy, tool allowlisting, governance audit events, and bounded compatible fallback.
+`true` requires web plus API and composes the completed Phase 14 capabilities into an optional generated API profile. Initialization materializes the selected model, typed-tool, evaluation, durable-execution, and governance package entry points; adds the corresponding API workspace dependencies and TypeScript project references; and generates a provider-neutral reference workflow with focused tests. The reviewed generator source is `tools/workspace-plugin/src/generators/init/ai-reference-template.ts`. The reference demonstrates V1 streaming, one runtime-validated authorized tool, durable checkpoints and human approval, evaluation, correlated observability, content policy, tool allowlisting, governance audit events, and bounded compatible fallback.
 
 The generated AI profile does **not** install a provider SDK or choose a production provider, credential, durable persistence product, vector database, orchestration framework, or monitoring backend. Its tests use the deterministic model adapter and in-memory durable adapter. Adopters still own server-side provider/model allowlists, data classification and retention policy, concrete redaction rules, production durable storage, tool/approver policy, runtime budgets, monitoring, abuse handling, and incident response.
 
@@ -166,7 +166,7 @@ pnpm initialize:workspace support-assistant \
   --ai=true
 ```
 
-After the second frozen install, inspect `apps/api/src/app/ai/` and replace the deterministic/test replacement points with application-owned production integrations only after the relevant policy and operations decisions are approved.
+After the second frozen install, inspect the generated API AI reference and replace the deterministic/test replacement points with application-owned production integrations only after the relevant policy and operations decisions are approved.
 
 ### API and worker service without web
 
