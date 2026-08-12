@@ -35,6 +35,9 @@ interface StreamAbortContext {
 }
 
 type JsonRecord = Record<string, unknown>;
+type StreamReadResult = Awaited<
+  ReturnType<ReadableStreamDefaultReader<Uint8Array>['read']>
+>;
 
 function asRecord(value: unknown): JsonRecord | undefined {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -258,7 +261,7 @@ function createStreamAbortContext(
 async function readStreamChunk(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   signal: AbortSignal,
-): Promise<ReadableStreamReadResult<Uint8Array>> {
+): Promise<StreamReadResult> {
   if (signal.aborted) throw signal.reason;
   let abort: (() => void) | undefined;
   const aborted = new Promise<never>((_resolve, reject) => {
