@@ -1,6 +1,6 @@
 # Template Roadmap
 
-Last updated: 2026-08-10
+Last updated: 2026-08-12
 
 This file tracks active work required to evolve the repository as a reusable, upgradeable application platform. Completed implementation history remains available in merged pull requests, ADRs, and Git history instead of being repeated as a separate historical roadmap.
 
@@ -41,8 +41,8 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 ## Execution order
 
 1. Phase 13 is complete through P13-07; ongoing dependency/security maintenance is tracked through the repository's normal security and issue workflows.
-2. Phase 14 is optional; P14-01 through P14-06 are complete, P14-07 is next, and the default workspace profile must remain free of AI runtime dependencies.
-3. Phase 15 follows the current Phase 14 work and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 through P15-03 are planned.
+2. Phase 14 is complete through P14-07; the default workspace profile remains free of AI runtime dependencies.
+3. Phase 15 follows completed Phase 14 and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 through P15-03 are planned.
 
 ## Phase 13 — Supply chain, CI scale, and documentation integrity
 
@@ -99,7 +99,7 @@ Exit criteria: production uses the exact image digests validated in preview, eac
 
 Goal: offer reusable AI application capabilities without coupling ordinary generated web applications to a specific model provider or orchestration framework.
 
-Phase 14 progress record (2026-08-09): P14-01 is completed by ADR 0020. It separates coding-agent repository support from runtime AI product capabilities, keeps provider-neutral contracts distinct from optional provider adapters, preserves `ai=false` as the default profile, and establishes fail-closed data-classification, explicit-retention, and server-side provider-selection constraints. P14-02 adds the backend `ModelClient` boundary for generation, JSON-Schema structured output, embeddings, and streaming; normalizes usage, cancellation, timeouts, errors, and bounded retries; and supplies an OpenAI native-fetch adapter plus a deterministic no-network adapter without adding a provider SDK dependency or wiring model calls into the default applications. P14-03 adds runtime-validated typed tools with mandatory invocation-time authorization, a strict V1 NDJSON agent-stream contract consumed by the web feature, and identifier-preserving browser decoding without composing AI runtime behavior into the default applications. P14-04 adds reviewed versioned prompt and tool-instruction artifacts, deterministic rule/model-grader evaluation boundaries, quality/latency/token/cost budgets, and a CI-enforced evidence manifest requirement for governed prompt, model, and tool changes without composing runtime AI into the default applications. P14-05 adds a backend-only replaceable durable-run adapter boundary with renewable leases and fences, idempotent ordered checkpoints, atomic human-approval pauses, approval-driven resume/rejection, interruption recovery, and payload-safe correlated observation while keeping persistence technology and durable-agent frameworks optional. P14-06 adds a backend-only governance boundary with runtime-validated input/output policy hooks, explicit data classifications, credential redaction/denial, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded server-configured provider/model fallback that rechecks classification, region, retention, and capability compatibility. P14-07 is next.
+Phase 14 progress record (2026-08-12): P14-01 is completed by ADR 0020. It separates coding-agent repository support from runtime AI product capabilities, keeps provider-neutral contracts distinct from optional provider adapters, preserves `ai=false` as the default profile, and establishes fail-closed data-classification, explicit-retention, and server-side provider-selection constraints. P14-02 adds the backend `ModelClient` boundary for generation, JSON-Schema structured output, embeddings, and streaming; normalizes usage, cancellation, timeouts, errors, and bounded retries; and supplies an OpenAI native-fetch adapter plus a deterministic no-network adapter without adding a provider SDK dependency or wiring model calls into the default applications. P14-03 adds runtime-validated typed tools with mandatory invocation-time authorization, a strict V1 NDJSON agent-stream contract consumed by the web feature, and identifier-preserving browser decoding without composing AI runtime behavior into the default applications. P14-04 adds reviewed versioned prompt and tool-instruction artifacts, deterministic rule/model-grader evaluation boundaries, quality/latency/token/cost budgets, and a CI-enforced evidence manifest requirement for governed prompt, model, and tool changes without composing runtime AI into the default applications. P14-05 adds a backend-only replaceable durable-run adapter boundary with renewable leases and fences, idempotent ordered checkpoints, atomic human-approval pauses, approval-driven resume/rejection, interruption recovery, and payload-safe correlated observation while keeping persistence technology and durable-agent frameworks optional. P14-06 adds a backend-only governance boundary with runtime-validated input/output policy hooks, explicit data classifications, credential redaction/denial, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded server-configured provider/model fallback that rechecks classification, region, retention, and capability compatibility. P14-07 is completed: the public preset composes those existing boundaries only when `ai=true`, generates and tests a reference workflow, and exact-head generated-workspace validation proves both default-profile isolation and the AI-enabled lifecycle.
 
 - [x] **P14-01 Define profile boundaries in an ADR.**
   - Separate coding-agent repository support from runtime AI product capabilities.
@@ -133,7 +133,7 @@ Phase 14 progress record (2026-08-09): P14-01 is completed by ADR 0020. It separ
   - Define model and provider fallback policy.
   - Document prompt-injection, data-exfiltration, excessive-agency, and runaway-cost mitigations.
 
-- [ ] **P14-07 Generate and test the AI profile.**
+- [x] **P14-07 Generate and test the AI profile.**
   - Add a preset option or generator that installs only the selected AI capabilities.
   - Add a reference workflow with streaming, one typed tool, persistence, evaluation, and observability.
   - Verify that the default non-AI profile contains no model-provider dependencies.

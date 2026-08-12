@@ -79,7 +79,7 @@
     "ai": {
       "type": "boolean",
       "default": false,
-      "description": "Select optional AI capabilities; requires web and api"
+      "description": "Generate the optional provider-neutral AI reference profile; requires web and api"
     },
     "skipFormat": {
       "type": "boolean",

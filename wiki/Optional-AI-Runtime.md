@@ -1,6 +1,6 @@
 # Optional AI Runtime
 
-SteadyStack now includes reusable **optional** runtime AI boundaries for provider-neutral model access, typed tool execution, browser streaming, prompt/evaluation evidence, durable agent execution, and safety/governance. These capabilities are intentionally separate from the repository's coding-agent operating model and are **not composed into the default generated applications**.
+SteadyStack includes reusable **optional** runtime AI boundaries for provider-neutral model access, typed tool execution, browser streaming, prompt/evaluation evidence, durable agent execution, and safety/governance. P14-07 composes those boundaries into a generated reference workflow only when the optional AI profile is selected; they remain separate from the repository's coding-agent operating model and are **not composed into the default generated applications**.
 
 ## Prerequisites
 
@@ -11,10 +11,10 @@ SteadyStack now includes reusable **optional** runtime AI boundaries for provide
 
 The optional AI profile describes the product being built; it does not control whether coding agents can work in the repository.
 
-- `ai=false` remains the default profile.
+- `ai=false` remains the default profile and keeps the generated application graph free of optional AI package dependencies and model-provider runtime packages.
 - Coding-agent support through `AGENTS.md`, Nx/MCP discovery, generators, validation, delivery controls, and review handoffs remains available regardless of the AI profile.
-- `ai=true` currently records product intent and requires the web and API applications, but it still does **not** generate or compose a runnable model-backed application workflow.
-- The default workspace must remain free of model-provider runtime dependencies.
+- `ai=true` requires web and API, materializes the selected Phase 14 AI capability package entry points, adds the API workspace dependencies and project references, and generates a provider-neutral reference workflow with focused tests. The reviewed generator source is `tools/workspace-plugin/src/generators/init/ai-reference-template.ts`.
+- The generated AI reference uses the deterministic model adapter and in-memory durable adapter in tests; it does not install a provider SDK, select production credentials, or choose production persistence.
 
 Phase 14 status:
 
@@ -24,13 +24,29 @@ Phase 14 status:
 - **P14-04 — complete:** reviewed prompt/tool-instruction artifacts and CI-enforced evaluation evidence.
 - **P14-05 — complete:** replaceable durable execution with leases/fences, checkpoints, resumable runs, human approval, and interruption recovery.
 - **P14-06 — complete:** input/output governance hooks, classification-aware sensitive-data handling, server-owned tool allowlists, approval authorization, payload-safe audit events, and bounded compatible provider/model fallback policy.
-- **P14-07 — next:** generate and test the runnable optional AI profile.
+- **P14-07 — complete:** generated optional AI-profile composition, deterministic reference workflow/tests, default-profile isolation proof, and generated-workspace lifecycle coverage.
 
 The repository roadmap in `docs/TODO.md` is authoritative for future sequencing.
 
+## Generated AI profile
+
+Selecting `ai=true` composes the existing Phase 14 boundaries rather than introducing a second AI architecture. The generated API reference demonstrates:
+
+- versioned streaming events;
+- one runtime-validated `reference.lookup` typed tool with invocation-time actor authorization;
+- server-owned tool allowlisting and trusted human-approval authorization;
+- durable runs and payload-safe checkpoints through the replaceable durable adapter boundary;
+- input/output classification policy and bounded compatible provider/model fallback;
+- deterministic evaluation evidence with normalized token usage;
+- correlated payload-safe logs, metrics, and governance audit events.
+
+Generation is deterministic: running the profile repeatedly must not change the generated output, lockfile, or API project graph. Generated-workspace CI separately validates the default profile and the AI-enabled profile with frozen installs, `pnpm check`, production builds, identity checks, graph assertions, and repository-cleanliness checks.
+
+The reference is deliberately a composition example, not a production provider integration. Applications still choose provider credentials and allowlists, production durable persistence, concrete policy/redaction rules, operational budgets, monitoring, abuse handling, and incident ownership.
+
 ## Provider-neutral model boundary
 
-`packages/backend/model` exposes a backend-only `ModelClient` interface without choosing a default provider or wiring model calls into the API or web application.
+`packages/backend/model` exposes a backend-only `ModelClient` interface without choosing a default provider or wiring model calls into the default API or web application.
 
 The public operations are:
 
@@ -112,7 +128,7 @@ V1 event types are:
 
 The protocol intentionally has no raw prompt, completion, tool-input, or tool-result field. The Agent Tasks web feature consumes the shared decoder, requires contiguous sequence numbers and stable actor/conversation identity, and preserves validated provider/model/tool identifiers.
 
-This is a transport boundary only. The default API does not expose a model-backed streaming endpoint.
+This is a transport boundary only. The default API does not expose a model-backed streaming endpoint; the optional generated reference shows how an AI-enabled application can compose the protocol without changing the default profile.
 
 ## Prompt and evaluation lifecycle
 
@@ -146,7 +162,7 @@ Lifecycle observation reuses the repository correlation context and retains only
 
 ## Safety and governance hooks
 
-`packages/backend/agent-governance` adds the reusable P14-06 safety boundary without composing a workflow.
+`packages/backend/agent-governance` provides the reusable P14-06 safety boundary. P14-07 composes it only in the optional generated AI reference; the default applications remain uncomposed.
 
 The content-policy boundary uses explicit classifications:
 
@@ -207,15 +223,15 @@ pnpm nx run backend-agent-governance:typecheck
 pnpm agent-eval:check
 ```
 
-## What is not implemented yet
+## Production replacement points
 
-The current reusable boundaries should not be described as a complete generated AI application profile. Phase 14 still has explicit gaps:
+P14-07 completes the generated reference profile, but SteadyStack intentionally leaves production-specific decisions to the adopting application:
 
-- **Generated runnable AI profile (P14-07):** `ai=true` does not yet install or wire a reference model-backed workflow into generated applications.
 - No production durable persistence adapter is selected by the shared platform; applications that need durable execution choose and operate one explicitly.
-- The repository does not choose a default model provider, orchestration framework, vector database, prompt-management service, or durable-agent framework.
+- The repository does not choose a default model provider, provider credential, orchestration framework, vector database, prompt-management service, or durable-agent framework.
+- The generated reference is not a production provider rollout or an authorization to send application data to a model provider.
 
-Applications that compose the current primitives must still own provider credentials and allowlisting, source data classification and concrete redaction/detection rules, actor/approver policy, safe tool registration, prompt content, runtime iteration/spend budgets, durable persistence selection, production monitoring, abuse handling, and incident response.
+Applications must still own provider credentials and allowlisting, source data classification and concrete redaction/detection rules, actor/approver policy, safe tool registration, prompt content, runtime iteration/spend budgets, durable persistence selection, production monitoring, abuse handling, and incident response.
 
 ## Related pages
 

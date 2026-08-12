@@ -111,11 +111,13 @@ When true, initialization enables local OTLP defaults. Production still requires
 
 This setting describes the **product being built**, not the development process. Every generated workspace retains the agent-compatible repository controls: `AGENTS.md` guidance, Nx graph and MCP configuration, generators, boundaries, validation, and upgrade tooling.
 
-`true` records product intent to add AI-powered application capabilities and requires web plus API. Phase 14 now provides reusable upstream runtime primitives behind that optional boundary: a provider-neutral backend `ModelClient` with OpenAI native-`fetch` and deterministic adapters, typed tools with invocation-time authorization, the versioned V1 NDJSON browser stream, and reviewed prompt/evaluation evidence. These primitives are **not composed into the default applications**, and `ai=true` still does not generate a runnable model-backed workflow or install a provider-specific SDK.
+`false` is the ordinary profile. It removes the optional AI reference workflow, AI-specific API dependencies/project references, and optional AI package entry points, keeping the generated workspace free of model-provider runtime dependencies.
 
-The default profile remains free of model-provider runtime dependencies. Any application that composes the optional capabilities must make server-side provider/model choices and explicitly own data classification, retention, provider credentials, tool policy, evaluation budgets, and production operations. Durable execution is the next Phase 14 task; broader safety/fallback policy and generated runnable AI-profile composition remain later work.
+`true` requires web plus API and composes the completed Phase 14 capabilities into an optional generated API profile. Initialization materializes the selected model, typed-tool, evaluation, durable-execution, and governance package entry points; adds the corresponding API workspace dependencies and TypeScript project references; and generates a provider-neutral reference workflow with focused tests. The reviewed generator source is `tools/workspace-plugin/src/generators/init/ai-reference-template.ts`. The reference demonstrates V1 streaming, one runtime-validated authorized tool, durable checkpoints and human approval, evaluation, correlated observability, content policy, tool allowlisting, governance audit events, and bounded compatible fallback.
 
-See [Optional AI Runtime](Optional-AI-Runtime) for the implemented boundaries and current gaps, and [Agentic Development Model](Agentic-Development-Model) for the development operating model.
+The generated AI profile does **not** install a provider SDK or choose a production provider, credential, durable persistence product, vector database, orchestration framework, or monitoring backend. Its tests use the deterministic model adapter and in-memory durable adapter. Adopters still own server-side provider/model allowlists, data classification and retention policy, concrete redaction rules, production durable storage, tool/approver policy, runtime budgets, monitoring, abuse handling, and incident response.
+
+See [Optional AI Runtime](Optional-AI-Runtime) for the generated reference behavior, reusable boundaries, safety constraints, and production replacement points, and [Agentic Development Model](Agentic-Development-Model) for the development operating model.
 
 ## Ports and database
 
@@ -148,6 +150,23 @@ pnpm initialize:workspace customer-portal \
   --telemetry=false \
   --deploymentProfile=containers
 ```
+
+### AI-enabled web and API reference profile
+
+```bash
+pnpm initialize:workspace support-assistant \
+  --displayName="Support Assistant" \
+  --packageScope=@acme \
+  --repositoryOwner=acme-platform \
+  --applications=web,api \
+  --authentication=development \
+  --workerTransport=none \
+  --telemetry=false \
+  --deploymentProfile=containers \
+  --ai=true
+```
+
+After the second frozen install, inspect the generated API AI reference and replace the deterministic/test replacement points with application-owned production integrations only after the relevant policy and operations decisions are approved.
 
 ### API and worker service without web
 

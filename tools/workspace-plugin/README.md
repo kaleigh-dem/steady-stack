@@ -20,6 +20,16 @@ pnpm generate:job refresh-search-index --queue=search
 pnpm generate:contract project-created
 ```
 
+Select the optional runtime AI reference profile deliberately when a product needs it:
+
+```bash
+pnpm initialize:workspace ai-product \
+  --packageScope=@acme \
+  --repositoryOwner=acme-platform \
+  --applications=web,api \
+  --ai=true
+```
+
 Replace the example target version with the release being evaluated.
 
 The equivalent Nx form is:
@@ -28,7 +38,7 @@ The equivalent Nx form is:
 pnpm nx g @steadystack/workspace-plugin:<generator> <name>
 ```
 
-Use `preset` as the public entry point when consuming a released tarball. The lower-level `init` generator remains available for local compatibility, while `preset` records the originating template version, retains downstream upgrade tooling, and removes template-maintainer release tooling from the generated repository.
+Use `preset` as the public entry point when consuming a released tarball. The lower-level `init` generator remains available for local compatibility, while `preset` records the originating template version, retains downstream upgrade tooling, removes template-maintainer release tooling from the generated repository, and realizes the optional AI profile when selected.
 
 The release package also exposes the `steadystack-upgrade` binary. It reads `workspace.template.json`, defaults to a dry run, applies ordered version migrations, reports ownership classes and conflicts, and synchronizes the repository-local upgrade runner after a successful apply.
 
@@ -36,8 +46,10 @@ After initialization, use the configured package scope in the equivalent Nx form
 
 ## Output contracts
 
-- `preset` invokes initialization, records `upstream.version` and the ownership-policy version, removes template-maintainer release files and commands, retains upgrade tooling, and marks the downstream local plugin private.
+- `preset` invokes initialization, records `upstream.version` and the ownership-policy version, removes template-maintainer release files and commands, retains upgrade tooling, marks the downstream local plugin private, and applies the selected optional AI composition.
 - `init` validates workspace identity and profiles, writes the versioned `workspace.template.json`, rewrites repository-wide package, service, image, database, telemetry, ownership, and TypeScript identities, and removes unselected application projects.
+- `ai=true` materializes only the existing provider-neutral Phase 14 model, typed-tool, evaluation, durable-execution, and governance capabilities into the API dependency graph and generates an AI-only API reference workflow, its focused tests, and its production-replacement guidance. It does not install a model-provider SDK or orchestration framework.
+- `ai=false` is the default. It removes the AI reference workflow and Phase 14 AI package/API dependency composition, so the ordinary generated application remains free of model-provider runtime dependencies.
 - `domain` creates `packages/backend/<name>` as a tagged, framework-free library with domain and application layers, tests, public exports, README, and local agent guidance.
 - `feature` creates `packages/web/features/<name>` as a browser-only library with a public component, testable view model, public exports, README, and local agent guidance.
 - `job` creates `apps/worker/src/jobs/<name>`, its testable handler and contract, README and agent guidance, then updates the worker jobs barrel.

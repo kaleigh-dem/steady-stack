@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "evidenceId": "p14-07-ai-profile-model-portability",
+  "taskId": "P14-07",
+  "recordedAt": "2026-08-12T03:57:06.000Z",
+  "promptArtifacts": [],
+  "coveredChanges": [
+    {
+      "kind": "model",
+      "path": "packages/backend/model/src/adapters/openai-model-adapter.ts"
+    }
+  ],
+  "checks": [
+    "pnpm agent-eval:check",
+    "pnpm typecheck",
+    "pnpm test",
+    "pnpm build"
+  ],
+  "budget": {
+    "minQualityScore": 1,
+    "maxLatencyMs": 25,
+    "maxTotalTokens": 20,
+    "maxEstimatedCostUsd": 0.00002
+  },
+  "results": [
+    {
+      "fixtureId": "synthetic-echo",
+      "passed": true,
+      "qualityScore": 1,
+      "latencyMs": 5,
+      "budgetPassed": true,
+      "providerId": "deterministic",
+      "modelId": "fixture-model",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 4,
+        "totalTokens": 12,
+        "cachedInputTokens": 2
+      },
+      "estimatedCostUsd": 0.000015
+    }
+  ]
+}
