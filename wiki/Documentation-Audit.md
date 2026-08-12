@@ -275,7 +275,7 @@ The quarterly isolated PostgreSQL restore exercise proves the repository baselin
 
 | Existing content                      | Disposition                                                                                                              |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Root README                           | Human repository landing page for SteadyStack, routing readers to the Wiki and contributors/agents to repository controls. |
+| Root README                           | Human landing page routing readers to the Wiki and contributors/agents to repository controls.                           |
 | `docs/agentic-development.md`         | Repository-local source for agent workflow, control surfaces, approval boundaries, and anti-patterns.                    |
 | `docs/getting-started.md`             | Expanded for agent-ready onboarding and merged into Quick Start, Profiles, Production Readiness.                         |
 | `docs/template-initialization.md`     | Merged into Profiles and Releases/Upgrades.                                                                              |
