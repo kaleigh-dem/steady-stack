@@ -50,32 +50,32 @@ Naming uses title case for page headings and hyphenated GitHub Wiki filenames. C
 
 ## Coverage matrix
 
-| Requirement/source area                                                        | Wiki coverage                       |
-| ------------------------------------------------------------------------------ | ----------------------------------- |
-| Platform description, audience, included/not included                          | Home                                |
-| Agentic development thesis, workflow, guardrails, and approval boundaries      | Agentic Development Model           |
-| Tool versions and local startup                                                | Quick Start                         |
-| Initialization options and compatibility                                       | Choosing Workspace Profiles         |
-| Apps, packages, infrastructure, tooling, docs                                  | Repository Tour                     |
-| Common Nx workflows                                                            | Everyday Development                |
-| Domain/feature/job/contract generators                                         | Code Generation                     |
-| Monorepo, request/data/worker flows, boundaries                                | Architecture                        |
-| Optional AI boundaries plus generated AI-profile reference composition         | Optional AI Runtime                 |
-| Development, none, OIDC, session, claims, outage                               | Authentication and Authorization    |
-| PostgreSQL, migrations, seed, reset, backups                                   | Database and Data Management        |
-| Outbox, leasing, retries, replay, metrics, drain                               | Worker and Background Jobs          |
-| `pnpm check`, focused commands, budgets, clean tree                            | Validation and Testing              |
-| AI evaluation gate and focused model/tool/eval/durable/governance checks       | Validation and Testing              |
-| Documentation-integrity commands, upstream-only audit scope, graph checks      | Validation and Testing              |
-| Documentation-integrity failure artifact and graph remediation                 | CI Diagnostics                      |
-| Cancellation, failure artifacts, traces, logs, cache fallback                  | CI Diagnostics                      |
-| Images, preview, smoke, performance, cleanup                                   | Containers and Preview Environments |
-| Repository controls, environments, permissions, retention                      | Repository and GitHub Setup         |
-| SBOMs, Trivy, policy, signatures, attestations, digests                        | Image Supply Chain                  |
-| Governance, secrets, identity, data, operations, evidence                      | Production Readiness                |
-| Release promotion, finalization, recovery evidence, upgrade walkthrough        | Releases and Upgrades               |
-| Symptom-based diagnostics                                                      | Troubleshooting                     |
-| Audit, discrepancies, verified commands, gaps                                  | Documentation Audit                 |
+| Requirement/source area                                                   | Wiki coverage                       |
+| ------------------------------------------------------------------------- | ----------------------------------- |
+| Platform description, audience, included/not included                     | Home                                |
+| Agentic development thesis, workflow, guardrails, and approval boundaries | Agentic Development Model           |
+| Tool versions and local startup                                           | Quick Start                         |
+| Initialization options and compatibility                                  | Choosing Workspace Profiles         |
+| Apps, packages, infrastructure, tooling, docs                             | Repository Tour                     |
+| Common Nx workflows                                                       | Everyday Development                |
+| Domain/feature/job/contract generators                                    | Code Generation                     |
+| Monorepo, request/data/worker flows, boundaries                           | Architecture                        |
+| Optional AI boundaries plus generated AI-profile reference composition    | Optional AI Runtime                 |
+| Development, none, OIDC, session, claims, outage                          | Authentication and Authorization    |
+| PostgreSQL, migrations, seed, reset, backups                              | Database and Data Management        |
+| Outbox, leasing, retries, replay, metrics, drain                          | Worker and Background Jobs          |
+| `pnpm check`, focused commands, budgets, clean tree                       | Validation and Testing              |
+| AI evaluation gate and focused model/tool/eval/durable/governance checks  | Validation and Testing              |
+| Documentation-integrity commands, upstream-only audit scope, graph checks | Validation and Testing              |
+| Documentation-integrity failure artifact and graph remediation            | CI Diagnostics                      |
+| Cancellation, failure artifacts, traces, logs, cache fallback             | CI Diagnostics                      |
+| Images, preview, smoke, performance, cleanup                              | Containers and Preview Environments |
+| Repository controls, environments, permissions, retention                 | Repository and GitHub Setup         |
+| SBOMs, Trivy, policy, signatures, attestations, digests                   | Image Supply Chain                  |
+| Governance, secrets, identity, data, operations, evidence                 | Production Readiness                |
+| Release promotion, finalization, recovery evidence, upgrade walkthrough   | Releases and Upgrades               |
+| Symptom-based diagnostics                                                 | Troubleshooting                     |
+| Audit, discrepancies, verified commands, gaps                             | Documentation Audit                 |
 
 ## Verified commands
 
@@ -138,7 +138,7 @@ pnpm telemetry:down
 pnpm telemetry:check
 ```
 
-`pnpm docs:architecture` and `pnpm docs:check` are P13-05 template-maintainer commands. In `@steadystack/source`, they generate/check the committed Nx architecture graph and run the documentation content/topology audit. Initialized products retain the deterministic checker tests but skip the upstream repository audit; product teams must add product-specific rules if they want equivalent enforcement.
+`pnpm docs:architecture` and `pnpm docs:check` are P13-05 template-maintainer commands. In `@steadystack/source`, they generate/check the committed Nx architecture graph and run the documentation content/topology audit. Initialized products retain the deterministic checker tests but skip the upstream content/topology audit; product teams must add product-specific rules if they want equivalent enforcement.
 
 `pnpm agent-eval:check` is the P14-04 evidence gate. It validates committed evidence manifests and, when Nx supplies a comparison range in CI, requires evidence updates for governed prompt artifacts and non-test model/tool runtime behavior changes.
 
@@ -214,7 +214,7 @@ Checked-in Markdown remains the authoritative reviewed page set. Pages that exis
 
 Agentic compatibility is a baseline repository property implemented through `AGENTS.md`, Nx graph and MCP context, generators, executable boundaries, validation, and upgrades. The `ai` initialization flag selects an optional product AI profile; it does not control repository agent readiness.
 
-Phase 14 is complete through P14-07. The reusable upstream runtime boundaries provide provider-neutral model interfaces and adapters, typed authorization-enforced tools, a strict V1 NDJSON browser stream, reviewed prompt/evaluation evidence, replaceable durable execution with leases, fencing, checkpoints, human-approval pauses, and interruption recovery, plus safety/governance hooks for runtime policy, sensitive-data handling, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded compatible provider/model fallback. `ai=false` remains the default and removes the optional AI application dependencies. Selecting `ai=true` materializes the selected Phase 14 package entry points, adds API dependencies/project references, and generates a provider-neutral reference workflow and focused tests under `apps/api/src/app/ai/`. Generated-workspace validation proves both default-profile isolation and the AI-enabled lifecycle.
+Phase 14 is complete through P14-07. The reusable upstream runtime boundaries provide provider-neutral model interfaces and adapters, typed authorization-enforced tools, a strict V1 NDJSON browser stream, reviewed prompt/evaluation evidence, replaceable durable execution with leases, fencing, checkpoints, human-approval pauses, and interruption recovery, plus safety/governance hooks for runtime policy, sensitive-data handling, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded compatible provider/model fallback. `ai=false` remains the default and removes the optional AI application dependencies. Selecting `ai=true` materializes the selected Phase 14 package entry points, adds API dependencies/project references, and generates a provider-neutral reference workflow and focused tests. The reviewed generator source is `tools/workspace-plugin/src/generators/init/ai-reference-template.ts`. Generated-workspace validation proves both default-profile isolation and the AI-enabled lifecycle.
 
 The generated reference does not make a provider SDK, provider credential, orchestration framework, vector database, or production durable-persistence implementation mandatory. Those remain adopter-owned production replacement points.
 
