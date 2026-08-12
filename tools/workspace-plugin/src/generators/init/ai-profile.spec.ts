@@ -103,6 +103,16 @@ describe('AI profile generation', () => {
     expect(tree.exists('apps/api/src/app/ai/reference-workflow.spec.ts')).toBe(
       true,
     );
+    const referenceWorkflow = tree.read(
+      'apps/api/src/app/ai/reference-workflow.ts',
+      'utf-8',
+    );
+    expect(referenceWorkflow).toContain(
+      'completed.usage.cachedInputTokens === undefined',
+    );
+    expect(referenceWorkflow).toContain(
+      '{ cachedInputTokens: completed.usage.cachedInputTokens }',
+    );
 
     const lockfile = tree.read('pnpm-lock.yaml', 'utf-8');
     expect(lockfile).toContain(
