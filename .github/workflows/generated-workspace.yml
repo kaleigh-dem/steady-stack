@@ -115,7 +115,7 @@ jobs:
 
       - name: Validate generated AI profile lifecycle
         env:
-          CI_DIAGNOSTICS_DIR: ${{ runner.temp }}/generated-workspace-ai/test-output
+          CI_DIAGNOSTICS_DIR: ${{ runner.temp }}/generated-workspace-ai-diagnostics
         run: |
           set -o pipefail
           mkdir -p "$CI_DIAGNOSTICS_DIR"
@@ -132,6 +132,6 @@ jobs:
           name: generated-workspace-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/generated-workspace/test-output
-            ${{ runner.temp }}/generated-workspace-ai/test-output
+            ${{ runner.temp }}/generated-workspace-ai-diagnostics
           if-no-files-found: ignore
           retention-days: 14
