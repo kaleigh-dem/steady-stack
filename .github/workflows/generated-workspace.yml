@@ -117,6 +117,7 @@ jobs:
         env:
           CI_DIAGNOSTICS_DIR: ${{ runner.temp }}/generated-workspace-ai/test-output
         run: |
+          set -o pipefail
           mkdir -p "$CI_DIAGNOSTICS_DIR"
           node tools/template/generated-ai-profile-e2e.mjs \
             --artifact "${{ steps.artifact.outputs.path }}" \
