@@ -17,7 +17,7 @@ The wiki was derived from implementation and maintained repository documents, in
 - getting started, initialization, architecture, authentication, rate limiting, database, worker, delivery, production readiness, upgrade, release, validation, runtime, security, migration, model/tool/stream/evaluation, durable-agent-execution, agent-safety-and-governance, and runbook documentation
 - nested `AGENTS.md` files for web, API, worker, contracts, database, Agent Task domain, web feature, worker job, backend model, backend agent-tool, backend agent-eval, backend-agent-durable, and backend-agent-governance projects
 - performance budget and smoke-test implementation
-- merged PR #50 supply-chain evidence, PR #52 immutable promotion, PR #55 CI diagnostics, PR #59 cache-input auditing, PR #61 SteadyStack identity rebrand, PR #64 release records/recovery evidence, PRs #65–#68 for the Phase 14 profile, model, tool/stream, and evaluation boundaries, PR #70 durable execution, and PR #71 safety/governance hooks
+- merged PR #50 supply-chain evidence, PR #52 immutable promotion, PR #55 CI diagnostics, PR #59 cache-input auditing, PR #61 SteadyStack identity rebrand, PR #64 release records/recovery evidence, PRs #65–#68 for the Phase 14 profile, model, tool/stream, and evaluation boundaries, PR #70 durable execution, PR #71 safety/governance hooks, and the P14-07 generated AI-profile implementation and exact-head validation in PR #80
 
 The hidden GitHub wiki Git repository is not exposed through the ordinary repository contents API and does not support the main repository's pull-request workflow. Reviewed source is maintained under `wiki/`. After a reviewed wiki change reaches `main`, `.github/workflows/wiki-publish.yml` synchronizes it to `steady-stack.wiki.git`, preserves wiki-only pages except those explicitly listed in `wiki/deletions.txt`, and rejects every unapproved deletion. `docs/wiki-publication.md` documents the manual fallback.
 
@@ -50,32 +50,32 @@ Naming uses title case for page headings and hyphenated GitHub Wiki filenames. C
 
 ## Coverage matrix
 
-| Requirement/source area                                                   | Wiki coverage                       |
-| ------------------------------------------------------------------------- | ----------------------------------- |
-| Platform description, audience, included/not included                     | Home                                |
-| Agentic development thesis, workflow, guardrails, and approval boundaries | Agentic Development Model           |
-| Tool versions and local startup                                           | Quick Start                         |
-| Initialization options and compatibility                                  | Choosing Workspace Profiles         |
-| Apps, packages, infrastructure, tooling, docs                             | Repository Tour                     |
-| Common Nx workflows                                                       | Everyday Development                |
-| Domain/feature/job/contract generators                                    | Code Generation                     |
-| Monorepo, request/data/worker flows, boundaries                           | Architecture                        |
-| Optional AI model/tool/stream/eval/durable/governance boundaries          | Optional AI Runtime                 |
-| Development, none, OIDC, session, claims, outage                          | Authentication and Authorization    |
-| PostgreSQL, migrations, seed, reset, backups                              | Database and Data Management        |
-| Outbox, leasing, retries, replay, metrics, drain                          | Worker and Background Jobs          |
-| `pnpm check`, focused commands, budgets, clean tree                       | Validation and Testing              |
-| AI evaluation gate and focused model/tool/eval/durable/governance checks  | Validation and Testing              |
-| Documentation-integrity commands, upstream-only audit scope, graph checks | Validation and Testing              |
-| Documentation-integrity failure artifact and graph remediation            | CI Diagnostics                      |
-| Cancellation, failure artifacts, traces, logs, cache fallback             | CI Diagnostics                      |
-| Images, preview, smoke, performance, cleanup                              | Containers and Preview Environments |
-| Repository controls, environments, permissions, retention                 | Repository and GitHub Setup         |
-| SBOMs, Trivy, policy, signatures, attestations, digests                   | Image Supply Chain                  |
-| Governance, secrets, identity, data, operations, evidence                 | Production Readiness                |
-| Release promotion, finalization, recovery evidence, upgrade walkthrough   | Releases and Upgrades               |
-| Symptom-based diagnostics                                                 | Troubleshooting                     |
-| Audit, discrepancies, verified commands, gaps                             | Documentation Audit                 |
+| Requirement/source area                                                        | Wiki coverage                       |
+| ------------------------------------------------------------------------------ | ----------------------------------- |
+| Platform description, audience, included/not included                          | Home                                |
+| Agentic development thesis, workflow, guardrails, and approval boundaries      | Agentic Development Model           |
+| Tool versions and local startup                                                | Quick Start                         |
+| Initialization options and compatibility                                       | Choosing Workspace Profiles         |
+| Apps, packages, infrastructure, tooling, docs                                  | Repository Tour                     |
+| Common Nx workflows                                                            | Everyday Development                |
+| Domain/feature/job/contract generators                                         | Code Generation                     |
+| Monorepo, request/data/worker flows, boundaries                                | Architecture                        |
+| Optional AI boundaries plus generated AI-profile reference composition         | Optional AI Runtime                 |
+| Development, none, OIDC, session, claims, outage                               | Authentication and Authorization    |
+| PostgreSQL, migrations, seed, reset, backups                                   | Database and Data Management        |
+| Outbox, leasing, retries, replay, metrics, drain                               | Worker and Background Jobs          |
+| `pnpm check`, focused commands, budgets, clean tree                            | Validation and Testing              |
+| AI evaluation gate and focused model/tool/eval/durable/governance checks       | Validation and Testing              |
+| Documentation-integrity commands, upstream-only audit scope, graph checks      | Validation and Testing              |
+| Documentation-integrity failure artifact and graph remediation                 | CI Diagnostics                      |
+| Cancellation, failure artifacts, traces, logs, cache fallback                  | CI Diagnostics                      |
+| Images, preview, smoke, performance, cleanup                                   | Containers and Preview Environments |
+| Repository controls, environments, permissions, retention                      | Repository and GitHub Setup         |
+| SBOMs, Trivy, policy, signatures, attestations, digests                        | Image Supply Chain                  |
+| Governance, secrets, identity, data, operations, evidence                      | Production Readiness                |
+| Release promotion, finalization, recovery evidence, upgrade walkthrough        | Releases and Upgrades               |
+| Symptom-based diagnostics                                                      | Troubleshooting                     |
+| Audit, discrepancies, verified commands, gaps                                  | Documentation Audit                 |
 
 ## Verified commands
 
@@ -212,9 +212,11 @@ Checked-in Markdown remains the authoritative reviewed page set. Pages that exis
 
 ### Agentic compatibility versus optional product AI
 
-Agentic compatibility is a baseline repository property implemented through `AGENTS.md`, Nx graph and MCP context, generators, executable boundaries, validation, and upgrades. The `ai` initialization flag only records product intent to add AI-powered application features.
+Agentic compatibility is a baseline repository property implemented through `AGENTS.md`, Nx graph and MCP context, generators, executable boundaries, validation, and upgrades. The `ai` initialization flag selects an optional product AI profile; it does not control repository agent readiness.
 
-Phase 14 now provides the reusable upstream runtime boundaries through P14-06: provider-neutral model interfaces and adapters, typed authorization-enforced tools, a strict V1 NDJSON browser stream, reviewed prompt/evaluation evidence, replaceable durable execution with leases, fencing, checkpoints, human-approval pauses, and interruption recovery, plus safety/governance hooks for runtime policy, sensitive-data handling, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded compatible provider/model fallback. These capabilities remain uncomposed in the default applications. `ai=false` is still the default, and `ai=true` does not yet generate a runnable AI workflow. P14-07 generated-profile and reference-workflow composition is the only remaining future Phase 14 implementation task.
+Phase 14 is complete through P14-07. The reusable upstream runtime boundaries provide provider-neutral model interfaces and adapters, typed authorization-enforced tools, a strict V1 NDJSON browser stream, reviewed prompt/evaluation evidence, replaceable durable execution with leases, fencing, checkpoints, human-approval pauses, and interruption recovery, plus safety/governance hooks for runtime policy, sensitive-data handling, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded compatible provider/model fallback. `ai=false` remains the default and removes the optional AI application dependencies. Selecting `ai=true` materializes the selected Phase 14 package entry points, adds API dependencies/project references, and generates a provider-neutral reference workflow and focused tests under `apps/api/src/app/ai/`. Generated-workspace validation proves both default-profile isolation and the AI-enabled lifecycle.
+
+The generated reference does not make a provider SDK, provider credential, orchestration framework, vector database, or production durable-persistence implementation mandatory. Those remain adopter-owned production replacement points.
 
 ### Worker operations port exposure
 
@@ -258,7 +260,7 @@ The quarterly isolated PostgreSQL restore exercise proves the repository baselin
 
 ### `pnpm check` scope
 
-`pnpm check` now includes `pnpm agent-eval:check` immediately after documentation integrity. It still does not run identity validation, telemetry Compose validation, preview lifecycle, production readiness, a real provider reachability test, or release-record finalization. Those are documented separately.
+`pnpm check` includes `pnpm agent-eval:check` immediately after documentation integrity. It still does not run identity validation, telemetry Compose validation, preview lifecycle, production readiness, a real provider reachability test, or release-record finalization. Those are documented separately.
 
 ## Existing documentation disposition
 
@@ -302,7 +304,7 @@ Needed information:
 
 ### Organization-specific durable release-evidence retention
 
-The repository now creates validated release-record bundles and retains GitHub handoff copies for 90 days, but an adopting organization must still define:
+The repository creates validated release-record bundles and retains GitHub handoff copies for 90 days, but an adopting organization must still define:
 
 - durable evidence store and retention duration
 - export/ingestion automation and access policy
@@ -337,7 +339,7 @@ Needed information:
 
 ### Production model-provider composition
 
-SteadyStack supplies reusable optional AI boundaries but intentionally does not choose production composition. Needed information includes:
+SteadyStack supplies a generated optional AI reference profile but intentionally does not choose production composition. Needed information includes:
 
 - approved provider/model/region allowlist and credentials
 - application data-classification and retention policy
@@ -345,7 +347,7 @@ SteadyStack supplies reusable optional AI boundaries but intentionally does not 
 - tool allowlist and audit policy
 - prompt/application persistence policy
 - fallback and safety policy
-- durable-execution adapter when required
+- production durable-execution adapter when required
 - quality/latency/token/cost budgets and production monitoring
 
 ### Redis worker transport
@@ -394,7 +396,7 @@ The page set provides a direct path to:
 - make and validate a focused change
 - generate a domain, feature, contract, or job
 - understand synchronous and asynchronous architecture
-- understand and safely compose the current optional AI model/tool/stream/evaluation/durable/governance boundaries
+- select, inspect, and safely extend the generated optional AI reference profile and its model/tool/stream/evaluation/durable/governance boundaries
 - build and validate the preview environment
 - identify production replacement points
 - publish/promote immutable images and finalize production release evidence
