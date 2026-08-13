@@ -184,6 +184,72 @@ test('rejects unknown capabilities, missing repository paths, and ad hoc shell c
   });
 });
 
+test('rejects pnpm built-ins, shell chaining, pipes, and inline Node execution', async () => {
+  await withWorkspace(async (root) => {
+    const document = skillDocument({
+      body: [
+        '# Invalid execution',
+        '',
+        '```bash',
+        'pnpm exec node --version',
+        'pnpm exec sh -c "printf x | cat"',
+        'pnpm check && pnpm affected',
+        'node -e "console.log(1)"',
+        '```',
+      ].join('\n'),
+    });
+    const entry = await addSkill(root, { document });
+    await writeProvenance(root, [entry]);
+
+    const failures = await validateAgentSkills(root);
+    assert(
+      failures.some((failure) =>
+        failure.includes('unknown root package script: exec'),
+      ),
+    );
+    assert(
+      failures.some((failure) =>
+        failure.includes('shell control token is not allowed: |'),
+      ),
+    );
+    assert(
+      failures.some((failure) =>
+        failure.includes('shell control token is not allowed: &&'),
+      ),
+    );
+    assert(
+      failures.some((failure) =>
+        failure.includes('node command must use a tracked script entry point'),
+      ),
+    );
+  });
+});
+
+test('accepts reviewed root, Nx, and tracked Node commands', async () => {
+  await withWorkspace(async (root) => {
+    await mkdir(path.join(root, 'tools'), { recursive: true });
+    await writeFile(
+      path.join(root, 'tools', 'reviewed.mjs'),
+      'console.log("reviewed");\n',
+    );
+    const document = skillDocument({
+      body: [
+        '# Reviewed execution',
+        '',
+        '```bash',
+        'pnpm check',
+        'pnpm nx show projects',
+        'node tools/reviewed.mjs',
+        '```',
+      ].join('\n'),
+    });
+    const entry = await addSkill(root, { document });
+    await writeProvenance(root, [entry]);
+
+    assert.deepEqual(await validateAgentSkills(root), []);
+  });
+});
+
 test('requires reviewed immutable provenance for third-party scripts', async () => {
   await withWorkspace(async (root) => {
     const document = skillDocument({ origin: 'third-party' });
