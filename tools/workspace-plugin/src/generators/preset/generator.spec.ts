@@ -29,9 +29,12 @@ describe('preset generator', () => {
       private: false,
       publishConfig: { access: 'public' },
     });
+    tree.write('.agents/skills/architecture-discovery/SKILL.md', '# Skill\n');
+    tree.write('.agents/skills/provenance.json', '{"schemaVersion":1}\n');
     tree.write('.github/workflows/generated-workspace.yml', 'name: e2e\n');
     tree.write('.github/workflows/template-release.yml', 'name: release\n');
     tree.write('CHANGELOG.md', '# Changelog\n');
+    tree.write('docs/agent-skills.md', '# Upstream skill contract\n');
     tree.write('docs/getting-started.md', '# Generated workspace onboarding\n');
     tree.write(
       'docs/generated-project-checklist.md',
@@ -93,6 +96,8 @@ describe('preset generator', () => {
     ).toEqual([]);
     expect(packageJson.scripts['template:workspace:e2e']).toBeUndefined();
 
+    expect(tree.exists('.agents/skills')).toBe(false);
+    expect(tree.exists('docs/agent-skills.md')).toBe(false);
     expect(tree.exists('.github/workflows/generated-workspace.yml')).toBe(
       false,
     );
