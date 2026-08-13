@@ -4,7 +4,7 @@ SteadyStack uses the open Agent Skills format for detailed, progressively disclo
 
 ## Authority and precedence
 
-Skills are procedure packages, not policy or authorization. Use repository context in this order:
+Skills are procedure packages, not policy or authorization. When a portable skill registry is present, use repository context in this order:
 
 1. root and closest nested `AGENTS.md`;
 2. executable contracts, generated sources of truth, and project boundaries;
@@ -16,7 +16,7 @@ A skill cannot override an `AGENTS.md` rule, weaken validation, grant credential
 
 ## Canonical layout
 
-The repository-owned source is:
+The P15-01 upstream repository-owned source is:
 
 ```text
 .agents/skills/
@@ -30,6 +30,8 @@ The repository-owned source is:
 Do not maintain independent `.claude/skills`, `.codex/skills`, or editor-specific skill copies. Hosts that support the open format should discover the canonical project-level `.agents/skills/` tree directly. Vendor adapters, if one is ever required, must be generated from this source rather than edited independently.
 
 The upstream contract follows the [Agent Skills specification](https://agentskills.io/specification): each skill directory contains `SKILL.md` with YAML frontmatter and Markdown instructions. `name` and `description` are required by the open format; SteadyStack also requires an explicit license and repository metadata.
+
+P15-01 deliberately keeps this skill tree out of initialized products. The preset removes `.agents/skills` while retaining this contract document and the validator command; P15-02 owns explicitly distributing the validated skill set, adding release/upgrade skills, and proving maintained host discovery.
 
 ## Required SteadyStack metadata
 
@@ -117,7 +119,7 @@ pnpm check
 
 `pnpm agent-skills:check` validates metadata, canonical location, provenance hashes, third-party source policy, script review, conceptual tool capabilities, authority, referenced resources/repository paths, and reviewed commands.
 
-P15-01 validates the upstream repository skill set only. Initialized downstream workspaces without a generated skill registry skip this gate until P15-02 adds the portable skill set to generated workspaces.
+In the upstream template, the registry is mandatory and the complete skill set is validated. An initialized downstream workspace created during P15-01 has no `.agents/skills/provenance.json`, so the same command intentionally reports a skip. P15-02 will replace that skip with a generated portable skill set and explicit host-discovery verification.
 
 ## Changing or importing a skill
 
