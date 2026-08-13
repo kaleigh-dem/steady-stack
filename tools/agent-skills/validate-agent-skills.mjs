@@ -48,22 +48,6 @@ const SKIP_SCAN_DIRECTORIES = new Set([
   'node_modules',
   'test-output',
 ]);
-const ROOT_SCRIPT_BUILT_INS = new Set([
-  'add',
-  'approve-builds',
-  'audit',
-  'create',
-  'dlx',
-  'exec',
-  'install',
-  'list',
-  'outdated',
-  'pack',
-  'publish',
-  'remove',
-  'run',
-  'update',
-]);
 const NX_BUILT_INS = new Set([
   'affected',
   'daemon',
@@ -83,6 +67,17 @@ const NX_BUILT_INS = new Set([
   'sync',
   'sync:check',
 ]);
+const SHELL_CONTROL_TOKENS = [
+  '&&',
+  '||',
+  '$(',
+  '|',
+  ';',
+  '>',
+  '<',
+  '&',
+  '`',
+];
 const REPOSITORY_PATH_PREFIXES = [
   '.agents/',
   '.github/',
@@ -353,6 +348,15 @@ function shellWords(command) {
   return command.split(/\s+/).map((word) => word.replace(/^['"]|['";,]$/g, ''));
 }
 
+function validateShellCommandShape(command) {
+  for (const token of SHELL_CONTROL_TOKENS) {
+    if (command.includes(token)) {
+      return [`shell control token is not allowed: ${token}`];
+    }
+  }
+  return [];
+}
+
 function validatePnpmCommand(command, packageJson) {
   const words = shellWords(command);
   let index = 1;
@@ -369,9 +373,11 @@ function validatePnpmCommand(command, packageJson) {
     return [];
   }
 
-  if (ROOT_SCRIPT_BUILT_INS.has(action)) return [];
   if (!packageJson.scripts?.[action] && !/[<$[{]/.test(action)) {
     return [`unknown root package script: ${action}`];
+  }
+  if (!packageJson.scripts?.[action]) {
+    return [`root package script must be a literal reviewed name: ${action}`];
   }
   return [];
 }
@@ -379,8 +385,11 @@ function validatePnpmCommand(command, packageJson) {
 function validateNodeCommand(command, root) {
   const words = shellWords(command);
   const script = words.slice(1).find((word) => !word.startsWith('-'));
-  if (!script || script === '-' || script === '-e' || /[<$[{]/.test(script)) {
-    return [];
+  if (!script || script === '-' || script === '-e') {
+    return ['node command must use a tracked script entry point'];
+  }
+  if (/[<$[{]/.test(script)) {
+    return [`node script must be a literal tracked path: ${script}`];
   }
   const normalized = normalizePath(script.replace(/["';]$/g, ''));
   if (!/\.(?:c?js|mjs|ts)$/.test(normalized)) {
@@ -449,6 +458,13 @@ function validateSkillReferences({
       continue;
     }
     for (const command of commandLines(block.content)) {
+      const shapeFailures = validateShellCommandShape(command);
+      if (shapeFailures.length > 0) {
+        for (const failure of shapeFailures) {
+          failures.push(`${location}: ${failure} in \`${command}\``);
+        }
+        continue;
+      }
       const first = shellWords(command)[0];
       const commandFailures =
         first === 'pnpm'
