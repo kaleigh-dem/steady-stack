@@ -143,7 +143,9 @@ test('rejects vendor-specific skill locations and non-portable tool preapproval'
       failures.some((failure) => failure.includes('must live only under')),
     );
     assert(
-      failures.some((failure) => failure.includes('allowed-tools is not portable')),
+      failures.some((failure) =>
+        failure.includes('allowed-tools is not portable'),
+      ),
     );
   });
 });
@@ -167,10 +169,14 @@ test('rejects unknown capabilities, missing repository paths, and ad hoc shell c
 
     const failures = await validateAgentSkills(root);
     assert(
-      failures.some((failure) => failure.includes('unreviewed tool capability')),
+      failures.some((failure) =>
+        failure.includes('unreviewed tool capability'),
+      ),
     );
     assert(
-      failures.some((failure) => failure.includes('missing referenced repository path')),
+      failures.some((failure) =>
+        failure.includes('missing referenced repository path'),
+      ),
     );
     assert(
       failures.some((failure) => failure.includes('unsupported shell command')),
@@ -193,7 +199,9 @@ test('requires reviewed immutable provenance for third-party scripts', async () 
 
     const failures = await validateAgentSkills(root);
     assert(
-      failures.some((failure) => failure.includes('sourceRef must be immutable')),
+      failures.some((failure) =>
+        failure.includes('sourceRef must be immutable'),
+      ),
     );
     assert(
       failures.some((failure) => failure.includes('reviewedScripts=true')),
@@ -212,7 +220,9 @@ test('detects provenance drift after a skill changes', async () => {
 
     const failures = await validateAgentSkills(root);
     assert(
-      failures.some((failure) => failure.includes('contentSha256 does not match')),
+      failures.some((failure) =>
+        failure.includes('contentSha256 does not match'),
+      ),
     );
   });
 });
