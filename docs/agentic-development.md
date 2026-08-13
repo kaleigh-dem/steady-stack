@@ -10,7 +10,8 @@ The optional initialization setting `ai=true` records product intent to add AI-p
 
 | Surface                                                | Purpose                                                                         |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| Root and nested `AGENTS.md`                            | Layered instructions that become more specific near the code being changed.     |
+| Root and nested `AGENTS.md`                            | Concise always-on instructions that become more specific near changed code.     |
+| `.agents/skills`                                       | Portable progressively disclosed procedures for repeatable repository work.      |
 | Nx project graph and `project.json`                    | Machine-readable ownership, tags, targets, dependencies, and affected analysis. |
 | `.mcp.json`                                            | Starts the Nx MCP server for compatible agent clients.                          |
 | Local workspace generators                             | Deterministic creation of approved domains, features, jobs, and contracts.      |
@@ -20,18 +21,23 @@ The optional initialization setting `ai=true` records product intent to add AI-p
 | `workspace.template.json` and upgrade ownership policy | Provenance and safe evolution of generated projects.                            |
 | ADRs, runbooks, and environment contracts              | Durable design and operational context outside transient conversations.         |
 
+`AGENTS.md` remains policy and boundary guidance. Skills hold detailed repeatable procedures and load only when a task matches their description. The canonical repository source is `.agents/skills`; do not maintain vendor-specific duplicate skill trees. Skills never override repository rules, executable contracts, or human approval.
+
+See `docs/agent-skills.md` and ADR 0026 for the portable skill contract, provenance policy, and deterministic validation.
+
 ## Standard workflow
 
 1. Read the root `AGENTS.md` and the closest nested instruction files.
-2. Inspect the target project and graph:
+2. If the task matches a repository-owned skill under `.agents/skills`, load that `SKILL.md` on demand rather than copying its procedure into always-on context.
+3. Inspect the target project and graph:
 
    ```bash
    pnpm nx show project <PROJECT_NAME>
    pnpm graph
    ```
 
-3. Identify the source of truth for contracts, domain behavior, persistence, configuration, or application composition.
-4. Use the local generator when creating repeated structure:
+4. Identify the source of truth for contracts, domain behavior, persistence, configuration, or application composition.
+5. Use the local generator when creating repeated structure:
 
    ```bash
    pnpm generate:domain <DOMAIN_NAME>
@@ -40,9 +46,14 @@ The optional initialization setting `ai=true` records product intent to add AI-p
    pnpm generate:contract <CONTRACT_NAME>
    ```
 
-5. Make the smallest coherent change through public package entry points.
-6. Run focused targets and affected validation during iteration.
-7. Run the full repository contract before handoff:
+6. Make the smallest coherent change through public package entry points.
+7. Run focused targets and affected validation during iteration. Skill changes also run:
+
+   ```bash
+   pnpm agent-skills:check
+   ```
+
+8. Run the full repository contract before handoff:
 
    ```bash
    pnpm format
@@ -51,7 +62,7 @@ The optional initialization setting `ai=true` records product intent to add AI-p
    git status --short
    ```
 
-8. Provide a reviewable summary of behavior, projects, boundaries, migrations or generated files, validation, risks, and remaining human decisions.
+9. Provide a reviewable summary of behavior, projects, boundaries, migrations or generated files, validation, risks, and remaining human decisions.
 
 Compatible agent clients can use the checked-in MCP configuration, which runs:
 
@@ -59,7 +70,7 @@ Compatible agent clients can use the checked-in MCP configuration, which runs:
 pnpm nx mcp
 ```
 
-MCP is an additional discovery interface. It does not replace repository instructions, source-of-truth documents, or validation.
+MCP is an additional discovery interface. It does not replace repository instructions, skills, source-of-truth documents, or validation.
 
 ## Human approval boundaries
 
@@ -73,11 +84,15 @@ Agents can explore, generate, implement, test, document, draft migrations, and i
 - destructive production migrations;
 - environment promotion, deployment, rollback, and incident command.
 
+Skills do not alter these boundaries. Their required-tool metadata describes expected capabilities for discovery only; it does not grant tools, credentials, or approval authority.
+
 Do not give an agent long-lived production credentials merely to increase autonomy. Use least privilege, short-lived credentials, protected environments, required review, and auditable approval gates.
 
 ## Maintaining compatibility as the product grows
 
-- Keep root and nested `AGENTS.md` current and scoped.
+- Keep root and nested `AGENTS.md` current, concise, and limited to always-on rules.
+- Put detailed repeatable procedures in the canonical `.agents/skills` tree and validate them with `pnpm agent-skills:check`.
+- Do not maintain vendor-specific duplicate skill sources.
 - Add an ADR when architecture or dependency direction changes.
 - Extend local generators when a pattern will be repeated.
 - Keep public package APIs narrow and prohibit cross-project deep imports.
@@ -91,6 +106,8 @@ Do not give an agent long-lived production credentials merely to increase autono
 ## Anti-patterns
 
 - Treating nearby code or a prior chat as the only specification.
+- Copying a repository-owned skill into `.claude`, `.codex`, or another vendor directory and editing the copy independently.
+- Auto-downloading or executing unreviewed third-party skill scripts.
 - Asking agents to copy project directories manually.
 - Putting reusable product logic in routes, controllers, or process bootstrap files.
 - Duplicating request, response, or event types outside contract sources.
@@ -99,4 +116,4 @@ Do not give an agent long-lived production credentials merely to increase autono
 - Equating `ai=true` with development-time agent compatibility.
 - Equating agent-generated code with production approval.
 
-See `README.md`, `AGENTS.md`, `docs/architecture/overview.md`, `tools/workspace-plugin/README.md`, and the generated-project checklist for the concrete repository contracts.
+See `README.md`, `AGENTS.md`, `docs/agent-skills.md`, `docs/architecture/overview.md`, `tools/workspace-plugin/README.md`, and the generated-project checklist for the concrete repository contracts.
