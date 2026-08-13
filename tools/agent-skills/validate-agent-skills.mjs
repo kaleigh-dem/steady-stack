@@ -192,7 +192,10 @@ export function parseSkillDocument(content, location = 'SKILL.md') {
 
   return {
     frontmatter,
-    body: lines.slice(closing + 1).join('\n').trim(),
+    body: lines
+      .slice(closing + 1)
+      .join('\n')
+      .trim(),
   };
 }
 
@@ -219,7 +222,9 @@ function validateFrontmatter(skillName, document, location) {
 
   if (frontmatter.name) {
     if (frontmatter.name !== skillName) {
-      failures.push(`${location}: name must match parent directory ${skillName}`);
+      failures.push(
+        `${location}: name must match parent directory ${skillName}`,
+      );
     }
     if (
       frontmatter.name.length > 64 ||
@@ -230,13 +235,15 @@ function validateFrontmatter(skillName, document, location) {
   }
   if (
     frontmatter.description &&
-    (frontmatter.description.length < 1 || frontmatter.description.length > 1024)
+    (frontmatter.description.length < 1 ||
+      frontmatter.description.length > 1024)
   ) {
     failures.push(`${location}: description must be 1-1024 characters`);
   }
   if (
     frontmatter.compatibility &&
-    (frontmatter.compatibility.length < 1 || frontmatter.compatibility.length > 500)
+    (frontmatter.compatibility.length < 1 ||
+      frontmatter.compatibility.length > 500)
   ) {
     failures.push(`${location}: compatibility must be 1-500 characters`);
   }
@@ -343,9 +350,7 @@ function commandLines(content) {
 }
 
 function shellWords(command) {
-  return command
-    .split(/\s+/)
-    .map((word) => word.replace(/^['"]|['";,]$/g, ''));
+  return command.split(/\s+/).map((word) => word.replace(/^['"]|['";,]$/g, ''));
 }
 
 function validatePnpmCommand(command, packageJson) {
@@ -431,12 +436,16 @@ function validateSkillReferences({
     const candidate = match[1].trim().replace(/[.,;:]$/, '');
     if (!looksLikeRepositoryPath(candidate)) continue;
     if (!existsSync(path.join(root, candidate))) {
-      failures.push(`${location}: missing referenced repository path: ${candidate}`);
+      failures.push(
+        `${location}: missing referenced repository path: ${candidate}`,
+      );
     }
   }
 
   for (const block of extractFencedBlocks(body)) {
-    if (!['', 'bash', 'console', 'sh', 'shell', 'zsh'].includes(block.language)) {
+    if (
+      !['', 'bash', 'console', 'sh', 'shell', 'zsh'].includes(block.language)
+    ) {
       continue;
     }
     for (const command of commandLines(block.content)) {
@@ -470,7 +479,8 @@ async function listFilesRecursively(directory, root = directory) {
       files.push(...(await listFilesRecursively(absolute, root)));
       continue;
     }
-    if (entry.isFile()) files.push({ path: relative, absolute, symlink: false });
+    if (entry.isFile())
+      files.push({ path: relative, absolute, symlink: false });
   }
   return files;
 }
@@ -642,7 +652,10 @@ export async function validateAgentSkills(root) {
 
     let document;
     try {
-      document = parseSkillDocument(await readFile(skillPath, 'utf8'), location);
+      document = parseSkillDocument(
+        await readFile(skillPath, 'utf8'),
+        location,
+      );
     } catch (error) {
       failures.push(error instanceof Error ? error.message : String(error));
       continue;
