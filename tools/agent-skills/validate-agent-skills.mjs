@@ -67,17 +67,7 @@ const NX_BUILT_INS = new Set([
   'sync',
   'sync:check',
 ]);
-const SHELL_CONTROL_TOKENS = [
-  '&&',
-  '||',
-  '$(',
-  '|',
-  ';',
-  '>',
-  '<',
-  '&',
-  '`',
-];
+const SHELL_CONTROL_TOKENS = ['&&', '||', '$(', '|', ';', '&', '`'];
 const REPOSITORY_PATH_PREFIXES = [
   '.agents/',
   '.github/',
