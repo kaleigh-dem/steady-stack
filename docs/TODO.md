@@ -21,7 +21,7 @@ Phases 2–14 established the current foundation:
 - Phase 13 (P13-01–P13-07): image and dependency supply-chain evidence, immutable digest promotion, CI cancellation/caching/diagnostics, cache-input and affected-execution auditing, documentation integrity, release/rollback/recovery evidence, and dependency-vulnerability remediation
 - Phase 14 (P14-01–P14-07): a default-off optional AI profile with provider-neutral model interfaces, typed authorized tools and browser streaming, governed prompt/evaluation evidence, replaceable durable execution, safety/governance hooks, and deterministic generated reference-profile composition while the ordinary profile remains isolated from AI runtime dependencies
 
-Detailed completed-phase task lists are intentionally omitted. Relevant implementation evidence remains recorded in merged PRs #2–#80, `docs/adr/`, and Git history.
+Detailed completed-phase task lists are intentionally omitted. Relevant implementation evidence remains recorded in merged PRs #2–#81, `docs/adr/`, and Git history.
 
 ## Status conventions
 
@@ -43,13 +43,15 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 ## Execution order
 
 1. Phases 13 and 14 are completed baseline; ongoing dependency/security maintenance continues through the repository's normal security and issue workflows, and the default workspace profile remains free of AI runtime dependencies unless the optional AI profile is selected.
-2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 through P15-03 are planned.
+2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 is in progress, while P15-02 and P15-03 remain planned.
 
 ## Phase 15 — Portable agent ergonomics
 
 Goal: make repository-specific operating knowledge discoverable on demand across maintained coding-agent hosts while keeping `AGENTS.md`, executable repository contracts, human-facing wiki documentation, and human approval boundaries clearly separated and authoritative for their audiences.
 
-- [ ] **P15-01 Establish the portable Agent Skills contract.**
+Phase 15 progress record (2026-08-12): P15-01 is in progress. The upstream repository now defines `.agents/skills` as the canonical open Agent Skills source, adds repository-owned architecture-discovery and validation/debugging skills, records reviewed provenance/content hashes, and introduces deterministic metadata/reference/command/least-privilege validation through `pnpm agent-skills:check`. Generated-workspace installation and multi-host discovery remain P15-02 scope; P15-01 completion remains gated on applicable exact-head validation and review.
+
+- [-] **P15-01 Establish the portable Agent Skills contract.**
   - Keep root and nested `AGENTS.md` as concise always-on, agent-agnostic rules; use progressively disclosed skills for detailed repeatable procedures.
   - Use `.agents/skills` as the canonical repository-owned skill location and avoid maintaining vendor-specific duplicate skill sources.
   - Define deterministic validation for skill metadata, referenced files, repository commands, provenance, and least-privilege tool expectations.
