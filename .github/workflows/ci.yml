@@ -43,13 +43,6 @@ jobs:
       - run: pnpm nx sync:check
       - run: pnpm agent-eval:check
       - run: pnpm format:check
-      - name: Show portable skill formatting diff
-        if: failure()
-        run: |
-          pnpm exec prettier --write \
-            tools/agent-skills/validate-agent-skills.mjs \
-            tools/agent-skills/validate-agent-skills.spec.mjs
-          git diff -- tools/agent-skills
       - name: Check documentation integrity
         run: pnpm docs:check
       - name: Validate portable Agent Skills
