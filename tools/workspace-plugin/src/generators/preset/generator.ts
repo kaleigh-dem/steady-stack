@@ -7,9 +7,11 @@ import type { InitGeneratorSchema } from '../init/schema';
 import { formatGeneratorFiles } from '../shared';
 
 const templateMaintainerPaths = [
+  '.agents/skills',
   '.github/workflows/generated-workspace.yml',
   '.github/workflows/template-release.yml',
   'CHANGELOG.md',
+  'docs/agent-skills.md',
   'docs/template-releases.md',
   'docs/template-validation.md',
   'tools/template/fixtures',
