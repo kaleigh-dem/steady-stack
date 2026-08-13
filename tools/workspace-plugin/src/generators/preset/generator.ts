@@ -11,7 +11,6 @@ const templateMaintainerPaths = [
   '.github/workflows/generated-workspace.yml',
   '.github/workflows/template-release.yml',
   'CHANGELOG.md',
-  'docs/agent-skills.md',
   'docs/template-releases.md',
   'docs/template-validation.md',
   'tools/template/fixtures',
