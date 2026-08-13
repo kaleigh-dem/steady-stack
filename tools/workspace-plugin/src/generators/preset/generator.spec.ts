@@ -34,7 +34,7 @@ describe('preset generator', () => {
     tree.write('.github/workflows/generated-workspace.yml', 'name: e2e\n');
     tree.write('.github/workflows/template-release.yml', 'name: release\n');
     tree.write('CHANGELOG.md', '# Changelog\n');
-    tree.write('docs/agent-skills.md', '# Upstream skill contract\n');
+    tree.write('docs/agent-skills.md', '# Portable skill contract\n');
     tree.write('docs/getting-started.md', '# Generated workspace onboarding\n');
     tree.write(
       'docs/generated-project-checklist.md',
@@ -97,7 +97,7 @@ describe('preset generator', () => {
     expect(packageJson.scripts['template:workspace:e2e']).toBeUndefined();
 
     expect(tree.exists('.agents/skills')).toBe(false);
-    expect(tree.exists('docs/agent-skills.md')).toBe(false);
+    expect(tree.exists('docs/agent-skills.md')).toBe(true);
     expect(tree.exists('.github/workflows/generated-workspace.yml')).toBe(
       false,
     );
