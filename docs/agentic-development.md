@@ -4,14 +4,14 @@ This template is designed to become the foundation for many web applications tha
 
 Agentic compatibility is a repository property. It means a capable contributor with no prior conversation history can discover the rules, understand the project graph, create approved structure, receive fast feedback, and produce objective evidence for review. It does not mean the generated product includes an AI model provider or that agents receive autonomous production authority.
 
-The optional initialization setting `ai=true` records product intent to add AI-powered application features. It is separate from the agentic development model; every generated workspace retains the repository controls described here.
+The optional initialization setting `ai=true` records product intent to add AI-powered application features. It is separate from the agentic development model. Every generated workspace retains the established `AGENTS.md`, Nx/MCP, generator, boundary, and validation controls; P15-01 additionally establishes the portable Agent Skills contract in the upstream template, while P15-02 owns distributing that skill set to generated products.
 
 ## Repository control surfaces
 
 | Surface                                                | Purpose                                                                         |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------- |
 | Root and nested `AGENTS.md`                            | Concise always-on instructions that become more specific near changed code.     |
-| `.agents/skills`                                       | Portable progressively disclosed procedures for repeatable repository work.      |
+| `.agents/skills`                                       | Upstream canonical progressively disclosed procedures for repeatable work.      |
 | Nx project graph and `project.json`                    | Machine-readable ownership, tags, targets, dependencies, and affected analysis. |
 | `.mcp.json`                                            | Starts the Nx MCP server for compatible agent clients.                          |
 | Local workspace generators                             | Deterministic creation of approved domains, features, jobs, and contracts.      |
@@ -21,14 +21,14 @@ The optional initialization setting `ai=true` records product intent to add AI-p
 | `workspace.template.json` and upgrade ownership policy | Provenance and safe evolution of generated projects.                            |
 | ADRs, runbooks, and environment contracts              | Durable design and operational context outside transient conversations.         |
 
-`AGENTS.md` remains policy and boundary guidance. Skills hold detailed repeatable procedures and load only when a task matches their description. The canonical repository source is `.agents/skills`; do not maintain vendor-specific duplicate skill trees. Skills never override repository rules, executable contracts, or human approval.
+`AGENTS.md` remains policy and boundary guidance. When a workspace contains `.agents/skills/provenance.json`, skills hold detailed repeatable procedures and load only when a task matches their description. The canonical repository source is `.agents/skills`; do not maintain vendor-specific duplicate skill trees. Skills never override repository rules, executable contracts, or human approval.
 
-See `docs/agent-skills.md` and ADR 0026 for the portable skill contract, provenance policy, and deterministic validation.
+See `docs/agent-skills.md` and ADR 0026 for the portable skill contract, provenance policy, deterministic validation, and the P15-02 downstream-distribution boundary.
 
 ## Standard workflow
 
 1. Read the root `AGENTS.md` and the closest nested instruction files.
-2. If the task matches a repository-owned skill under `.agents/skills`, load that `SKILL.md` on demand rather than copying its procedure into always-on context.
+2. When `.agents/skills/provenance.json` exists and the task matches a repository-owned skill, load that `SKILL.md` on demand rather than copying its procedure into always-on context.
 3. Inspect the target project and graph:
 
    ```bash
@@ -70,7 +70,7 @@ Compatible agent clients can use the checked-in MCP configuration, which runs:
 pnpm nx mcp
 ```
 
-MCP is an additional discovery interface. It does not replace repository instructions, skills, source-of-truth documents, or validation.
+MCP is an additional discovery interface. It does not replace repository instructions, skills when present, source-of-truth documents, or validation.
 
 ## Human approval boundaries
 
@@ -91,7 +91,7 @@ Do not give an agent long-lived production credentials merely to increase autono
 ## Maintaining compatibility as the product grows
 
 - Keep root and nested `AGENTS.md` current, concise, and limited to always-on rules.
-- Put detailed repeatable procedures in the canonical `.agents/skills` tree and validate them with `pnpm agent-skills:check`.
+- When a portable skill registry is present, keep detailed repeatable procedures in the canonical `.agents/skills` tree and validate them with `pnpm agent-skills:check`.
 - Do not maintain vendor-specific duplicate skill sources.
 - Add an ADR when architecture or dependency direction changes.
 - Extend local generators when a pattern will be repeated.
@@ -106,7 +106,7 @@ Do not give an agent long-lived production credentials merely to increase autono
 ## Anti-patterns
 
 - Treating nearby code or a prior chat as the only specification.
-- Copying a repository-owned skill into `.claude`, `.codex`, or another vendor directory and editing the copy independently.
+- Copying a canonical skill into `.claude`, `.codex`, or another vendor directory and editing the copy independently.
 - Auto-downloading or executing unreviewed third-party skill scripts.
 - Asking agents to copy project directories manually.
 - Putting reusable product logic in routes, controllers, or process bootstrap files.
@@ -115,5 +115,7 @@ Do not give an agent long-lived production credentials merely to increase autono
 - Accepting an agent completion statement without reviewing the diff and command evidence.
 - Equating `ai=true` with development-time agent compatibility.
 - Equating agent-generated code with production approval.
+
+P15-01 defines and validates the upstream skill contract. The preset deliberately excludes `.agents/skills` from initialized products so P15-02 can make downstream inclusion, additional release/upgrade skills, and multi-host discovery an explicit maintained contract rather than an accidental template copy.
 
 See `README.md`, `AGENTS.md`, `docs/agent-skills.md`, `docs/architecture/overview.md`, `tools/workspace-plugin/README.md`, and the generated-project checklist for the concrete repository contracts.
