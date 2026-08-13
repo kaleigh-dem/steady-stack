@@ -43,15 +43,15 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 ## Execution order
 
 1. Phases 13 and 14 are completed baseline; ongoing dependency/security maintenance continues through the repository's normal security and issue workflows, and the default workspace profile remains free of AI runtime dependencies unless the optional AI profile is selected.
-2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 is in progress, while P15-02 and P15-03 remain planned.
+2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 is complete, while P15-02 and P15-03 remain planned.
 
 ## Phase 15 — Portable agent ergonomics
 
 Goal: make repository-specific operating knowledge discoverable on demand across maintained coding-agent hosts while keeping `AGENTS.md`, executable repository contracts, human-facing wiki documentation, and human approval boundaries clearly separated and authoritative for their audiences.
 
-Phase 15 progress record (2026-08-12): P15-01 is in progress. The upstream repository now defines `.agents/skills` as the canonical open Agent Skills source, adds repository-owned architecture-discovery and validation/debugging skills, records reviewed provenance/content hashes, and introduces deterministic metadata/reference/command/least-privilege validation through `pnpm agent-skills:check`. Generated-workspace installation and multi-host discovery remain P15-02 scope; P15-01 completion remains gated on applicable exact-head validation and review.
+Phase 15 progress record (2026-08-12): P15-01 is complete. The upstream repository defines `.agents/skills` as the canonical open Agent Skills source, provides repository-owned architecture-discovery and validation/debugging skills, records reviewed provenance and complete skill-tree hashes, and enforces deterministic metadata, reference, command, provenance, least-privilege capability, authority, third-party import, and script-review rules through `pnpm agent-skills:check` in the root contract and CI. The preset deliberately excludes the upstream skill tree from initialized products so downstream skill distribution and multi-host discovery remain explicit P15-02 work. Exact-head validation on `c6a1d0c8f5bd87e25800a37371fb2517909f339e` passed CI #1024, Security #845, Delivery #678, and Generated workspace #647.
 
-- [-] **P15-01 Establish the portable Agent Skills contract.**
+- [x] **P15-01 Establish the portable Agent Skills contract.**
   - Keep root and nested `AGENTS.md` as concise always-on, agent-agnostic rules; use progressively disclosed skills for detailed repeatable procedures.
   - Use `.agents/skills` as the canonical repository-owned skill location and avoid maintaining vendor-specific duplicate skill sources.
   - Define deterministic validation for skill metadata, referenced files, repository commands, provenance, and least-privilege tool expectations.
