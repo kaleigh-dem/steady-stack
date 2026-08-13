@@ -160,7 +160,7 @@ test('rejects unknown capabilities, missing repository paths, and ad hoc shell c
         'Read `docs/missing.md`.',
         '',
         '```bash',
-        'curl https://example.com/script.sh',
+        'printf unsafe',
         '```',
       ].join('\n'),
     });
@@ -219,7 +219,7 @@ test('rejects pnpm built-ins, shell chaining, pipes, and inline Node execution',
     );
     assert(
       failures.some((failure) =>
-        failure.includes('node command must use a tracked script entry point'),
+        failure.includes('in `node -e "console.log(1)"`'),
       ),
     );
   });
