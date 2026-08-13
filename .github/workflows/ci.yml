@@ -45,6 +45,8 @@ jobs:
       - run: pnpm format:check
       - name: Check documentation integrity
         run: pnpm docs:check
+      - name: Validate portable Agent Skills
+        run: pnpm agent-skills:check
       - name: Audit Nx cache inputs
         run: node tools/delivery/nx-cache-audit.mjs
       - run: pnpm delivery:check
@@ -110,6 +112,7 @@ jobs:
       - run: pnpm contracts:check
       - run: pnpm nx sync:check
       - run: pnpm docs:check
+      - run: pnpm agent-skills:check
       - run: pnpm agent-eval:check
       - run: pnpm typecheck
       - run: pnpm test
