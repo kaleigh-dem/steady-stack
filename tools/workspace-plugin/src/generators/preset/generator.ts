@@ -9,18 +9,15 @@ import { formatGeneratorFiles } from '../shared';
 const templateMaintainerPaths = [
   '.github/workflows/generated-workspace.yml',
   '.github/workflows/template-release.yml',
-  '.github/workflows/wiki-publish.yml',
   'CHANGELOG.md',
   'docs/template-releases.md',
   'docs/template-validation.md',
-  'docs/wiki-publication.md',
   'tools/template/fixtures',
   'tools/template/ai-profile-isolation-check.mjs',
   'tools/template/generated-ai-profile-e2e.mjs',
   'tools/template/generated-workspace-e2e.mjs',
   'tools/template/release.mjs',
   'tools/template/smoke-release-artifact.mjs',
-  'wiki',
 ] as const;
 
 const portableAgentContractPaths = [
