@@ -22,18 +22,24 @@ pnpm graph
 
 The repository exposes its operating rules through several complementary surfaces:
 
-| Surface                            | Purpose                                                                           |
-| ---------------------------------- | --------------------------------------------------------------------------------- |
-| `AGENTS.md`                        | Repository-wide instructions and subsystem-specific rules.                        |
-| `.mcp.json`                        | Starts the Nx MCP server so compatible agent clients can query workspace context. |
-| `project.json` and Nx graph        | Project ownership, tags, targets, dependencies, and affected analysis.            |
-| `src/index.ts` public entry points | Supported cross-project APIs.                                                     |
-| `docs/adr`                         | Durable reasons for architectural decisions.                                      |
-| Root `package.json` scripts        | Stable, copyable development and validation commands.                             |
-| `workspace.template.json`          | Generated repository identity, profile choices, provenance, and upgrade metadata. |
-| Local generators                   | Approved write paths for repeated architectural structures.                       |
+| Surface                            | Purpose                                                                                                     |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md`                        | Repository-wide instructions and subsystem-specific rules.                                                  |
+| `.agents/skills/<name>/SKILL.md`   | Canonical progressively disclosed repository procedures loaded only when relevant.                          |
+| `.agents/skills/provenance.json`   | Reviewed skill origin, license, script-review state, and complete-tree content hashes.                      |
+| `.mcp.json`                        | Starts the Nx MCP server so compatible agent clients can query workspace context.                           |
+| `project.json` and Nx graph        | Project ownership, tags, targets, dependencies, and affected analysis.                                      |
+| `src/index.ts` public entry points | Supported cross-project APIs.                                                                               |
+| `docs/adr`                         | Durable reasons for architectural decisions.                                                                |
+| Root `package.json` scripts        | Stable, copyable development and validation commands, including `pnpm agent-skills:check` in the root gate. |
+| `workspace.template.json`          | Generated repository identity, profile choices, provenance, and upgrade metadata.                           |
+| Local generators                   | Approved write paths for repeated architectural structures.                                                 |
 
-An agent should combine these sources rather than treating any single README, folder tree, or prior conversation as complete context.
+Authority remains explicit. Root and closest nested `AGENTS.md` come first, followed by executable repository contracts and generated sources of truth, then applicable ADRs and `docs/TODO.md`. A relevant `.agents/skills` procedure can supplement those sources but cannot override them, weaken validation, grant credentials or production authority, approve an architecture exception, or bypass a human approval gate.
+
+P15-01 establishes `.agents/skills` only in the upstream SteadyStack repository. Initialized products intentionally do not receive the skill tree yet; `pnpm agent-skills:check` skips the absent downstream registry during this phase. P15-02 owns distributing the validated portable skill set into generated workspaces and proving discovery across maintained agent hosts.
+
+An agent should combine these sources rather than treating any single README, folder tree, skill, or prior conversation as complete context.
 
 ## Deployable applications
 
@@ -102,14 +108,15 @@ Use the root scripts rather than copying structures manually.
 
 ## Documentation and decisions
 
-- `AGENTS.md` at the root defines repository-wide development rules.
-- Nested `AGENTS.md` files add subsystem-specific instructions.
+- `AGENTS.md` at the root defines repository-wide development rules; nested `AGENTS.md` files add subsystem-specific instructions.
+- `.agents/skills/<name>/SKILL.md` is the upstream canonical progressively disclosed procedure layer, with `.agents/skills/provenance.json` providing reviewed origin and complete-tree integrity records.
+- `docs/agent-skills.md` and ADR 0026 define the Agent Skills metadata, authority, provenance, command, and P15-01/P15-02 rollout boundary.
 - `docs/adr` contains architectural decision records.
 - `docs/TODO.md` is the upstream template roadmap, primarily relevant to template maintainers.
 - `docs/runbooks` contains release rollback, disaster recovery, and degraded-dependency procedures.
 - `docs/security` contains threat-model and identity operations guidance.
 
-Generated application teams should distinguish upstream roadmap processes from their own product backlog.
+Generated application teams should distinguish upstream roadmap processes from their own product backlog. During P15-01, they should also expect initialized products to lack `.agents/skills`; P15-02 is the planned generation and multi-host discovery step.
 
 ## Architectural tags
 
