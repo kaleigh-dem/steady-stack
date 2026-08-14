@@ -131,9 +131,9 @@ describe('preset generator', () => {
       tree.read('tools/agent-skills/validate-agent-skills.mjs', 'utf-8'),
     ).toBe(validatorContent);
     expect(tree.exists('docs/agent-skills.md')).toBe(true);
-    expect(
-      tree.read('docs/adr/0026-portable-agent-skills.md', 'utf-8'),
-    ).toBe('# ADR\nSteadyStack kaleigh-dem/steady-stack\n');
+    expect(tree.read('docs/adr/0026-portable-agent-skills.md', 'utf-8')).toBe(
+      '# ADR\nSteadyStack kaleigh-dem/steady-stack\n',
+    );
     expect(tree.exists('.github/workflows/generated-workspace.yml')).toBe(
       false,
     );
