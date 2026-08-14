@@ -32,12 +32,14 @@ Root and nested `AGENTS.md` remain the always-on, agent-agnostic policy layer. D
 
 The repository keeps one canonical skill source. Do not maintain separate `.claude/skills`, `.codex/skills`, or editor-specific copies. Each skill declares reviewed provenance, conceptual least-privilege tool expectations, and `authority: none`; those declarations do not grant tools or production authority.
 
-P15-01 establishes two upstream skills:
+Phase 15 maintains four portable skills in both the upstream template and initialized workspaces:
 
-- `architecture-discovery` for project ownership, dependency direction, instructions, and source-of-truth discovery;
-- `validation-debugging` for reviewed validation commands and failure diagnosis without weakening checks.
+- `architecture-discovery` for project ownership, dependency direction, instructions, source-of-truth discovery, Nx MCP/project-graph context, and installed Next.js documentation;
+- `validation-debugging` for reviewed validation commands and failure diagnosis without weakening checks;
+- `release-evidence` for exact-identity release evidence inspection and deterministic bundle validation without deployment authority;
+- `downstream-upgrades` for dry-run-first, ownership-aware template migrations using the reviewed local upgrade contract.
 
-`pnpm agent-skills:check` validates canonical location, metadata, provenance/content hashes, referenced resources and repository paths, reviewed commands, third-party import rules, and authority/tool declarations. P15-02 owns generating the skill set into downstream workspaces and proving discovery across maintained agent hosts.
+`pnpm agent-skills:check` validates canonical location, metadata, provenance/content hashes, referenced resources and repository paths, reviewed commands, third-party import rules, authority/tool declarations, and the maintained-host discovery contract. P15-02 generates the same reviewed skill set into downstream workspaces and records immutable evidence that GitHub Copilot and OpenAI Codex recognize the same project-level `.agents/skills` root.
 
 ## Standard agent workflow
 
@@ -170,7 +172,7 @@ As the product grows:
 10. Keep secrets and production authority outside agent-readable source files.
 11. Upgrade the template regularly and commit upgrades separately from product work.
 
-P15-01 defines the upstream skill contract. P15-02 will carry the validated skill set into generated workspaces; until then, ordinary generated products retain their existing `AGENTS.md`, Nx/MCP, generator, and validation controls without a generated `.agents/skills` registry.
+P15-01 defines the validated skill contract, and P15-02 carries that same reviewed contract into generated workspaces. Generated products contain the canonical `.agents/skills` registry, the release/upgrade procedures, and the same deterministic host-discovery validation used by the upstream template.
 
 ## Common anti-patterns
 
