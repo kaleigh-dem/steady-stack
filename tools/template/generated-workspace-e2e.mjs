@@ -186,16 +186,13 @@ async function assertGeneratedContract(workspace, expectedVersion) {
   const removedPaths = [
     '.github/workflows/generated-workspace.yml',
     '.github/workflows/template-release.yml',
-    '.github/workflows/wiki-publish.yml',
     'CHANGELOG.md',
     'docs/getting-started.md',
     'docs/template-releases.md',
     'docs/template-validation.md',
-    'docs/wiki-publication.md',
     'tools/template/generated-workspace-e2e.mjs',
     'tools/template/release.mjs',
     'tools/template/smoke-release-artifact.mjs',
-    'wiki',
   ];
   for (const relativePath of removedPaths) {
     await assert.rejects(
