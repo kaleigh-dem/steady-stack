@@ -10,7 +10,10 @@ const CONTRACT_PATH = 'tools/agent-skills/host-discovery.json';
 const IMMUTABLE_GIT_REF = /^[a-f0-9]{40}$/;
 
 function normalizePath(value) {
-  return value.replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/$/, '');
+  return value
+    .replaceAll('\\', '/')
+    .replace(/^\.\//, '')
+    .replace(/\/$/, '');
 }
 
 async function readJson(filePath) {
@@ -64,7 +67,9 @@ export async function validateHostDiscovery(root) {
     );
   }
   if (!Array.isArray(contract.hosts) || contract.hosts.length < 2) {
-    failures.push(`${CONTRACT_PATH}: at least two maintained hosts are required`);
+    failures.push(
+      `${CONTRACT_PATH}: at least two maintained hosts are required`,
+    );
   }
   if (!Array.isArray(provenance.skills)) {
     failures.push(`${PROVENANCE_PATH}: skills must be an array`);
@@ -130,7 +135,9 @@ export async function validateHostDiscovery(root) {
   }
 
   for (const host of contract.hosts ?? []) {
-    if (normalizePath(host?.projectSkillRoot ?? '') !== CANONICAL_ROOT) continue;
+    if (normalizePath(host?.projectSkillRoot ?? '') !== CANONICAL_ROOT) {
+      continue;
+    }
     const discovered = await discoverSkillNames(root, host.projectSkillRoot);
     if (discovered.join('\0') !== expectedSkills.join('\0')) {
       failures.push(
@@ -152,8 +159,9 @@ async function main() {
   }
   const contract = await readJson(path.join(root, CONTRACT_PATH));
   const skills = await discoverSkillNames(root, CANONICAL_ROOT);
+  const hostNames = contract.hosts.map((host) => host.id).join(', ');
   process.stdout.write(
-    `Portable Agent Skills host discovery passed for ${contract.hosts.map((host) => host.id).join(', ')} with ${skills.length} canonical skill(s).\n`,
+    `Portable Agent Skills host discovery passed for ${hostNames} with ${skills.length} canonical skill(s).\n`,
   );
 }
 

@@ -7,7 +7,7 @@ import { upstreamTemplateRepository } from '../../upstream-template';
 import presetGenerator from './generator';
 
 describe('preset generator', () => {
-  it('records template provenance, preserves portable skills, and removes maintainer-only tooling', async () => {
+  it('preserves portable skills and removes maintainer-only tooling', async () => {
     const tree = createTreeWithEmptyWorkspace();
     writeJson(tree, 'package.json', {
       name: '@steadystack/source',
@@ -50,7 +50,10 @@ describe('preset generator', () => {
       skillContent,
     );
     tree.write('.agents/skills/provenance.json', provenanceContent);
-    tree.write('tools/agent-skills/validate-agent-skills.mjs', validatorContent);
+    tree.write(
+      'tools/agent-skills/validate-agent-skills.mjs',
+      validatorContent,
+    );
     tree.write('.github/workflows/generated-workspace.yml', 'name: e2e\n');
     tree.write('.github/workflows/template-release.yml', 'name: release\n');
     tree.write('CHANGELOG.md', '# Changelog\n');

@@ -31,7 +31,7 @@ The canonical project-level source is generated into both the upstream template 
     └── SKILL.md
 ```
 
-Do not maintain independent `.claude/skills`, `.codex/skills`, `.github/skills`, or editor-specific skill copies. Maintained hosts that support the open project format discover `.agents/skills/` directly. Vendor adapters, if ever required, must be generated from this source rather than edited independently.
+Do not maintain independent vendor-specific project skill directories for Claude, Codex, Copilot, or editors. Maintained hosts that support the open project format discover `.agents/skills/` directly. Vendor adapters, if ever required, must be generated from this source rather than edited independently.
 
 The contract follows the open Agent Skills `SKILL.md` format. Each skill directory contains `SKILL.md` with YAML frontmatter and Markdown instructions. `name` and `description` are required by the open format; SteadyStack additionally requires an explicit license and repository metadata.
 

@@ -26,7 +26,7 @@ Root and nested `AGENTS.md` remain concise, always-on, agent-agnostic rules. Ski
 
 ### Canonical location and format
 
-`.agents/skills/<name>/SKILL.md` remains the only repository-owned skill source. Independent `.claude/skills`, `.codex/skills`, `.github/skills`, or editor-specific copies are rejected as alternate sources of truth.
+`.agents/skills/<name>/SKILL.md` remains the only repository-owned skill source. Independent vendor-specific project skill directories for Claude, Codex, Copilot, or editors are rejected as alternate sources of truth.
 
 Each skill follows the open Agent Skills frontmatter contract and additionally requires:
 
