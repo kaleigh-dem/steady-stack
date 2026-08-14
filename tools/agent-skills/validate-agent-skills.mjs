@@ -66,17 +66,7 @@ const NX_BUILT_INS = new Set([
   'sync',
   'sync:check',
 ]);
-const SHELL_CONTROL_TOKENS = [
-  '&&',
-  '||',
-  '$(',
-  '|',
-  ';',
-  '&',
-  '`',
-  '>',
-  '<',
-];
+const SHELL_CONTROL_TOKENS = ['&&', '||', '$(', '|', ';', '&', '`', '>', '<'];
 const COMMAND_PLACEHOLDER_PATTERN = /<[A-Z][A-Z0-9_-]*>/g;
 const REPOSITORY_PATH_PREFIXES = [
   '.agents/',
