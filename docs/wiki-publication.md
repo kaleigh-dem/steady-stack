@@ -1,6 +1,8 @@
 # Publishing the reviewed GitHub Wiki source
 
-The authoritative, reviewable wiki source lives under `wiki/` in the main repository. The rendered GitHub Wiki is stored in the separate hidden Git repository at `steady-stack.wiki.git`, which does not support the normal pull-request review flow.
+The reviewed `wiki/` tree is the source for SteadyStack's primary human-facing documentation. Product evaluation, onboarding, operator guidance, production-readiness explanation, releases/upgrades, and other human-first documentation belong there rather than in competing repository manuals.
+
+The rendered GitHub Wiki is stored in the separate hidden Git repository at `steady-stack.wiki.git`, which does not support the normal pull-request review flow. For that reason, edits are reviewed in the main repository and published only after they reach `main`.
 
 ## Automated publication
 
@@ -16,6 +18,17 @@ The authoritative, reviewable wiki source lives under `wiki/` in the main reposi
 8. displays the changed page list and pushes only when the rendered wiki differs.
 
 The workflow may also be run manually with **Publish reviewed wiki** in GitHub Actions.
+
+## Documentation ownership
+
+P15-03 separates audiences instead of duplicating prose:
+
+- `wiki/*.md` is the reviewed primary human-facing surface;
+- root `README.md` is the repository landing exception and routes readers to the Wiki;
+- root and `docs/` Markdown remains only when it has an implementation, automation, governance, review, generated-evidence, executable-runbook, release, security, compatibility, or agent/machine reason to live beside the code;
+- `docs/TODO.md` remains the roadmap/control-plane exception.
+
+`pnpm docs:check` enforces this inventory through the documentation-surface ownership suite. A new human guide belongs under `wiki/`; a new root or `docs/` Markdown document must declare a repository-control reason in the gate.
 
 ## Review a page deletion
 

@@ -6,7 +6,7 @@ This file tracks active work required to evolve the repository as a reusable, up
 
 ## Completed baseline
 
-Phases 2–14 established the current foundation:
+Phases 2–15 established the current foundation:
 
 - Nx workspace migration and enforceable project boundaries
 - architecture-aware domain, feature, job, and contract generators
@@ -20,8 +20,9 @@ Phases 2–14 established the current foundation:
 - security verification for token expiry, issuer and audience mismatch, signing-key rotation, permission denial, and rate-limit behavior
 - Phase 13 (P13-01–P13-07): image and dependency supply-chain evidence, immutable digest promotion, CI cancellation/caching/diagnostics, cache-input and affected-execution auditing, documentation integrity, release/rollback/recovery evidence, and dependency-vulnerability remediation
 - Phase 14 (P14-01–P14-07): a default-off optional AI profile with provider-neutral model interfaces, typed authorized tools and browser streaming, governed prompt/evaluation evidence, replaceable durable execution, safety/governance hooks, and deterministic generated reference-profile composition while the ordinary profile remains isolated from AI runtime dependencies
+- Phase 15 (P15-01–P15-03): portable repository-owned Agent Skills with reviewed provenance and maintained-host discovery, generated-workspace distribution with version-matched framework context, and an enforced documentation ownership split in which the published Wiki is the primary human-facing surface while repository Markdown is limited to explicit implementation, automation, governance, agent, evidence, runbook, review, and roadmap control purposes
 
-Detailed completed-phase task lists are intentionally omitted. Relevant implementation evidence remains recorded in merged PRs #2–#81, `docs/adr/`, and Git history.
+Detailed completed-phase task lists are intentionally omitted. Relevant implementation evidence remains recorded in merged pull requests, `docs/adr/`, and Git history.
 
 ## Status conventions
 
@@ -42,37 +43,18 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 
 ## Execution order
 
-1. Phases 13 and 14 are completed baseline; ongoing dependency/security maintenance continues through the repository's normal security and issue workflows, and the default workspace profile remains free of AI runtime dependencies unless the optional AI profile is selected.
-2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 and P15-02 are complete, with P15-03 remaining as the active roadmap task.
+1. Phases 13–15 are completed baseline. Ongoing dependency, security, release, and documentation maintenance continues through the repository's normal workflows.
+2. No roadmap implementation task follows P15-03 yet. Start future feature work under a new stable task ID and phase rather than extending a completed Phase 15 task.
 
-## Phase 15 — Portable agent ergonomics
+## Phase 15 completion record
 
-Goal: make repository-specific operating knowledge discoverable on demand across maintained coding-agent hosts while keeping `AGENTS.md`, executable repository contracts, human-facing wiki documentation, and human approval boundaries clearly separated and authoritative for their audiences.
+Phase 15 is complete as of 2026-08-14.
 
-Phase 15 progress record (2026-08-14): P15-01 established the canonical `.agents/skills` contract, deterministic provenance/authority/command validation, and the initial architecture-discovery and validation/debugging procedures. P15-02 generates that reviewed contract into initialized products, adds release-evidence and downstream-upgrade procedures, preserves exact skill/provenance bytes through product-identity initialization, and makes `pnpm agent-skills:check` verify an offline maintained-host discovery contract. The host proof pins immutable GitHub Copilot and OpenAI Codex source evidence showing both recognize the same project-level `.agents/skills` root, without generating vendor-specific copies. Architecture discovery now prefers Nx MCP/project-graph context and the Next.js documentation shipped with the installed package over copied framework prose. Human approval and production authority remain unchanged.
+- P15-01 established `.agents/skills` as the canonical progressively disclosed procedure source, with deterministic metadata, command, provenance, capability, authority, third-party import, and script-review validation.
+- P15-02 generates the reviewed skill set into initialized products, adds release-evidence and downstream-upgrade procedures, preserves exact skill/provenance bytes through product identity initialization, verifies maintained-host discovery against the same project-level skill root, and prefers installed Nx/Next.js context over copied framework prose.
+- P15-03 establishes the reviewed `wiki/` source and published GitHub Wiki as the primary human-facing product, operator, onboarding, and explanatory documentation. The root `README.md` is a routing landing page; `docs/TODO.md` remains the roadmap exception; repository-resident Markdown is classified as an implementation, automation, governance, agent, evidence, runbook, review, or control surface. The documentation-integrity gate inventories root Markdown, `docs/`, and `wiki/`, rejects unclassified repository prose and restored onboarding duplication, and prevents README from becoming a second human manual.
 
-- [x] **P15-01 Establish the portable Agent Skills contract.**
-  - Keep root and nested `AGENTS.md` as concise always-on, agent-agnostic rules; use progressively disclosed skills for detailed repeatable procedures.
-  - Use `.agents/skills` as the canonical repository-owned skill location and avoid maintaining vendor-specific duplicate skill sources.
-  - Define deterministic validation for skill metadata, referenced files, repository commands, provenance, and least-privilege tool expectations.
-  - Add initial repository-owned skills for architecture discovery and validation/debugging using only reviewed repository commands.
-  - Require review and provenance for imported third-party skills; never auto-install unreviewed scripts.
-
-- [x] **P15-02 Generate and verify portable agent skills.**
-  - Add maintained skills for release evidence and downstream upgrades after the core skill contract is proven.
-  - Include the validated portable skill set in generated workspaces without requiring a specific commercial coding-agent product.
-  - Prefer framework-provided, version-matched documentation and diagnostics, including Next.js packaged agent guidance and Nx MCP/project-graph context, over copied framework prose.
-  - Demonstrate that at least two maintained agent hosts can discover the same repository rules and task procedures.
-  - Preserve all existing human approval boundaries; no skill may grant production authority, credentials, or an alternate path around repository checks.
-
-- [ ] **P15-03 Separate human and agent documentation surfaces.**
-  - Establish the published GitHub Wiki, sourced from reviewed `wiki/` files, as the primary home for human-facing product, operator, onboarding, and explanatory documentation.
-  - Keep repository-resident documentation focused on agent/machine-facing source-of-truth material needed for implementation, validation, governance, and review, including `AGENTS.md`, ADRs, contracts, generated evidence, and executable runbooks.
-  - Keep the root `README.md` as the human landing page for the repository site, routing people to the Wiki and contributors/agents to the appropriate repository control surfaces; retain `docs/TODO.md` as the roadmap/control-plane exception unless a later migration explicitly replaces it.
-  - Inventory root Markdown, `docs/`, and `wiki/`; classify each document by audience and authority, migrate or cull duplicated human-facing prose from repository documentation, and preserve only repository copies that have an implementation, automation, governance, or review reason to live beside the code.
-  - Extend documentation-integrity checks so links and ownership rules prevent the Wiki and repository documentation from silently becoming competing sources of truth.
-
-Exit criteria: portable agent procedures are validated and generated without vendor lock-in, at least two maintained agent hosts can discover the same repository rules and procedures, framework guidance is tied to installed versions rather than stale copied prose, human-facing documentation has one clear Wiki home with only explicit repository exceptions, agent/machine-facing guidance remains versioned beside the code, and no skill or documentation path weakens existing human approval gates.
+The Phase 15 documentation and Agent Skills changes do not grant production authority, credentials, approval power, or an alternate path around repository checks. Human approval boundaries remain unchanged.
 
 ## Definition of done for roadmap tasks
 
