@@ -50,34 +50,34 @@ Naming uses title case for page headings and hyphenated GitHub Wiki filenames. C
 
 ## Coverage matrix
 
-| Requirement/source area                                                   | Wiki coverage                       |
-| ------------------------------------------------------------------------- | ----------------------------------- |
-| Platform description, audience, included/not included                     | Home                                |
-| Agentic development thesis, workflow, guardrails, and approval boundaries | Agentic Development Model           |
-| Portable Agent Skills contract, provenance, authority, validation, rollout| Home, Repository Tour, Troubleshooting |
-| Tool versions and local startup                                           | Quick Start                         |
-| Initialization options and compatibility                                  | Choosing Workspace Profiles         |
-| Apps, packages, infrastructure, tooling, docs                             | Repository Tour                     |
-| Common Nx workflows                                                       | Everyday Development                |
-| Domain/feature/job/contract generators                                    | Code Generation                     |
-| Monorepo, request/data/worker flows, boundaries                           | Architecture                        |
-| Optional AI boundaries plus generated AI-profile reference composition    | Optional AI Runtime                 |
-| Development, none, OIDC, session, claims, outage                          | Authentication and Authorization    |
-| PostgreSQL, migrations, seed, reset, backups                              | Database and Data Management        |
-| Outbox, leasing, retries, replay, metrics, drain                          | Worker and Background Jobs          |
-| `pnpm check`, focused commands, budgets, clean tree                       | Validation and Testing              |
-| AI evaluation gate and focused model/tool/eval/durable/governance checks  | Validation and Testing              |
-| Documentation-integrity commands, upstream-only audit scope, graph checks | Validation and Testing              |
-| Documentation-integrity failure artifact and graph remediation            | CI Diagnostics                      |
-| Cancellation, failure artifacts, traces, logs, cache fallback             | CI Diagnostics                      |
-| Images, preview, smoke, performance, cleanup                              | Containers and Preview Environments |
-| Repository controls, environments, permissions, retention                 | Repository and GitHub Setup         |
-| SBOMs, Trivy, policy, signatures, attestations, digests                   | Image Supply Chain                  |
-| Governance, secrets, identity, data, operations, evidence                 | Production Readiness                |
-| Release promotion, finalization, recovery evidence, upgrade walkthrough   | Releases and Upgrades               |
-| Symptom-based diagnostics                                                 | Troubleshooting                     |
-| Audit, discrepancies, verified commands, gaps                             | Documentation Audit                 |
-| Planned Wiki-first documentation ownership and repository exceptions      | Documentation Audit                 |
+| Requirement/source area                                                    | Wiki coverage                          |
+| -------------------------------------------------------------------------- | -------------------------------------- |
+| Platform description, audience, included/not included                      | Home                                   |
+| Agentic development thesis, workflow, guardrails, and approval boundaries  | Agentic Development Model              |
+| Portable Agent Skills contract, provenance, authority, validation, rollout | Home, Repository Tour, Troubleshooting |
+| Tool versions and local startup                                            | Quick Start                            |
+| Initialization options and compatibility                                   | Choosing Workspace Profiles            |
+| Apps, packages, infrastructure, tooling, docs                              | Repository Tour                        |
+| Common Nx workflows                                                        | Everyday Development                   |
+| Domain/feature/job/contract generators                                     | Code Generation                        |
+| Monorepo, request/data/worker flows, boundaries                            | Architecture                           |
+| Optional AI boundaries plus generated AI-profile reference composition     | Optional AI Runtime                    |
+| Development, none, OIDC, session, claims, outage                           | Authentication and Authorization       |
+| PostgreSQL, migrations, seed, reset, backups                               | Database and Data Management           |
+| Outbox, leasing, retries, replay, metrics, drain                           | Worker and Background Jobs             |
+| `pnpm check`, focused commands, budgets, clean tree                        | Validation and Testing                 |
+| AI evaluation gate and focused model/tool/eval/durable/governance checks   | Validation and Testing                 |
+| Documentation-integrity commands, upstream-only audit scope, graph checks  | Validation and Testing                 |
+| Documentation-integrity failure artifact and graph remediation             | CI Diagnostics                         |
+| Cancellation, failure artifacts, traces, logs, cache fallback              | CI Diagnostics                         |
+| Images, preview, smoke, performance, cleanup                               | Containers and Preview Environments    |
+| Repository controls, environments, permissions, retention                  | Repository and GitHub Setup            |
+| SBOMs, Trivy, policy, signatures, attestations, digests                    | Image Supply Chain                     |
+| Governance, secrets, identity, data, operations, evidence                  | Production Readiness                   |
+| Release promotion, finalization, recovery evidence, upgrade walkthrough    | Releases and Upgrades                  |
+| Symptom-based diagnostics                                                  | Troubleshooting                        |
+| Audit, discrepancies, verified commands, gaps                              | Documentation Audit                    |
+| Planned Wiki-first documentation ownership and repository exceptions       | Documentation Audit                    |
 
 ## Verified commands
 
@@ -301,29 +301,29 @@ The Agent Skills gate therefore runs after documentation integrity and before th
 
 ## Existing documentation disposition
 
-| Existing content                      | Disposition                                                                                                              |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Root README                           | Human landing page routing readers to the Wiki and contributors/agents to repository controls.                           |
-| `docs/agentic-development.md`         | Repository-local source for agent workflow, control surfaces, approval boundaries, and anti-patterns.                    |
-| `docs/agent-skills.md`                | Repository-local P15-01 source for the portable skill layout, metadata, provenance, authority, validation, and rollout boundary. |
-| `docs/adr/0026-portable-agent-skills.md` | Accepted architectural decision for the canonical skill source, authority precedence, provenance, and P15-02 boundary. |
-| `docs/getting-started.md`             | Expanded for agent-ready onboarding and merged into Quick Start, Profiles, Production Readiness.                         |
-| `docs/template-initialization.md`     | Merged into Profiles and Releases/Upgrades.                                                                              |
-| `docs/model-interfaces.md`            | End-user model boundary summarized in Optional AI Runtime.                                                               |
-| `docs/typed-tools-and-streaming.md`   | Typed tool authorization and V1 transport summarized in Optional AI Runtime and Architecture.                            |
-| `docs/prompt-evaluation-lifecycle.md` | Prompt/evaluation lifecycle summarized in Optional AI Runtime and Validation/Testing.                                    |
-| `docs/delivery/release-records.md`    | Release finalization and baseline restore evidence merged into Releases/Upgrades, Production Readiness, Troubleshooting. |
-| `docs/steadystack-migration.md`       | Retained as maintainer-only historical identity and compatibility evidence; no separate end-user wiki page.              |
-| Architecture docs and ADR summaries   | Reorganized into Repository Tour, Architecture, and Optional AI Runtime.                                                 |
-| Auth docs                             | Merged into Authentication and Authorization, with local/production separation.                                          |
-| Database docs                         | Expanded into task-based database page.                                                                                  |
-| Worker docs                           | Merged into operations-focused worker page.                                                                              |
-| Delivery docs                         | Merged into Containers/Preview, Image Supply Chain, Repository/GitHub Setup, Releases, and Production Readiness.         |
-| Generated project checklist           | Expanded with agent-readiness governance and reorganized into launch checklist with automated/human distinction.         |
-| Workspace plugin README               | Reframed as the deterministic structural write API for humans and coding agents.                                         |
-| Template release/upgrade docs         | Split by generated-workspace user tasks; maintainer procedures labeled.                                                  |
-| Runbooks                              | Summarized and linked conceptually from Production Readiness and Troubleshooting.                                        |
-| Existing first wiki page              | Replaced by the authored Home source; its exact remote content could not be retrieved through the contents API.          |
+| Existing content                         | Disposition                                                                                                                      |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Root README                              | Human landing page routing readers to the Wiki and contributors/agents to repository controls.                                   |
+| `docs/agentic-development.md`            | Repository-local source for agent workflow, control surfaces, approval boundaries, and anti-patterns.                            |
+| `docs/agent-skills.md`                   | Repository-local P15-01 source for the portable skill layout, metadata, provenance, authority, validation, and rollout boundary. |
+| `docs/adr/0026-portable-agent-skills.md` | Accepted architectural decision for the canonical skill source, authority precedence, provenance, and P15-02 boundary.           |
+| `docs/getting-started.md`                | Expanded for agent-ready onboarding and merged into Quick Start, Profiles, Production Readiness.                                 |
+| `docs/template-initialization.md`        | Merged into Profiles and Releases/Upgrades.                                                                                      |
+| `docs/model-interfaces.md`               | End-user model boundary summarized in Optional AI Runtime.                                                                       |
+| `docs/typed-tools-and-streaming.md`      | Typed tool authorization and V1 transport summarized in Optional AI Runtime and Architecture.                                    |
+| `docs/prompt-evaluation-lifecycle.md`    | Prompt/evaluation lifecycle summarized in Optional AI Runtime and Validation/Testing.                                            |
+| `docs/delivery/release-records.md`       | Release finalization and baseline restore evidence merged into Releases/Upgrades, Production Readiness, Troubleshooting.         |
+| `docs/steadystack-migration.md`          | Retained as maintainer-only historical identity and compatibility evidence; no separate end-user wiki page.                      |
+| Architecture docs and ADR summaries      | Reorganized into Repository Tour, Architecture, and Optional AI Runtime.                                                         |
+| Auth docs                                | Merged into Authentication and Authorization, with local/production separation.                                                  |
+| Database docs                            | Expanded into task-based database page.                                                                                          |
+| Worker docs                              | Merged into operations-focused worker page.                                                                                      |
+| Delivery docs                            | Merged into Containers/Preview, Image Supply Chain, Repository/GitHub Setup, Releases, and Production Readiness.                 |
+| Generated project checklist              | Expanded with agent-readiness governance and reorganized into launch checklist with automated/human distinction.                 |
+| Workspace plugin README                  | Reframed as the deterministic structural write API for humans and coding agents.                                                 |
+| Template release/upgrade docs            | Split by generated-workspace user tasks; maintainer procedures labeled.                                                          |
+| Runbooks                                 | Summarized and linked conceptually from Production Readiness and Troubleshooting.                                                |
+| Existing first wiki page                 | Replaced by the authored Home source; its exact remote content could not be retrieved through the contents API.                  |
 
 Under the current pre-P15-03 model, source documentation is not deleted solely because it is represented in the Wiki; repository-local docs remain versioned evidence and implementation-adjacent references. P15-03 explicitly plans to revisit that retention rule by classifying audience and authority, migrating/culling duplicated human-facing prose, and retaining repository copies only when an implementation, automation, governance, agent/machine, or review reason justifies them beside the code.
 
