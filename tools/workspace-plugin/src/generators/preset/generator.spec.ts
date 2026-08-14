@@ -45,10 +45,7 @@ describe('preset generator', () => {
     )}\n`;
     const validatorContent =
       'export const source = "kaleigh-dem/steady-stack";\n';
-    tree.write(
-      '.agents/skills/architecture-discovery/SKILL.md',
-      skillContent,
-    );
+    tree.write('.agents/skills/architecture-discovery/SKILL.md', skillContent);
     tree.write('.agents/skills/provenance.json', provenanceContent);
     tree.write(
       'tools/agent-skills/validate-agent-skills.mjs',
