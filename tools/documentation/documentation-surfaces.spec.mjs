@@ -45,46 +45,40 @@ function files(overrides = {}) {
   );
 }
 
-test(
-  'classifies the Wiki, README exception, and repository controls distinctly',
-  () => {
-    assert.deepEqual(classifyDocumentationSurface('wiki/Quick-Start.md'), {
-      audience: 'human',
-      authority: 'primary-human',
-      reason: 'published-wiki-source',
-    });
-    assert.equal(
-      classifyDocumentationSurface('README.md')?.authority,
-      'landing-exception',
-    );
-    assert.equal(
-      classifyDocumentationSurface('docs/adr/0027-example.md')?.authority,
-      'repository-control',
-    );
-    assert.equal(classifyDocumentationSurface('docs/getting-started.md'), null);
-  },
-);
+test('classifies documentation surfaces', () => {
+  assert.deepEqual(classifyDocumentationSurface('wiki/Quick-Start.md'), {
+    audience: 'human',
+    authority: 'primary-human',
+    reason: 'published-wiki-source',
+  });
+  assert.equal(
+    classifyDocumentationSurface('README.md')?.authority,
+    'landing-exception',
+  );
+  assert.equal(
+    classifyDocumentationSurface('docs/adr/0027-example.md')?.authority,
+    'repository-control',
+  );
+  assert.equal(classifyDocumentationSurface('docs/getting-started.md'), null);
+});
 
-test(
-  'rejects human onboarding duplicates and unclassified repository prose',
-  () => {
-    const failures = auditDocumentationSurfaces(
-      files({
-        'docs/getting-started.md': '# Duplicate onboarding\n',
-        'docs/new-explainer.md': '# New explainer\n',
-      }),
-    );
+test('rejects duplicate and unclassified prose', () => {
+  const failures = auditDocumentationSurfaces(
+    files({
+      'docs/getting-started.md': '# Duplicate onboarding\n',
+      'docs/new-explainer.md': '# New explainer\n',
+    }),
+  );
 
-    assert(
-      failures.some((failure) => failure.includes('docs/getting-started.md')),
-    );
-    assert(
-      failures.some((failure) => failure.includes('docs/new-explainer.md')),
-    );
-  },
-);
+  assert(
+    failures.some((failure) => failure.includes('docs/getting-started.md')),
+  );
+  assert(
+    failures.some((failure) => failure.includes('docs/new-explainer.md')),
+  );
+});
 
-test('keeps README as a routing surface instead of a second manual', () => {
+test('keeps README as a routing surface', () => {
   const failures = auditReadmeLanding(
     [
       '# SteadyStack',
@@ -97,11 +91,11 @@ test('keeps README as a routing surface instead of a second manual', () => {
   assert(failures.some((failure) => failure.includes('Local development')));
 });
 
-test('accepts a fully classified documentation inventory', () => {
+test('accepts a classified inventory', () => {
   assert.deepEqual(auditDocumentationSurfaces(files()), []);
 });
 
-test('runs ownership checks only in the upstream source repository', () => {
+test('runs only in the upstream source repository', () => {
   assert.equal(
     shouldAuditDocumentationSurfaces({ name: '@steadystack/source' }),
     true,
@@ -112,10 +106,7 @@ test('runs ownership checks only in the upstream source repository', () => {
   );
 });
 
-test(
-  'enforces ownership against the tracked repository inventory',
-  async () => {
-    const root = fileURLToPath(new URL('../..', import.meta.url));
-    assert.deepEqual(await checkDocumentationSurfaces(root), []);
-  },
-);
+test('enforces the tracked repository inventory', async () => {
+  const root = fileURLToPath(new URL('../..', import.meta.url));
+  assert.deepEqual(await checkDocumentationSurfaces(root), []);
+});

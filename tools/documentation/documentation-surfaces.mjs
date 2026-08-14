@@ -10,6 +10,7 @@ const ROOT_REPOSITORY_MARKDOWN = new Map([
   ['CHANGELOG.md', 'release-evidence'],
   ['CONTRIBUTING.md', 'governance'],
   ['SECURITY.md', 'governance'],
+  ['THIRD_PARTY_NOTICES.md', 'legal-notices'],
 ]);
 
 const TOP_LEVEL_DOCS = new Map([
