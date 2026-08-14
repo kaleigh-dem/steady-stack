@@ -7,7 +7,7 @@ on:
 
 permissions:
   actions: read
-  contents: write
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -42,28 +42,6 @@ jobs:
       - run: pnpm contracts:compat
       - run: pnpm nx sync:check
       - run: pnpm agent-eval:check
-      - name: Apply exact reviewer-fix Markdown formatting
-        run: |
-          files=(
-            docs/TODO.md
-            docs/adr/0026-portable-agent-skills.md
-            docs/agentic-development.md
-            wiki/Agentic-Development-Model.md
-            wiki/Documentation-Audit.md
-            wiki/Home.md
-            wiki/Repository-Tour.md
-            wiki/Troubleshooting.md
-            wiki/Validation-and-Testing.md
-          )
-          pnpm exec prettier --write "${files[@]}"
-          if git diff --quiet -- "${files[@]}"; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "${files[@]}"
-          git commit -m "style(agent-skills): format reviewer fixes"
-          git push origin HEAD:${{ github.head_ref }}
       - run: pnpm format:check
       - name: Check documentation integrity
         run: pnpm docs:check
@@ -126,7 +104,6 @@ jobs:
           version: 10.13.1
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-
         with:
           node-version: 26
           cache: pnpm
