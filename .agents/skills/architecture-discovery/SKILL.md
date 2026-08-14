@@ -19,7 +19,7 @@ Use this skill after reading the root and closest `AGENTS.md`. It provides the r
 
 ```bash
 pnpm nx show projects
-pnpm nx show project <PROJECT_NAME>
+pnpm nx show project PROJECT_NAME
 pnpm graph
 ```
 

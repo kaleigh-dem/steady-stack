@@ -196,6 +196,7 @@ test('rejects unreviewed pnpm, Nx, shell, and Node command shapes', async () => 
         'pnpm nx exec --version',
         'pnpm check && pnpm affected',
         'pnpm check > test-output.txt',
+        'pnpm check < input.txt',
         'node -e "console.log(1)"',
         'node --trace-warnings tools/reviewed.mjs',
         'node --conditions=reviewed tools/reviewed.mjs',
@@ -230,6 +231,11 @@ test('rejects unreviewed pnpm, Nx, shell, and Node command shapes', async () => 
       ),
     );
     assert(
+      failures.some((failure) =>
+        failure.includes('shell control token is not allowed: <'),
+      ),
+    );
+    assert(
       failures.some(
         (failure) =>
           failure.includes('node runtime options are not allowed') &&
@@ -251,7 +257,7 @@ test('rejects unreviewed pnpm, Nx, shell, and Node command shapes', async () => 
   });
 });
 
-test('accepts reviewed root, Nx, tracked Node, and placeholder commands', async () => {
+test('accepts reviewed root, Nx, tracked Node, and literal placeholder commands', async () => {
   await withWorkspace(async (root) => {
     await mkdir(path.join(root, 'tools'), { recursive: true });
     await writeFile(
@@ -265,7 +271,7 @@ test('accepts reviewed root, Nx, tracked Node, and placeholder commands', async 
         '```bash',
         'pnpm check',
         'pnpm nx show projects',
-        'pnpm nx show project <PROJECT_NAME>',
+        'pnpm nx show project PROJECT_NAME',
         'node tools/reviewed.mjs',
         '```',
       ].join('\n'),

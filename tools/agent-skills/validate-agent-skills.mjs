@@ -67,7 +67,6 @@ const NX_BUILT_INS = new Set([
   'sync:check',
 ]);
 const SHELL_CONTROL_TOKENS = ['&&', '||', '$(', '|', ';', '&', '`', '>', '<'];
-const COMMAND_PLACEHOLDER_PATTERN = /<[A-Z][A-Z0-9_-]*>/g;
 const REPOSITORY_PATH_PREFIXES = [
   '.agents/',
   '.github/',
@@ -339,9 +338,8 @@ function shellWords(command) {
 }
 
 function validateShellCommandShape(command) {
-  const executableCommand = command.replace(COMMAND_PLACEHOLDER_PATTERN, '');
   for (const token of SHELL_CONTROL_TOKENS) {
-    if (executableCommand.includes(token)) {
+    if (command.includes(token)) {
       return [`shell control token is not allowed: ${token}`];
     }
   }
