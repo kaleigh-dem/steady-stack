@@ -116,9 +116,9 @@ describe('release browser authentication validation', () => {
     expect(deliveryWorkflow).toContain("PLAYWRIGHT_USE_PREVIEW_IMAGE: 'true'");
   });
 
-  it('keeps generated-workspace onboarding aligned with the session adapter', () => {
-    const gettingStarted = readFileSync(
-      new URL('../../docs/getting-started.md', import.meta.url),
+  it('keeps human authentication guidance aligned with the session adapter', () => {
+    const choosingWorkspaceProfiles = readFileSync(
+      new URL('../../wiki/Choosing-Workspace-Profiles.md', import.meta.url),
       'utf8',
     );
     const templateInitialization = readFileSync(
@@ -126,7 +126,10 @@ describe('release browser authentication validation', () => {
       'utf8',
     );
 
-    for (const documentation of [gettingStarted, templateInitialization]) {
+    for (const documentation of [
+      choosingWorkspaceProfiles,
+      templateInitialization,
+    ]) {
       expect(documentation).toContain('browser credential adapter');
       expect(documentation).toContain('login');
       expect(documentation).toContain('callback');
