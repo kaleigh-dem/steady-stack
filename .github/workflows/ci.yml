@@ -42,6 +42,39 @@ jobs:
       - run: pnpm contracts:compat
       - run: pnpm nx sync:check
       - run: pnpm agent-eval:check
+      - name: Capture exact reviewer-fix Markdown formatting
+        run: |
+          mkdir -p "$CI_DIAGNOSTICS_DIR"
+          pnpm exec prettier --write \
+            docs/TODO.md \
+            docs/adr/0026-portable-agent-skills.md \
+            docs/agentic-development.md \
+            wiki/Agentic-Development-Model.md \
+            wiki/Documentation-Audit.md \
+            wiki/Home.md \
+            wiki/Repository-Tour.md \
+            wiki/Troubleshooting.md \
+            wiki/Validation-and-Testing.md
+          tar -czf "$CI_DIAGNOSTICS_DIR/formatted-reviewer-fix-markdown.tgz" \
+            docs/TODO.md \
+            docs/adr/0026-portable-agent-skills.md \
+            docs/agentic-development.md \
+            wiki/Agentic-Development-Model.md \
+            wiki/Documentation-Audit.md \
+            wiki/Home.md \
+            wiki/Repository-Tour.md \
+            wiki/Troubleshooting.md \
+            wiki/Validation-and-Testing.md
+          git checkout -- \
+            docs/TODO.md \
+            docs/adr/0026-portable-agent-skills.md \
+            docs/agentic-development.md \
+            wiki/Agentic-Development-Model.md \
+            wiki/Documentation-Audit.md \
+            wiki/Home.md \
+            wiki/Repository-Tour.md \
+            wiki/Troubleshooting.md \
+            wiki/Validation-and-Testing.md
       - run: pnpm format:check
       - name: Check documentation integrity
         run: pnpm docs:check
