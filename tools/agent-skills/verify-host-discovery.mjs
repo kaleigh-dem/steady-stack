@@ -10,10 +10,7 @@ const CONTRACT_PATH = 'tools/agent-skills/host-discovery.json';
 const IMMUTABLE_GIT_REF = /^[a-f0-9]{40}$/;
 
 function normalizePath(value) {
-  return value
-    .replaceAll('\\', '/')
-    .replace(/^\.\//, '')
-    .replace(/\/$/, '');
+  return value.replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/$/, '');
 }
 
 async function readJson(filePath) {
@@ -135,9 +132,8 @@ export async function validateHostDiscovery(root) {
   }
 
   for (const host of contract.hosts ?? []) {
-    if (normalizePath(host?.projectSkillRoot ?? '') !== CANONICAL_ROOT) {
+    if (normalizePath(host?.projectSkillRoot ?? '') !== CANONICAL_ROOT)
       continue;
-    }
     const discovered = await discoverSkillNames(root, host.projectSkillRoot);
     if (discovered.join('\0') !== expectedSkills.join('\0')) {
       failures.push(

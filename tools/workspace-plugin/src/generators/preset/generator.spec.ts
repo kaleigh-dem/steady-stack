@@ -7,7 +7,7 @@ import { upstreamTemplateRepository } from '../../upstream-template';
 import presetGenerator from './generator';
 
 describe('preset generator', () => {
-  it('preserves portable skills and removes maintainer-only tooling', async () => {
+  it('preserves portable agent skills', async () => {
     const tree = createTreeWithEmptyWorkspace();
     writeJson(tree, 'package.json', {
       name: '@steadystack/source',
