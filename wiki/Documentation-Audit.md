@@ -301,29 +301,29 @@ The Agent Skills gate therefore runs after documentation integrity and before th
 
 ## Existing documentation disposition
 
-| Existing content                         | Disposition                                                                                                                      |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Root README                              | Human landing page routing readers to the Wiki and contributors/agents to repository controls.                                   |
-| `docs/agentic-development.md`            | Repository-local source for agent workflow, control surfaces, approval boundaries, and anti-patterns.                            |
-| `docs/agent-skills.md`                   | Repository-local Phase 15 source for portable skill layout, provenance, authority, generation, and host discovery.               |
-| `docs/adr/0026-portable-agent-skills.md` | Accepted architectural decision for canonical skills, authority precedence, provenance, generation, and host discovery.         |
-| `docs/getting-started.md`                | Expanded for agent-ready onboarding and merged into Quick Start, Profiles, Production Readiness.                                 |
-| `docs/template-initialization.md`        | Merged into Profiles and Releases/Upgrades.                                                                                      |
-| `docs/model-interfaces.md`               | End-user model boundary summarized in Optional AI Runtime.                                                                       |
-| `docs/typed-tools-and-streaming.md`      | Typed tool authorization and V1 transport summarized in Optional AI Runtime and Architecture.                                    |
-| `docs/prompt-evaluation-lifecycle.md`    | Prompt/evaluation lifecycle summarized in Optional AI Runtime and Validation/Testing.                                            |
-| `docs/delivery/release-records.md`       | Release finalization and baseline restore evidence merged into Releases/Upgrades, Production Readiness, Troubleshooting.         |
-| `docs/steadystack-migration.md`          | Retained as maintainer-only historical identity and compatibility evidence; no separate end-user wiki page.                      |
-| Architecture docs and ADR summaries      | Reorganized into Repository Tour, Architecture, and Optional AI Runtime.                                                         |
-| Auth docs                                | Merged into Authentication and Authorization, with local/production separation.                                                  |
-| Database docs                            | Expanded into task-based database page.                                                                                          |
-| Worker docs                              | Merged into operations-focused worker page.                                                                                      |
-| Delivery docs                            | Merged into Containers/Preview, Image Supply Chain, Repository/GitHub Setup, Releases, and Production Readiness.                 |
-| Generated project checklist              | Expanded with agent-readiness governance and reorganized into launch checklist with automated/human distinction.                 |
-| Workspace plugin README                  | Reframed as the deterministic structural write API for humans and coding agents.                                                 |
-| Template release/upgrade docs            | Split by generated-workspace user tasks; maintainer procedures labeled.                                                          |
-| Runbooks                                 | Summarized and linked conceptually from Production Readiness and Troubleshooting.                                                |
-| Existing first wiki page                 | Replaced by the authored Home source; its exact remote content could not be retrieved through the contents API.                  |
+| Existing content                         | Disposition                                                                                                              |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Root README                              | Human landing page routing readers to the Wiki and contributors/agents to repository controls.                           |
+| `docs/agentic-development.md`            | Repository-local source for agent workflow, control surfaces, approval boundaries, and anti-patterns.                    |
+| `docs/agent-skills.md`                   | Repository-local Phase 15 source for portable skill layout, provenance, authority, generation, and host discovery.       |
+| `docs/adr/0026-portable-agent-skills.md` | Accepted architectural decision for canonical skills, authority precedence, provenance, generation, and host discovery.  |
+| `docs/getting-started.md`                | Expanded for agent-ready onboarding and merged into Quick Start, Profiles, Production Readiness.                         |
+| `docs/template-initialization.md`        | Merged into Profiles and Releases/Upgrades.                                                                              |
+| `docs/model-interfaces.md`               | End-user model boundary summarized in Optional AI Runtime.                                                               |
+| `docs/typed-tools-and-streaming.md`      | Typed tool authorization and V1 transport summarized in Optional AI Runtime and Architecture.                            |
+| `docs/prompt-evaluation-lifecycle.md`    | Prompt/evaluation lifecycle summarized in Optional AI Runtime and Validation/Testing.                                    |
+| `docs/delivery/release-records.md`       | Release finalization and baseline restore evidence merged into Releases/Upgrades, Production Readiness, Troubleshooting. |
+| `docs/steadystack-migration.md`          | Retained as maintainer-only historical identity and compatibility evidence; no separate end-user wiki page.              |
+| Architecture docs and ADR summaries      | Reorganized into Repository Tour, Architecture, and Optional AI Runtime.                                                 |
+| Auth docs                                | Merged into Authentication and Authorization, with local/production separation.                                          |
+| Database docs                            | Expanded into task-based database page.                                                                                  |
+| Worker docs                              | Merged into operations-focused worker page.                                                                              |
+| Delivery docs                            | Merged into Containers/Preview, Image Supply Chain, Repository/GitHub Setup, Releases, and Production Readiness.         |
+| Generated project checklist              | Expanded with agent-readiness governance and reorganized into launch checklist with automated/human distinction.         |
+| Workspace plugin README                  | Reframed as the deterministic structural write API for humans and coding agents.                                         |
+| Template release/upgrade docs            | Split by generated-workspace user tasks; maintainer procedures labeled.                                                  |
+| Runbooks                                 | Summarized and linked conceptually from Production Readiness and Troubleshooting.                                        |
+| Existing first wiki page                 | Replaced by the authored Home source; its exact remote content could not be retrieved through the contents API.          |
 
 Under the current pre-P15-03 model, source documentation is not deleted solely because it is represented in the Wiki; repository-local docs remain versioned evidence and implementation-adjacent references. P15-03 explicitly plans to revisit that retention rule by classifying audience and authority, migrating/culling duplicated human-facing prose, and retaining repository copies only when an implementation, automation, governance, agent/machine, or review reason justifies them beside the code.
 
