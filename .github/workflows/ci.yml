@@ -1,1 +1,122 @@
-x
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  affected:
+    runs-on: ubuntu-latest
+    env:
+      CI_DIAGNOSTICS_DIR: ${{ github.workspace }}/test-output/ci-diagnostics
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 10.13.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5
+
+      - run: pnpm telemetry:check
+      - run: pnpm contracts:check
+      - run: pnpm contracts:compat
+      - run: pnpm nx sync:check
+      - run: pnpm agent-eval:check
+      - run: pnpm format:check
+      - name: Check documentation integrity
+        run: pnpm docs:check
+      - name: Validate portable Agent Skills
+        run: pnpm agent-skills:check
+      - name: Audit Nx cache inputs
+        run: node tools/delivery/nx-cache-audit.mjs
+      - run: pnpm delivery:check
+      - name: Verify release tooling
+        run: |
+          mkdir -p "$CI_DIAGNOSTICS_DIR"
+          node tools/delivery/release-plan.mjs \
+            --environment preview \
+            --image-prefix "ghcr.io/${{ github.repository_owner }}/steadystack" \
+            --version 0.0.0-ci \
+            --output "$CI_DIAGNOSTICS_DIR/release-plan.json"
+      - name: Typecheck and build affected projects
+        run: pnpm nx affected -t typecheck build --parallel=3
+        env:
+          NEXT_PUBLIC_AUTHENTICATION_PROFILE: none
+      - name: Verify template release artifact
+        run: |
+          version=$(node -p "require('./package.json').version")
+          release_directory="$RUNNER_TEMP/template-release"
+          pnpm template:release:verify -- --version "$version"
+          pnpm template:release:pack -- \
+            --version "$version" \
+            --output "$release_directory"
+          pnpm template:release:smoke -- \
+            --artifact "$release_directory/steadystack-workspace-plugin-${version}.tgz" \
+            --expected-version "$version"
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm nx affected -t e2e --parallel=1
+      - name: Verify generated output and project graph
+        run: pnpm nx run workspace-plugin:generated-output-smoke
+      - name: Verify generated workspace identity
+        run: pnpm nx run workspace-plugin:initialization-output-smoke
+      - name: Verify validation leaves the checkout clean
+        run: git diff --exit-code
+      - run: pnpm nx affected -t lint test
+
+      - name: Upload CI failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ci-failure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CI_DIAGNOSTICS_DIR }}
+          if-no-files-found: ignore
+          retention-days: 14
+
+  node-current-compatibility:
+    name: Node 26 compatibility
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 10.13.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm contracts:check
+      - run: pnpm nx sync:check
+      - run: pnpm docs:check
+      - run: pnpm agent-skills:check
+      - run: pnpm agent-eval:check
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Build workspace
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_AUTHENTICATION_PROFILE: none
