@@ -14,7 +14,8 @@ An agent-compatible repository must make the correct path easier to discover tha
 
 | Need                         | Repository mechanism                                                                             | Why it matters for agents                                                                                   |
 | ---------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| Discover the rules           | Root and nested `AGENTS.md` files                                                                | Instructions become more specific near the code being changed.                                              |
+| Discover the rules           | Root and nested `AGENTS.md` files                                                                | Concise instructions become more specific near the code being changed.                                      |
+| Load repeatable procedures   | Canonical `.agents/skills` Agent Skills                                                          | Detailed workflows load only when relevant instead of consuming every session's context.                    |
 | Understand the system        | Nx project graph, `project.json`, tags, and public package entry points                          | Agents can inspect ownership and dependencies instead of relying on folder proximity.                       |
 | Query workspace structure    | `.mcp.json` with the Nx MCP server                                                               | Compatible agent clients can ask Nx for project and graph context through a machine-readable interface.     |
 | Create approved structure    | Local domain, feature, job, and contract generators                                              | Repeated code starts with correct tags, tests, exports, references, README files, and local agent guidance. |
@@ -25,20 +26,28 @@ An agent-compatible repository must make the correct path easier to discover tha
 
 These mechanisms support human developers too. The design principle is that repository knowledge should be explicit and executable enough for a capable contributor who has no prior conversation history.
 
+## Always-on rules versus portable skills
+
+Root and nested `AGENTS.md` remain the always-on, agent-agnostic policy layer. Detailed repeatable procedures live in the open Agent Skills format under `.agents/skills/<name>/SKILL.md` and are loaded only when their metadata matches the task.
+
+The repository keeps one canonical skill source. Do not maintain separate `.claude/skills`, `.codex/skills`, or editor-specific copies. Each skill declares reviewed provenance, conceptual least-privilege tool expectations, and `authority: none`; those declarations do not grant tools or production authority.
+
+P15-01 establishes two upstream skills:
+
+- `architecture-discovery` for project ownership, dependency direction, instructions, and source-of-truth discovery;
+- `validation-debugging` for reviewed validation commands and failure diagnosis without weakening checks.
+
+`pnpm agent-skills:check` validates canonical location, metadata, provenance/content hashes, referenced resources and repository paths, reviewed commands, third-party import rules, and authority/tool declarations. P15-02 owns generating the skill set into downstream workspaces and proving discovery across maintained agent hosts.
+
 ## Standard agent workflow
 
 Use this sequence for application changes, whether the work is performed by a human, an agent, or both.
 
 ### 1. Read the instruction hierarchy
 
-From the workspace root:
+From the workspace root, read `AGENTS.md` and the closest nested instructions for every area you expect to change. Nested guidance supplements the root rules; it does not replace them.
 
-```bash
-cat AGENTS.md
-find apps packages tools -name AGENTS.md -print
-```
-
-Read the root file and the closest nested `AGENTS.md` for every area you expect to change. Nested guidance supplements the root rules; it does not replace them.
+If the task matches a repository-owned skill, load the relevant `.agents/skills/<name>/SKILL.md` after the always-on rules. The skill provides procedure, not higher authority.
 
 ### 2. Inspect the target projects
 
@@ -56,7 +65,7 @@ An agent client that supports Model Context Protocol can use the checked-in `.mc
 pnpm nx mcp
 ```
 
-The MCP integration is an additional discovery path, not a replacement for repository rules or validation.
+The MCP integration is an additional discovery path, not a replacement for repository rules, portable skills, or validation.
 
 ### 3. Locate the source of truth
 
@@ -101,7 +110,7 @@ pnpm nx run <PROJECT_NAME>:build
 pnpm affected
 ```
 
-Use focused commands during iteration. Run contract, database, authentication, worker, preview, or delivery checks when the changed boundary requires them.
+Use focused commands during iteration. Skill changes also run `pnpm agent-skills:check`. Run contract, database, authentication, worker, preview, or delivery checks when the changed boundary requires them.
 
 ### 7. Run the repository contract
 
@@ -135,7 +144,7 @@ Agents can perform substantial implementation work, including repository explora
 
 | Agents can prepare or execute                    | Humans must own or explicitly approve                                        |
 | ------------------------------------------------ | ---------------------------------------------------------------------------- |
-| Explore the graph and instructions               | Product intent and acceptance criteria                                       |
+| Explore the graph, instructions, and skills      | Product intent and acceptance criteria                                       |
 | Generate approved project structures             | Architecture exceptions and boundary changes                                 |
 | Implement and test scoped changes                | Access control, data classification, and privacy decisions                   |
 | Draft migrations and run them on disposable data | Production migration timing, backup evidence, and destructive data decisions |
@@ -143,26 +152,32 @@ Agents can perform substantial implementation work, including repository explora
 | Build and verify release evidence                | Production environment approval and deployment authorization                 |
 | Draft rollback or incident steps                 | Incident command, customer communication, and business continuity decisions  |
 
-Do not give an agent long-lived production credentials merely to make the workflow more autonomous. Use least-privilege repository access, short-lived workload identity, protected environments, and human approval gates.
+Skill metadata describes expected capabilities but does not grant them. Do not give an agent long-lived production credentials merely to make the workflow more autonomous. Use least-privilege repository access, short-lived workload identity, protected environments, and human approval gates.
 
 ## Keeping a generated project agent-compatible
 
 As the product grows:
 
-1. Keep root and nested `AGENTS.md` files current and concise.
-2. Add an ADR when architecture or dependency direction changes.
-3. Add or extend a local generator when a structure will be repeated.
-4. Keep package public APIs narrow; avoid cross-project deep imports.
-5. Preserve project tags and executable boundary rules.
-6. Keep commands at the repository root stable and documented.
-7. Ensure generated outputs have drift checks rather than manual editing instructions.
-8. Add focused tests and observable verification for new infrastructure behavior.
-9. Keep secrets and production authority outside agent-readable source files.
-10. Upgrade the template regularly and commit upgrades separately from product work.
+1. Keep root and nested `AGENTS.md` files current, concise, and limited to always-on rules.
+2. Keep detailed repeatable procedures in the canonical portable skill source and validate provenance before use.
+3. Add an ADR when architecture or dependency direction changes.
+4. Add or extend a local generator when a structure will be repeated.
+5. Keep package public APIs narrow; avoid cross-project deep imports.
+6. Preserve project tags and executable boundary rules.
+7. Keep commands at the repository root stable and documented.
+8. Ensure generated outputs have drift checks rather than manual editing instructions.
+9. Add focused tests and observable verification for new infrastructure behavior.
+10. Keep secrets and production authority outside agent-readable source files.
+11. Upgrade the template regularly and commit upgrades separately from product work.
+
+P15-01 defines the upstream skill contract. P15-02 will carry the validated skill set into generated workspaces; until then, ordinary generated products retain their existing `AGENTS.md`, Nx/MCP, generator, and validation controls without a generated `.agents/skills` registry.
 
 ## Common anti-patterns
 
 - Treating nearby code as the only specification.
+- Copying a canonical skill into a vendor-specific directory and editing the copy independently.
+- Auto-downloading or executing an unreviewed third-party skill script.
+- Treating skill tool metadata as permission or production authority.
 - Asking an agent to create a new slice by copying directories manually.
 - Putting business logic directly in Next.js routes, NestJS controllers, or worker bootstrap code.
 - Duplicating request, response, or event types outside the contract source.
@@ -174,7 +189,7 @@ As the product grows:
 
 ## What the template does not provide
 
-The template does not bundle a coding-agent service, choose an LLM, manage prompts for product features, grant agents repository or cloud access, or make autonomous production decisions. Adopting teams select their agent tools and access model while preserving the repository contracts described here.
+The template does not bundle a coding-agent service, choose an LLM, manage prompts for product features, grant agents repository or cloud access, or make autonomous production decisions. The portable skill contract packages reviewed procedures; it does not install a commercial agent product or grant tool access. Adopting teams select their agent tools and access model while preserving the repository contracts described here.
 
 ## Related pages
 

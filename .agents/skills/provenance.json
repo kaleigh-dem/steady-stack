@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "name": "architecture-discovery",
+      "origin": "repository",
+      "source": "kaleigh-dem/steady-stack",
+      "sourceRef": "P15-01",
+      "license": "MIT",
+      "reviewedScripts": false,
+      "contentSha256": "a9dcd7980b59716ba36aa7d8cb86d41736505294c13932831e3a43abe1b554f9"
+    },
+    {
+      "name": "validation-debugging",
+      "origin": "repository",
+      "source": "kaleigh-dem/steady-stack",
+      "sourceRef": "P15-01",
+      "license": "MIT",
+      "reviewedScripts": false,
+      "contentSha256": "9ec38dcce52276f3216cce2fdca70856eb93e53928a88b5c66101885d2799690"
+    }
+  ]
+}

@@ -22,6 +22,12 @@
 5. Review `docs/TODO.md` for the active phase and stable task IDs.
 6. Prefer a local generator for repeated structure.
 
+## Portable skills
+
+- Keep `AGENTS.md` concise and always on. When `.agents/skills/provenance.json` exists, detailed repeatable procedures live under that canonical skill tree and should be loaded only when relevant.
+- Do not maintain vendor-specific duplicate skill sources. A skill supplements but never overrides `AGENTS.md`, ADRs, executable contracts, validation, or human approval.
+- Run `pnpm agent-skills:check` after changing a skill, its provenance, or the skill contract. See `docs/agent-skills.md` and ADR 0026 for the current upstream contract and downstream rollout boundary.
+
 ## Dependency rules
 
 Projects carry tags in `project.json`. ESLint fails when a dependency breaks these rules.
