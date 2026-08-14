@@ -103,11 +103,11 @@ See the repository-local `docs/documentation-integrity.md` for the exact upstrea
 pnpm agent-skills:check
 ```
 
-This is the P15-01 portable-skill contract. In the upstream template it validates the canonical `.agents/skills/<name>/SKILL.md` tree, open-format metadata and naming, SteadyStack least-privilege capability declarations, `authority: none`, reviewed provenance/content hashes, immutable third-party source refs, explicit script review, referenced resources/repository paths, and reviewed root/Nx or tracked-Node commands. It also rejects vendor-specific duplicate `SKILL.md` sources and symbolic links that could escape the reviewed skill tree.
+This is the Phase 15 portable-skill contract. In the upstream template and P15-02-generated workspaces it validates the canonical `.agents/skills/<name>/SKILL.md` tree, open-format metadata and naming, SteadyStack least-privilege capability declarations, `authority: none`, reviewed provenance/content hashes, immutable third-party source refs, explicit script review, referenced resources/repository paths, and reviewed root/Nx or tracked-Node commands. It also rejects vendor-specific duplicate `SKILL.md` sources and symbolic links that could escape the reviewed skill tree.
 
-P15-01 does not yet generate skills into downstream workspaces. An initialized product without `.agents/skills/provenance.json` therefore skips only this skill-set audit until P15-02 adds generated portable skills; the upstream template must always contain and pass the registry.
+P15-02-generated workspaces contain the same provenance registry and canonical skill set as the upstream template. The gate also runs the offline maintained-host discovery verifier, which requires immutable evidence for at least two maintained hosts and exact agreement between discovered skill directories and provenance. A missing downstream registry is therefore a validation failure rather than the expected P15-01 skip state.
 
-See `docs/agent-skills.md` and ADR 0026 for the authority, provenance, import, and portability rules.
+See `docs/agent-skills.md` and ADR 0026 for the authority, provenance, generation, import, and portability rules.
 
 ### AI evaluation evidence
 
@@ -230,7 +230,7 @@ pnpm docs:architecture
 pnpm agent-skills:check
 ```
 
-For initialized products, `pnpm docs:check` retains the checker unit tests but skips the upstream `@steadystack/source` content/topology audit. P15-01 likewise skips `pnpm agent-skills:check` when a downstream workspace has not yet received a generated skill registry. Add product-specific documentation rules if the initialized workspace should enforce an equivalent documentation contract.
+For initialized products, `pnpm docs:check` retains the checker unit tests but skips the upstream `@steadystack/source` content/topology audit. P15-02-generated workspaces retain the canonical Agent Skills registry and run the same `pnpm agent-skills:check` contract, including maintained-host discovery. Add product-specific documentation rules if the initialized workspace should enforce an equivalent documentation contract.
 
 Optional AI runtime and evaluation projects:
 

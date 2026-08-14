@@ -4,26 +4,26 @@ This template is designed to become the foundation for many web applications tha
 
 Agentic compatibility is a repository property. It means a capable contributor with no prior conversation history can discover the rules, understand the project graph, create approved structure, receive fast feedback, and produce objective evidence for review. It does not mean the generated product includes an AI model provider or that agents receive autonomous production authority.
 
-The optional initialization setting `ai=true` records product intent to add AI-powered application features. It is separate from the agentic development model. Every generated workspace retains the established `AGENTS.md`, Nx/MCP, generator, boundary, and validation controls; P15-01 additionally establishes the portable Agent Skills contract in the upstream template, while P15-02 owns distributing that skill set to generated products.
+The optional initialization setting `ai=true` records product intent to add AI-powered application features. It is separate from the agentic development model. Every generated workspace retains the established `AGENTS.md`, Nx/MCP, generator, boundary, and validation controls; Phase 15 additionally provides the portable Agent Skills contract, and P15-02 distributes the same validated skill set to generated products.
 
 ## Repository control surfaces
 
-| Surface                                                | Purpose                                                                         |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| Root and nested `AGENTS.md`                            | Concise always-on instructions that become more specific near changed code.     |
-| `.agents/skills`                                       | Upstream canonical progressively disclosed procedures for repeatable work.      |
-| Nx project graph and `project.json`                    | Machine-readable ownership, tags, targets, dependencies, and affected analysis. |
-| `.mcp.json`                                            | Starts the Nx MCP server for compatible agent clients.                          |
-| Local workspace generators                             | Deterministic creation of approved domains, features, jobs, and contracts.      |
-| ESLint boundaries and TypeScript references            | Executable dependency and runtime constraints.                                  |
-| Contract generation and compatibility checks           | One source of truth for HTTP and asynchronous payloads.                         |
-| Root package scripts                                   | Stable commands for focused work, repository validation, preview, and delivery. |
-| `workspace.template.json` and upgrade ownership policy | Provenance and safe evolution of generated projects.                            |
-| ADRs, runbooks, and environment contracts              | Durable design and operational context outside transient conversations.         |
+| Surface                                                | Purpose                                                                             |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| Root and nested `AGENTS.md`                            | Concise always-on instructions that become more specific near changed code.         |
+| `.agents/skills`                                       | Canonical progressively disclosed procedures generated into initialized workspaces. |
+| Nx project graph and `project.json`                    | Machine-readable ownership, tags, targets, dependencies, and affected analysis.     |
+| `.mcp.json`                                            | Starts the Nx MCP server for compatible agent clients.                              |
+| Local workspace generators                             | Deterministic creation of approved domains, features, jobs, and contracts.          |
+| ESLint boundaries and TypeScript references            | Executable dependency and runtime constraints.                                      |
+| Contract generation and compatibility checks           | One source of truth for HTTP and asynchronous payloads.                             |
+| Root package scripts                                   | Stable commands for focused work, repository validation, preview, and delivery.     |
+| `workspace.template.json` and upgrade ownership policy | Provenance and safe evolution of generated projects.                                |
+| ADRs, runbooks, and environment contracts              | Durable design and operational context outside transient conversations.             |
 
 `AGENTS.md` remains policy and boundary guidance. When a workspace contains `.agents/skills/provenance.json`, skills hold detailed repeatable procedures and load only when a task matches their description. The canonical repository source is `.agents/skills`; do not maintain vendor-specific duplicate skill trees. Skills never override repository rules, executable contracts, or human approval.
 
-See `docs/agent-skills.md` and ADR 0026 for the portable skill contract, provenance policy, deterministic validation, and the P15-02 downstream-distribution boundary.
+See `docs/agent-skills.md` and ADR 0026 for the portable skill contract, provenance policy, deterministic validation, generated-workspace distribution, and maintained-host discovery contract.
 
 ## Standard workflow
 
@@ -116,6 +116,6 @@ Do not give an agent long-lived production credentials merely to increase autono
 - Equating `ai=true` with development-time agent compatibility.
 - Equating agent-generated code with production approval.
 
-P15-01 defines and validates the upstream skill contract. The preset deliberately excludes `.agents/skills` from initialized products so P15-02 can make downstream inclusion, additional release/upgrade skills, and multi-host discovery an explicit maintained contract rather than an accidental template copy.
+P15-01 defined and validated the canonical skill contract. P15-02 preserves that contract in initialized products, adds release-evidence and downstream-upgrade procedures, and verifies maintained-host discovery against the same project-level `.agents/skills` root without vendor-specific copies.
 
 See `README.md`, `AGENTS.md`, `docs/agent-skills.md`, `docs/architecture/overview.md`, `tools/workspace-plugin/README.md`, and the generated-project checklist for the concrete repository contracts.

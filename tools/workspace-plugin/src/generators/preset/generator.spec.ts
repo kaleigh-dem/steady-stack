@@ -7,7 +7,7 @@ import { upstreamTemplateRepository } from '../../upstream-template';
 import presetGenerator from './generator';
 
 describe('preset generator', () => {
-  it('records template provenance and removes maintainer-only tooling', async () => {
+  it('preserves portable agent skills', async () => {
     const tree = createTreeWithEmptyWorkspace();
     writeJson(tree, 'package.json', {
       name: '@steadystack/source',
@@ -29,12 +29,36 @@ describe('preset generator', () => {
       private: false,
       publishConfig: { access: 'public' },
     });
-    tree.write('.agents/skills/architecture-discovery/SKILL.md', '# Skill\n');
-    tree.write('.agents/skills/provenance.json', '{"schemaVersion":1}\n');
+    const skillContent = '# Skill\nSteadyStack kaleigh-dem/steady-stack\n';
+    const provenanceContent = `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        skills: [
+          {
+            name: 'architecture-discovery',
+            source: 'kaleigh-dem/steady-stack',
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`;
+    const validatorContent =
+      'export const source = "kaleigh-dem/steady-stack";\n';
+    tree.write('.agents/skills/architecture-discovery/SKILL.md', skillContent);
+    tree.write('.agents/skills/provenance.json', provenanceContent);
+    tree.write(
+      'tools/agent-skills/validate-agent-skills.mjs',
+      validatorContent,
+    );
     tree.write('.github/workflows/generated-workspace.yml', 'name: e2e\n');
     tree.write('.github/workflows/template-release.yml', 'name: release\n');
     tree.write('CHANGELOG.md', '# Changelog\n');
     tree.write('docs/agent-skills.md', '# Portable skill contract\n');
+    tree.write(
+      'docs/adr/0026-portable-agent-skills.md',
+      '# ADR\nSteadyStack kaleigh-dem/steady-stack\n',
+    );
     tree.write('docs/getting-started.md', '# Generated workspace onboarding\n');
     tree.write(
       'docs/generated-project-checklist.md',
@@ -96,8 +120,20 @@ describe('preset generator', () => {
     ).toEqual([]);
     expect(packageJson.scripts['template:workspace:e2e']).toBeUndefined();
 
-    expect(tree.exists('.agents/skills')).toBe(false);
+    expect(tree.exists('.agents/skills')).toBe(true);
+    expect(
+      tree.read('.agents/skills/architecture-discovery/SKILL.md', 'utf-8'),
+    ).toBe(skillContent);
+    expect(tree.read('.agents/skills/provenance.json', 'utf-8')).toBe(
+      provenanceContent,
+    );
+    expect(
+      tree.read('tools/agent-skills/validate-agent-skills.mjs', 'utf-8'),
+    ).toBe(validatorContent);
     expect(tree.exists('docs/agent-skills.md')).toBe(true);
+    expect(tree.read('docs/adr/0026-portable-agent-skills.md', 'utf-8')).toBe(
+      '# ADR\nSteadyStack kaleigh-dem/steady-stack\n',
+    );
     expect(tree.exists('.github/workflows/generated-workspace.yml')).toBe(
       false,
     );

@@ -24,9 +24,11 @@
 
 ## Portable skills
 
-- Keep `AGENTS.md` concise and always on. When `.agents/skills/provenance.json` exists, detailed repeatable procedures live under that canonical skill tree and should be loaded only when relevant.
-- Do not maintain vendor-specific duplicate skill sources. A skill supplements but never overrides `AGENTS.md`, ADRs, executable contracts, validation, or human approval.
-- Run `pnpm agent-skills:check` after changing a skill, its provenance, or the skill contract. See `docs/agent-skills.md` and ADR 0026 for the current upstream contract and downstream rollout boundary.
+- Keep `AGENTS.md` concise and always on. Detailed repeatable procedures live under the canonical `.agents/skills` tree and should be loaded only when relevant.
+- Generated workspaces receive the same validated portable skill set. Do not maintain vendor-specific duplicate skill sources.
+- A skill supplements but never overrides `AGENTS.md`, ADRs, executable contracts, validation, protected controls, or human approval.
+- Prefer version-matched framework/workspace context referenced by a skill, including Nx MCP/project graph and installed Next.js docs, over copied framework prose.
+- Run `pnpm agent-skills:check` after changing a skill, provenance, generation behavior, host-discovery evidence, or the skill contract. See `docs/agent-skills.md` and ADR 0026.
 
 ## Dependency rules
 

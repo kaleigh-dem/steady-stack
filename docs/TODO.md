@@ -1,6 +1,6 @@
 # Template Roadmap
 
-Last updated: 2026-08-12
+Last updated: 2026-08-14
 
 This file tracks active work required to evolve the repository as a reusable, upgradeable application platform. Completed implementation history remains available in merged pull requests, ADRs, and Git history instead of being repeated as a separate historical roadmap.
 
@@ -43,13 +43,13 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 ## Execution order
 
 1. Phases 13 and 14 are completed baseline; ongoing dependency/security maintenance continues through the repository's normal security and issue workflows, and the default workspace profile remains free of AI runtime dependencies unless the optional AI profile is selected.
-2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 is complete, while P15-02 and P15-03 remain planned.
+2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 and P15-02 are complete, with P15-03 remaining as the active roadmap task.
 
 ## Phase 15 — Portable agent ergonomics
 
 Goal: make repository-specific operating knowledge discoverable on demand across maintained coding-agent hosts while keeping `AGENTS.md`, executable repository contracts, human-facing wiki documentation, and human approval boundaries clearly separated and authoritative for their audiences.
 
-Phase 15 progress record (2026-08-12): P15-01 is complete. The upstream repository defines `.agents/skills` as the canonical open Agent Skills source, provides repository-owned architecture-discovery and validation/debugging skills, records reviewed provenance and complete skill-tree hashes, and enforces deterministic metadata, reference, command, provenance, least-privilege capability, authority, third-party import, and script-review rules through `pnpm agent-skills:check` in the root contract and CI. The preset deliberately excludes the upstream skill tree from initialized products so downstream skill distribution and multi-host discovery remain explicit P15-02 work. Exact-head validation on `c6a1d0c8f5bd87e25800a37371fb2517909f339e` passed CI #1024, Security #845, Delivery #678, and Generated workspace #647.
+Phase 15 progress record (2026-08-14): P15-01 established the canonical `.agents/skills` contract, deterministic provenance/authority/command validation, and the initial architecture-discovery and validation/debugging procedures. P15-02 generates that reviewed contract into initialized products, adds release-evidence and downstream-upgrade procedures, preserves exact skill/provenance bytes through product-identity initialization, and makes `pnpm agent-skills:check` verify an offline maintained-host discovery contract. The host proof pins immutable GitHub Copilot and OpenAI Codex source evidence showing both recognize the same project-level `.agents/skills` root, without generating vendor-specific copies. Architecture discovery now prefers Nx MCP/project-graph context and the Next.js documentation shipped with the installed package over copied framework prose. Human approval and production authority remain unchanged.
 
 - [x] **P15-01 Establish the portable Agent Skills contract.**
   - Keep root and nested `AGENTS.md` as concise always-on, agent-agnostic rules; use progressively disclosed skills for detailed repeatable procedures.
@@ -58,7 +58,7 @@ Phase 15 progress record (2026-08-12): P15-01 is complete. The upstream reposito
   - Add initial repository-owned skills for architecture discovery and validation/debugging using only reviewed repository commands.
   - Require review and provenance for imported third-party skills; never auto-install unreviewed scripts.
 
-- [ ] **P15-02 Generate and verify portable agent skills.**
+- [x] **P15-02 Generate and verify portable agent skills.**
   - Add maintained skills for release evidence and downstream upgrades after the core skill contract is proven.
   - Include the validated portable skill set in generated workspaces without requiring a specific commercial coding-agent product.
   - Prefer framework-provided, version-matched documentation and diagnostics, including Next.js packaged agent guidance and Nx MCP/project-graph context, over copied framework prose.
