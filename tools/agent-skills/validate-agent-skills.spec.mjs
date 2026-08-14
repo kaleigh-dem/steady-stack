@@ -184,7 +184,7 @@ test('rejects unknown capabilities, missing repository paths, and ad hoc shell c
   });
 });
 
-test('rejects pnpm built-ins, shell chaining, pipes, and inline Node execution', async () => {
+test('rejects unreviewed pnpm, Nx, shell, and Node command shapes', async () => {
   await withWorkspace(async (root) => {
     const document = skillDocument({
       body: [
@@ -193,8 +193,12 @@ test('rejects pnpm built-ins, shell chaining, pipes, and inline Node execution',
         '```bash',
         'pnpm exec node --version',
         'pnpm exec sh -c "printf x | cat"',
+        'pnpm nx exec --version',
         'pnpm check && pnpm affected',
+        'pnpm check > test-output.txt',
         'node -e "console.log(1)"',
+        'node --trace-warnings tools/reviewed.mjs',
+        'node --conditions=reviewed tools/reviewed.mjs',
         '```',
       ].join('\n'),
     });
@@ -208,6 +212,9 @@ test('rejects pnpm built-ins, shell chaining, pipes, and inline Node execution',
       ),
     );
     assert(
+      failures.some((failure) => failure.includes('unknown Nx command: exec')),
+    );
+    assert(
       failures.some((failure) =>
         failure.includes('shell control token is not allowed: |'),
       ),
@@ -219,13 +226,32 @@ test('rejects pnpm built-ins, shell chaining, pipes, and inline Node execution',
     );
     assert(
       failures.some((failure) =>
+        failure.includes('shell control token is not allowed: >'),
+      ),
+    );
+    assert(
+      failures.some(
+        (failure) =>
+          failure.includes('node runtime options are not allowed') &&
+          failure.includes('node --trace-warnings tools/reviewed.mjs'),
+      ),
+    );
+    assert(
+      failures.some(
+        (failure) =>
+          failure.includes('node runtime options are not allowed') &&
+          failure.includes('node --conditions=reviewed tools/reviewed.mjs'),
+      ),
+    );
+    assert(
+      failures.some((failure) =>
         failure.includes('in `node -e "console.log(1)"`'),
       ),
     );
   });
 });
 
-test('accepts reviewed root, Nx, and tracked Node commands', async () => {
+test('accepts reviewed root, Nx, tracked Node, and placeholder commands', async () => {
   await withWorkspace(async (root) => {
     await mkdir(path.join(root, 'tools'), { recursive: true });
     await writeFile(
@@ -239,6 +265,7 @@ test('accepts reviewed root, Nx, and tracked Node commands', async () => {
         '```bash',
         'pnpm check',
         'pnpm nx show projects',
+        'pnpm nx show project <PROJECT_NAME>',
         'node tools/reviewed.mjs',
         '```',
       ].join('\n'),

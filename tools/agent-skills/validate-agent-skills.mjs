@@ -51,7 +51,6 @@ const SKIP_SCAN_DIRECTORIES = new Set([
 const NX_BUILT_INS = new Set([
   'affected',
   'daemon',
-  'exec',
   'format',
   'format:check',
   'format:write',
@@ -67,7 +66,18 @@ const NX_BUILT_INS = new Set([
   'sync',
   'sync:check',
 ]);
-const SHELL_CONTROL_TOKENS = ['&&', '||', '$(', '|', ';', '&', '`'];
+const SHELL_CONTROL_TOKENS = [
+  '&&',
+  '||',
+  '$(',
+  '|',
+  ';',
+  '&',
+  '`',
+  '>',
+  '<',
+];
+const COMMAND_PLACEHOLDER_PATTERN = /<[A-Z][A-Z0-9_-]*>/g;
 const REPOSITORY_PATH_PREFIXES = [
   '.agents/',
   '.github/',
@@ -339,8 +349,9 @@ function shellWords(command) {
 }
 
 function validateShellCommandShape(command) {
+  const executableCommand = command.replace(COMMAND_PLACEHOLDER_PATTERN, '');
   for (const token of SHELL_CONTROL_TOKENS) {
-    if (command.includes(token)) {
+    if (executableCommand.includes(token)) {
       return [`shell control token is not allowed: ${token}`];
     }
   }
@@ -374,9 +385,14 @@ function validatePnpmCommand(command, packageJson) {
 
 function validateNodeCommand(command, root) {
   const words = shellWords(command);
-  const script = words.slice(1).find((word) => !word.startsWith('-'));
-  if (!script || script === '-' || script === '-e') {
+  const script = words[1];
+  if (!script || script === '-') {
     return ['node command must use a tracked script entry point'];
+  }
+  if (script.startsWith('-')) {
+    return [
+      'node runtime options are not allowed; use a tracked script entry point',
+    ];
   }
   if (/[<$[{]/.test(script)) {
     return [`node script must be a literal tracked path: ${script}`];
