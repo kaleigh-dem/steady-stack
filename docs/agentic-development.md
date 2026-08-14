@@ -8,18 +8,18 @@ The optional initialization setting `ai=true` records product intent to add AI-p
 
 ## Repository control surfaces
 
-| Surface                                                | Purpose                                                                         |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| Root and nested `AGENTS.md`                            | Concise always-on instructions that become more specific near changed code.     |
+| Surface                                                | Purpose                                                                             |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| Root and nested `AGENTS.md`                            | Concise always-on instructions that become more specific near changed code.         |
 | `.agents/skills`                                       | Canonical progressively disclosed procedures generated into initialized workspaces. |
-| Nx project graph and `project.json`                    | Machine-readable ownership, tags, targets, dependencies, and affected analysis. |
-| `.mcp.json`                                            | Starts the Nx MCP server for compatible agent clients.                          |
-| Local workspace generators                             | Deterministic creation of approved domains, features, jobs, and contracts.      |
-| ESLint boundaries and TypeScript references            | Executable dependency and runtime constraints.                                  |
-| Contract generation and compatibility checks           | One source of truth for HTTP and asynchronous payloads.                         |
-| Root package scripts                                   | Stable commands for focused work, repository validation, preview, and delivery. |
-| `workspace.template.json` and upgrade ownership policy | Provenance and safe evolution of generated projects.                            |
-| ADRs, runbooks, and environment contracts              | Durable design and operational context outside transient conversations.         |
+| Nx project graph and `project.json`                    | Machine-readable ownership, tags, targets, dependencies, and affected analysis.     |
+| `.mcp.json`                                            | Starts the Nx MCP server for compatible agent clients.                              |
+| Local workspace generators                             | Deterministic creation of approved domains, features, jobs, and contracts.          |
+| ESLint boundaries and TypeScript references            | Executable dependency and runtime constraints.                                      |
+| Contract generation and compatibility checks           | One source of truth for HTTP and asynchronous payloads.                             |
+| Root package scripts                                   | Stable commands for focused work, repository validation, preview, and delivery.     |
+| `workspace.template.json` and upgrade ownership policy | Provenance and safe evolution of generated projects.                                |
+| ADRs, runbooks, and environment contracts              | Durable design and operational context outside transient conversations.             |
 
 `AGENTS.md` remains policy and boundary guidance. When a workspace contains `.agents/skills/provenance.json`, skills hold detailed repeatable procedures and load only when a task matches their description. The canonical repository source is `.agents/skills`; do not maintain vendor-specific duplicate skill trees. Skills never override repository rules, executable contracts, or human approval.
 
