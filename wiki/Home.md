@@ -22,7 +22,7 @@ The template makes the preferred engineering path explicit and executable:
 - `pnpm check`, preview validation, production gates, and release evidence provide objective completion criteria;
 - versioned template provenance and ownership-aware upgrades support long-lived generated projects.
 
-Portable skills supplement rather than replace repository authority. Root and closest nested `AGENTS.md`, executable contracts and generated sources of truth, ADRs and `docs/TODO.md`, protected controls, and human approval remain authoritative. P15-01 keeps the canonical skill tree upstream-only; initialized products intentionally lack `.agents/skills` until P15-02 generates and verifies the portable set across maintained agent hosts.
+Portable skills supplement rather than replace repository authority. Root and closest nested `AGENTS.md`, executable contracts and generated sources of truth, ADRs and `docs/TODO.md`, protected controls, and human approval remain authoritative. P15-02 distributes the canonical skill tree into initialized products and verifies that maintained agent hosts discover the same `.agents/skills` root without vendor-specific copies.
 
 Read [Agentic Development Model](Agentic-Development-Model) before establishing an agent-led workflow.
 
@@ -31,14 +31,14 @@ Read [Agentic Development Model](Agentic-Development-Model) before establishing 
 ### Agent-facing repository controls
 
 - Root and subsystem-specific `AGENTS.md` guidance.
-- Canonical upstream `.agents/skills/<name>/SKILL.md` procedures plus `.agents/skills/provenance.json` for origin, license, script-review state, and content hashes.
+- Canonical `.agents/skills/<name>/SKILL.md` procedures plus `.agents/skills/provenance.json` for origin, license, script-review state, and content hashes in the upstream template and initialized products.
 - Nx project graph, caching, affected commands, architectural tags, and MCP configuration.
 - Deterministic workspace initialization and local structural generators.
-- Stable root commands for formatting, testing, validation, preview, and upgrades, including the blocking `pnpm agent-skills:check` gate upstream.
+- Stable root commands for formatting, testing, validation, preview, and upgrades, including the blocking `pnpm agent-skills:check` gate.
 - Generated contracts with drift and compatibility checks.
 - Versioned template provenance, migration tooling, and file-ownership policy.
 
-During P15-01, the portable skill tree is a repository-owned upstream control surface only. The validator remains available in initialized products but intentionally skips when the generated workspace has no `.agents/skills/provenance.json`; P15-02 owns distributing the validated skill set and proving multi-host discovery.
+P15-02-generated products preserve the validated portable skill set byte-for-byte through identity initialization, including the release-evidence and downstream-upgrade procedures. The same `pnpm agent-skills:check` command validates the generated registry and maintained-host discovery contract.
 
 ### Application and operational foundation
 
@@ -83,7 +83,7 @@ Roadmap status is mirrored from the repository's authoritative [`docs/TODO.md`](
 
 - **Phase 13 — completed baseline plus maintenance:** P13-01 through P13-07 are complete; ongoing dependency and security maintenance continues through the repository's normal workflows.
 - **Phase 14 — complete and optional:** P14-01 through P14-07 are complete. The repository has the optional profile boundary, provider-neutral model interfaces and adapters, typed authorized tools plus V1 agent streaming, reviewed prompt/evaluation evidence, replaceable durable-run checkpoint/approval/recovery primitives, reusable safety/governance hooks, and `ai=true` generated reference composition with exact-head generated-workspace validation. `ai=false` remains the default and is validated to contain no model-provider runtime dependencies.
-- **Phase 15 — active portable agent ergonomics:** **P15-01 is complete**, establishing the canonical upstream `.agents/skills` contract, reviewed provenance, initial architecture-discovery and validation/debugging skills, and the blocking `pnpm agent-skills:check` validation gate. **P15-02 is next/planned** to generate the validated skills into downstream workspaces, add release/upgrade procedures, and prove discovery across at least two maintained agent hosts. **P15-03 remains planned** for the human/agent documentation-ownership separation. P15-01 intentionally leaves initialized products without the skill tree until P15-02.
+- **Phase 15 — active portable agent ergonomics:** **P15-01 and P15-02 are complete.** The repository has the canonical `.agents/skills` contract, reviewed provenance, architecture-discovery and validation/debugging procedures, generated release-evidence and downstream-upgrade procedures, byte-preserved generation into initialized products, and deterministic maintained-host discovery evidence for GitHub Copilot and OpenAI Codex. **P15-03 is the remaining roadmap task.**
 
 Use `docs/TODO.md` for sequencing, acceptance criteria, and future status changes.
 
@@ -129,7 +129,7 @@ Follow [Quick Start](Quick-Start), customize the root and nested agent guidance 
 
 ### Developing applications
 
-Use [Everyday Development](Everyday-Development), [Code Generation](Code-Generation), [Validation and Testing](Validation-and-Testing), and the root plus closest nested `AGENTS.md` files. In the upstream template, load a relevant `.agents/skills` procedure when it applies; in P15-01 generated products, the skill tree is intentionally absent until P15-02. For model/tool/prompt/durable/governance-runtime changes, also follow [Optional AI Runtime](Optional-AI-Runtime) and the applicable evaluation, data-retention, policy, authority, and fallback boundaries.
+Use [Everyday Development](Everyday-Development), [Code Generation](Code-Generation), [Validation and Testing](Validation-and-Testing), and the root plus closest nested `AGENTS.md` files. Generated products contain the canonical `.agents/skills` procedures; load the relevant skill when its task matches. For model/tool/prompt/durable/governance-runtime changes, also follow [Optional AI Runtime](Optional-AI-Runtime) and the applicable evaluation, data-retention, policy, authority, and fallback boundaries.
 
 ### Configuring infrastructure
 

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "canonicalProjectRoot": ".agents/skills",
+  "hosts": [
+    {
+      "id": "github-copilot",
+      "maintainer": "GitHub",
+      "projectSkillRoot": ".agents/skills",
+      "evidence": {
+        "repository": "github/docs",
+        "ref": "941eecc286bf855c8b4938145b4328372b34539c",
+        "path": "content/copilot/concepts/agents/about-agent-skills.md"
+      }
+    },
+    {
+      "id": "openai-codex",
+      "maintainer": "OpenAI",
+      "projectSkillRoot": ".agents/skills",
+      "evidence": {
+        "repository": "openai/codex",
+        "ref": "5bc8da6d78fe32343dc51eaf73b96fd288ae0e87",
+        "path": "codex-rs/core/tests/suite/skills.rs"
+      }
+    }
+  ]
+}

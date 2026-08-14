@@ -143,7 +143,7 @@ pnpm telemetry:check
 
 `pnpm docs:architecture` and `pnpm docs:check` are P13-05 template-maintainer commands. In `@steadystack/source`, they generate/check the committed Nx architecture graph and run the documentation content/topology audit. Initialized products retain the deterministic checker tests but skip the upstream content/topology audit; product teams must add product-specific rules if they want equivalent enforcement. P15-03 plans to extend upstream documentation-integrity enforcement with explicit audience/ownership rules after the Wiki-first migration is implemented; that future ownership policy is not yet enforced by the current checker.
 
-`pnpm agent-skills:check` is the P15-01 portable Agent Skills gate. In the upstream `@steadystack/source` template it requires the canonical `.agents/skills/<name>/SKILL.md` tree and `.agents/skills/provenance.json`, then validates metadata and naming, canonical location, capability declarations, `authority: none`, resource/repository references, reviewed command shapes, provenance/content hashes, immutable third-party refs, explicit bundled-script review, and symlink rejection. During P15-01, initialized downstream products intentionally omit the upstream skill tree; the same command therefore reports a skip when `.agents/skills/provenance.json` is absent. P15-02 owns replacing that skip with generated portable skills and multi-host discovery verification.
+`pnpm agent-skills:check` is the Phase 15 portable Agent Skills gate. In both the upstream `@steadystack/source` template and P15-02-generated workspaces it requires the canonical `.agents/skills/<name>/SKILL.md` tree and `.agents/skills/provenance.json`, then validates metadata and naming, canonical location, capability declarations, `authority: none`, resource/repository references, reviewed command shapes, provenance/content hashes, immutable third-party refs, explicit bundled-script review, symlink rejection, and the maintained-host discovery contract. The P15-01 downstream skip is no longer the expected generated-workspace state.
 
 `pnpm agent-eval:check` is the P14-04 evidence gate. It validates committed evidence manifests and, when Nx supplies a comparison range in CI, requires evidence updates for governed prompt artifacts and non-test model/tool runtime behavior changes.
 
@@ -205,11 +205,11 @@ pnpm nx run backend-agent-governance:build
 
 P13-05 adds deterministic documentation-integrity enforcement for the reviewed upstream template package, `@steadystack/source`. Initialization changes product identity, can remove projects through profile selection, and removes maintainer-only workflows and documents. For that reason, initialized products run the checker’s deterministic unit tests but intentionally skip the upstream content/topology audit. The wiki labels `pnpm docs:check` and `pnpm docs:architecture` accordingly and directs adopters to define product-owned rules when they need equivalent enforcement.
 
-### Portable Agent Skills are upstream-only in P15-01
+### Portable Agent Skills are generated and host-verified
 
-P15-01 is complete. `.agents/skills/<name>/SKILL.md` is the sole repository-owned progressively disclosed procedure source, `.agents/skills/provenance.json` records reviewed origin/license/script state and complete-tree hashes, `docs/agent-skills.md` documents the authoring and validation contract, and ADR 0026 records the authority and rollout decision. Skills supplement but never override root/closest `AGENTS.md`, executable contracts and generated sources of truth, applicable ADRs/roadmap state, protected controls, or human approval.
+P15-01 established `.agents/skills/<name>/SKILL.md` as the sole repository-owned progressively disclosed procedure source, `.agents/skills/provenance.json` as the reviewed origin/license/script-state and complete-tree hash registry, `docs/agent-skills.md` as the authoring and validation contract, and ADR 0026 as the authority decision. Skills supplement but never override root/closest `AGENTS.md`, executable contracts and generated sources of truth, applicable ADRs/roadmap state, protected controls, or human approval.
 
-The root `pnpm check` now enforces `pnpm agent-skills:check` immediately after `pnpm docs:check` and before `pnpm agent-eval:check`. The upstream template must contain and validate the canonical registry. P15-01 intentionally removes `.agents/skills` from initialized products, so downstream validation skips only this skill-set audit until P15-02 generates the portable set, adds release/upgrade skills, and proves discovery across maintained agent hosts.
+P15-02 generates the same validated skill set into initialized products, adds release-evidence and downstream-upgrade procedures, preserves the portable contract bytes through product-identity rewriting, and verifies immutable maintained-host evidence for GitHub Copilot and OpenAI Codex against the same project-level `.agents/skills` root. The root `pnpm check` enforces `pnpm agent-skills:check` immediately after `pnpm docs:check` and before `pnpm agent-eval:check` in both the template and generated workspaces.
 
 ### SteadyStack public identity
 
@@ -231,7 +231,7 @@ Documentation-integrity enforcement is expected to evolve with that migration. P
 
 ### Agentic compatibility versus optional product AI
 
-Agentic compatibility is a baseline repository property implemented through `AGENTS.md`, the canonical upstream `.agents/skills` procedure layer, Nx graph and MCP context, generators, executable boundaries, validation, and upgrades. The `ai` initialization flag selects an optional product AI profile; it does not control repository agent readiness.
+Agentic compatibility is a baseline repository property implemented through `AGENTS.md`, the canonical generated `.agents/skills` procedure layer, Nx graph and MCP context, generators, executable boundaries, validation, and upgrades. The `ai` initialization flag selects an optional product AI profile; it does not control repository agent readiness.
 
 Phase 14 is complete through P14-07. The reusable upstream runtime boundaries provide provider-neutral model interfaces and adapters, typed authorization-enforced tools, a strict V1 NDJSON browser stream, reviewed prompt/evaluation evidence, replaceable durable execution with leases, fencing, checkpoints, human-approval pauses, and interruption recovery, plus safety/governance hooks for runtime policy, sensitive-data handling, server-owned tool allowlists, trusted approval authorization, payload-safe audit events, and bounded compatible provider/model fallback. `ai=false` remains the default and removes the optional AI application dependencies. Selecting `ai=true` materializes the selected Phase 14 package entry points, adds API dependencies/project references, and generates a provider-neutral reference workflow and focused tests. The reviewed generator source is `tools/workspace-plugin/src/generators/init/ai-reference-template.ts`. Generated-workspace validation proves both default-profile isolation and the AI-enabled lifecycle.
 
@@ -305,8 +305,8 @@ The Agent Skills gate therefore runs after documentation integrity and before th
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Root README                              | Human landing page routing readers to the Wiki and contributors/agents to repository controls.                                   |
 | `docs/agentic-development.md`            | Repository-local source for agent workflow, control surfaces, approval boundaries, and anti-patterns.                            |
-| `docs/agent-skills.md`                   | Repository-local P15-01 source for the portable skill layout, metadata, provenance, authority, validation, and rollout boundary. |
-| `docs/adr/0026-portable-agent-skills.md` | Accepted architectural decision for the canonical skill source, authority precedence, provenance, and P15-02 boundary.           |
+| `docs/agent-skills.md`                   | Repository-local Phase 15 source for portable skill layout, provenance, authority, generation, and host discovery.               |
+| `docs/adr/0026-portable-agent-skills.md` | Accepted architectural decision for canonical skills, authority precedence, provenance, generation, and host discovery.         |
 | `docs/getting-started.md`                | Expanded for agent-ready onboarding and merged into Quick Start, Profiles, Production Readiness.                                 |
 | `docs/template-initialization.md`        | Merged into Profiles and Releases/Upgrades.                                                                                      |
 | `docs/model-interfaces.md`               | End-user model boundary summarized in Optional AI Runtime.                                                                       |
@@ -429,7 +429,7 @@ Needed information:
 The page set provides a direct path to:
 
 - understand SteadyStack's agentic-development purpose and approval model
-- understand the P15-01 portable Agent Skills contract, provenance/authority rules, upstream-only scope, and validation failure path
+- understand the Phase 15 portable Agent Skills contract, provenance/authority rules, generated-workspace distribution, maintained-host discovery, and validation failure path
 - configure a safe agent access and repository governance model
 - create and initialize a workspace
 - run it locally
