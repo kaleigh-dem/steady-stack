@@ -351,7 +351,7 @@ Persist the complete bundle before the 90-day GitHub artifact retention expires.
 
 **Symptom:** `pnpm agent-skills:check` exits non-zero, or CI fails the **Validate portable Agent Skills** step.
 
-**Likely causes:** A skill has invalid or missing metadata, an invalid name or license, duplicate or excessive capability declarations, `steadystack-authority` other than `none`, a missing/stale provenance entry or `contentSha256`, a moving or non-HTTPS third-party source, bundled scripts without explicit review, a duplicate vendor-specific `SKILL.md` tree, a missing/escaping reference, a symbolic link, or an unsafe fenced command such as shell chaining/redirection, arbitrary `pnpm`/Nx execution, or Node runtime options instead of a tracked entry point.
+**Likely causes:** A skill has invalid or missing metadata, an invalid name or license, duplicate or excessive capability declarations, `steadystack-authority` other than `none`, a missing/stale provenance entry or `contentSha256`, a moving or non-HTTPS third-party source, bundled scripts without explicit review, a duplicate vendor-specific `SKILL.md` tree, a missing/escaping reference, a symbolic link, an invalid maintained-host discovery record, a missing generated registry, or an unsafe fenced command such as shell chaining/redirection, arbitrary `pnpm`/Nx execution, or Node runtime options instead of a tracked entry point.
 
 **Diagnose:**
 
@@ -361,9 +361,9 @@ git status --short
 git diff -- .agents/skills docs/agent-skills.md docs/adr/0026-portable-agent-skills.md
 ```
 
-Read the first validator message literally; it names the offending skill, provenance field, reference, capability, authority declaration, or command shape. In the upstream `@steadystack/source` template, `.agents/skills/provenance.json` is mandatory and the complete canonical tree must validate. In a P15-01 initialized downstream product with no generated registry, the command intentionally reports a skip; that is expected until P15-02 distributes the portable skill set.
+Read the first validator message literally; it names the offending skill, provenance field, reference, capability, authority declaration, host-discovery evidence, or command shape. In the upstream `@steadystack/source` template and P15-02-generated workspaces, `.agents/skills/provenance.json` is mandatory and the complete canonical tree must validate. A generated workspace with no registry is incomplete or corrupted rather than an expected skip state.
 
-**Resolve:** Keep only the canonical `.agents/skills/<name>/SKILL.md` source and remove independent vendor-specific copies. Correct required metadata, keep conceptual capabilities least-privilege, and restore `steadystack-authority: none`. Fix missing or escaping references and remove symlinks. Replace unsafe command examples with reviewed root/Nx commands or a tracked Node entry point; do not weaken the validator to admit arbitrary execution. For third-party skills, pin an HTTPS source to an immutable revision, review the license, review every bundled script, and record `reviewedScripts: true` only after that review. After any intended skill-tree change, update the matching provenance entry and complete-tree `contentSha256` in the same reviewed change.
+**Resolve:** Keep only the canonical `.agents/skills/<name>/SKILL.md` source and remove independent vendor-specific copies. Correct required metadata, keep conceptual capabilities least-privilege, and restore `steadystack-authority: none`. Fix missing or escaping references and remove symlinks. Replace unsafe command examples with reviewed root/Nx commands or a tracked Node entry point; do not weaken the validator to admit arbitrary execution. For third-party skills, pin an HTTPS source to an immutable revision, review the license, review every bundled script, and record `reviewedScripts: true` only after that review. After any intended skill-tree change, update the matching provenance entry and complete-tree `contentSha256` in the same reviewed change. For host-discovery failures, preserve the canonical `.agents/skills` project root and immutable reviewed host evidence instead of adding vendor-specific copies.
 
 **Verify:**
 
@@ -372,7 +372,7 @@ pnpm agent-skills:check
 pnpm check
 ```
 
-See `docs/agent-skills.md` and ADR 0026 for the canonical layout, authority precedence, provenance contract, and P15-01/P15-02 rollout boundary.
+See `docs/agent-skills.md` and ADR 0026 for the canonical layout, authority precedence, provenance contract, generated-workspace distribution, and maintained-host discovery rules.
 
 ## Validation changes generated files
 
