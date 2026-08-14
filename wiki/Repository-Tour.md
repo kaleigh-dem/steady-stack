@@ -22,18 +22,18 @@ pnpm graph
 
 The repository exposes its operating rules through several complementary surfaces:
 
-| Surface                            | Purpose                                                                                                      |
+| Surface                            | Purpose                                                                                                     |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `AGENTS.md`                        | Repository-wide instructions and subsystem-specific rules.                                                   |
-| `.agents/skills/<name>/SKILL.md`   | Canonical progressively disclosed repository procedures loaded only when relevant.                            |
-| `.agents/skills/provenance.json`   | Reviewed skill origin, license, script-review state, and complete-tree content hashes.                        |
-| `.mcp.json`                        | Starts the Nx MCP server so compatible agent clients can query workspace context.                            |
-| `project.json` and Nx graph        | Project ownership, tags, targets, dependencies, and affected analysis.                                       |
-| `src/index.ts` public entry points | Supported cross-project APIs.                                                                                |
-| `docs/adr`                         | Durable reasons for architectural decisions.                                                                 |
+| `AGENTS.md`                        | Repository-wide instructions and subsystem-specific rules.                                                  |
+| `.agents/skills/<name>/SKILL.md`   | Canonical progressively disclosed repository procedures loaded only when relevant.                          |
+| `.agents/skills/provenance.json`   | Reviewed skill origin, license, script-review state, and complete-tree content hashes.                      |
+| `.mcp.json`                        | Starts the Nx MCP server so compatible agent clients can query workspace context.                           |
+| `project.json` and Nx graph        | Project ownership, tags, targets, dependencies, and affected analysis.                                      |
+| `src/index.ts` public entry points | Supported cross-project APIs.                                                                               |
+| `docs/adr`                         | Durable reasons for architectural decisions.                                                                |
 | Root `package.json` scripts        | Stable, copyable development and validation commands, including `pnpm agent-skills:check` in the root gate. |
-| `workspace.template.json`          | Generated repository identity, profile choices, provenance, and upgrade metadata.                            |
-| Local generators                   | Approved write paths for repeated architectural structures.                                                  |
+| `workspace.template.json`          | Generated repository identity, profile choices, provenance, and upgrade metadata.                           |
+| Local generators                   | Approved write paths for repeated architectural structures.                                                 |
 
 Authority remains explicit. Root and closest nested `AGENTS.md` come first, followed by executable repository contracts and generated sources of truth, then applicable ADRs and `docs/TODO.md`. A relevant `.agents/skills` procedure can supplement those sources but cannot override them, weaken validation, grant credentials or production authority, approve an architecture exception, or bypass a human approval gate.
 
