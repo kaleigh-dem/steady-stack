@@ -150,9 +150,8 @@ async function assertGeneratedContract(workspace, expectedVersion) {
   const pluginPackage = await readJson(
     path.join(workspace, 'tools/workspace-plugin/package.json'),
   );
-  const [readme, gettingStarted, projectChecklist] = await Promise.all([
+  const [readme, projectChecklist] = await Promise.all([
     readFile(path.join(workspace, 'README.md'), 'utf-8'),
-    readFile(path.join(workspace, 'docs/getting-started.md'), 'utf-8'),
     readFile(
       path.join(workspace, 'docs/generated-project-checklist.md'),
       'utf-8',
@@ -181,20 +180,22 @@ async function assertGeneratedContract(workspace, expectedVersion) {
   assert.equal(pluginPackage.private, true);
 
   assert.doesNotMatch(readme, /template migration is under review/i);
-  assert.match(gettingStarted, /## Supported profiles/);
-  assert.match(gettingStarted, /## Production replacement points/);
   assert.match(projectChecklist, /## Branch protection and required checks/);
   assert.match(projectChecklist, /## Secrets and application configuration/);
 
   const removedPaths = [
     '.github/workflows/generated-workspace.yml',
     '.github/workflows/template-release.yml',
+    '.github/workflows/wiki-publish.yml',
     'CHANGELOG.md',
+    'docs/getting-started.md',
     'docs/template-releases.md',
     'docs/template-validation.md',
+    'docs/wiki-publication.md',
     'tools/template/generated-workspace-e2e.mjs',
     'tools/template/release.mjs',
     'tools/template/smoke-release-artifact.mjs',
+    'wiki',
   ];
   for (const relativePath of removedPaths) {
     await assert.rejects(
