@@ -23,7 +23,7 @@ pnpm graph
 The repository exposes its operating rules through several complementary surfaces:
 
 | Surface                            | Purpose                                                                                                      |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `AGENTS.md`                        | Repository-wide instructions and subsystem-specific rules.                                                   |
 | `.agents/skills/<name>/SKILL.md`   | Canonical progressively disclosed repository procedures loaded only when relevant.                            |
 | `.agents/skills/provenance.json`   | Reviewed skill origin, license, script-review state, and complete-tree content hashes.                        |
