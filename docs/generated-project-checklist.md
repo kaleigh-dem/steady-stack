@@ -83,7 +83,7 @@ Use this checklist after initialization and before the repository is opened to a
 
 ## Validation before deployment
 
-- [ ] Every production replacement point in `docs/getting-started.md` has an implementation, an owner, or an explicit accepted deferral.
+- [ ] Every production replacement point described in the SteadyStack Wiki's Production Readiness guidance has an implementation, an owner, or an explicit accepted deferral.
 - [ ] `pnpm production:check` passes against the exact production environment file used by promotion.
 - [ ] Production images are published once from reviewed source and referenced by digest.
 - [ ] `pnpm preview:up` and `pnpm performance:load` pass, followed by deterministic `pnpm preview:down`.

@@ -27,7 +27,7 @@ pnpm install --frozen-lockfile
 pnpm template:identity:check
 ```
 
-Use `docs/getting-started.md` for required local tooling, profile-selection guidance, the complete first-run sequence, preview validation, and production replacement points. Generated repository owners should complete `docs/generated-project-checklist.md` before opening the project to a team or connecting a deployment environment.
+Use the SteadyStack Wiki [Quick Start](https://github.com/kaleigh-dem/steady-stack/wiki/Quick-Start) for required local tooling and the complete first-run sequence, and [Choosing Workspace Profiles](https://github.com/kaleigh-dem/steady-stack/wiki/Choosing-Workspace-Profiles) for profile-selection and production replacement guidance. Generated repository owners should complete `docs/generated-project-checklist.md` before opening the project to a team or connecting a deployment environment.
 
 ## Generated initialization contract
 
@@ -42,7 +42,7 @@ The preset writes `workspace.template.json` as the canonical, versioned record o
 
 The public preset also removes template-maintainer-only release workflows, changelog files, release scripts, validation fixtures, and release commands. The generated workspace's local plugin remains available for structural generators but is marked private so it cannot be published accidentally.
 
-The generated repository retains the downstream-facing onboarding, project checklist, runtime support, architecture, delivery, security, runbook, and template-upgrade documentation. These files are part of the generated handoff and must not depend on template-maintainer release permissions.
+The generated repository retains the downstream-facing project checklist, runtime support, architecture, delivery, security, runbook, and template-upgrade documentation. These files are part of the generated handoff and must not depend on template-maintainer release permissions. Human onboarding and profile explanation remain in the SteadyStack Wiki rather than being copied into generated repository controls.
 
 ## Supported profile behavior
 
@@ -65,7 +65,7 @@ Profile values are durable repository metadata. Their runtime behavior is:
 - `ai=true` deliberately composes the existing provider-neutral Phase 14 capabilities into the API package graph: model interfaces, runtime-validated tools, evaluation, durable execution, governance, contracts, and observability. It materializes only the package entry points needed for those selected capabilities and generates an AI-only API reference workflow, a deterministic test, and profile-specific guidance. The reference demonstrates streaming, a single typed tool, durable checkpoints and approval, evaluation evidence, correlated telemetry, data classification, retention-compatible routing, bounded fallback, tool allowlisting, invocation authorization, and trusted human approval without selecting a model-provider SDK or orchestration framework.
 - `ai=false` remains the default. It removes the generated AI workflow, AI-specific API dependencies and project references, and optional Phase 14 package entry points. The default generated workspace is validated to contain no model-provider runtime dependency.
 
-The complete compatibility rules and production replacement points are explained in `docs/getting-started.md`.
+The complete compatibility rules and production replacement points are explained in the SteadyStack Wiki [Choosing Workspace Profiles](https://github.com/kaleigh-dem/steady-stack/wiki/Choosing-Workspace-Profiles) and [Production Readiness](https://github.com/kaleigh-dem/steady-stack/wiki/Production-Readiness) guidance.
 
 ## Repository-wide identity replacement
 

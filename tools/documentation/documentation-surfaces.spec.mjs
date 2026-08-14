@@ -73,9 +73,7 @@ test('rejects duplicate and unclassified prose', () => {
   assert(
     failures.some((failure) => failure.includes('docs/getting-started.md')),
   );
-  assert(
-    failures.some((failure) => failure.includes('docs/new-explainer.md')),
-  );
+  assert(failures.some((failure) => failure.includes('docs/new-explainer.md')));
 });
 
 test('keeps README as a routing surface', () => {
