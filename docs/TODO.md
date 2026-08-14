@@ -43,7 +43,7 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 ## Execution order
 
 1. Phases 13 and 14 are completed baseline; ongoing dependency/security maintenance continues through the repository's normal security and issue workflows, and the default workspace profile remains free of AI runtime dependencies unless the optional AI profile is selected.
-2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 and P15-02 are complete, while P15-03 remains planned.
+2. Phase 15 is the active roadmap and strengthens development-time agent portability and documentation ownership independently of runtime AI; P15-01 and P15-02 are complete, with P15-03 remaining as the active roadmap task.
 
 ## Phase 15 — Portable agent ergonomics
 
