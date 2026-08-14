@@ -19,7 +19,7 @@
     "affected": "nx affected -t lint typecheck test build",
     "graph": "nx graph",
     "format": "nx format:write",
-    "format:check": "node tools/format-diagnostic.mjs && nx format:check",
+    "format:check": "nx format:check",
     "docs:architecture": "node tools/documentation/documentation-integrity.mjs write-architecture",
     "docs:check": "node --test tools/documentation/documentation-integrity.spec.mjs && node tools/documentation/documentation-integrity.mjs check",
     "agent-skills:check": "node --test tools/agent-skills/validate-agent-skills.spec.mjs tools/agent-skills/verify-host-discovery.spec.mjs && node tools/agent-skills/validate-agent-skills.mjs && node tools/agent-skills/verify-host-discovery.mjs",
