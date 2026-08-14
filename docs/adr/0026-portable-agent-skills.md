@@ -11,7 +11,7 @@ SteadyStack exposes concise always-on repository rules through root and nested `
 
 P15-01 established the open Agent Skills format under `.agents/skills`, deterministic provenance/command/authority validation, and two initial repository skills. It intentionally removed that tree from initialized products until distribution and multi-host discovery were proven.
 
-P15-02 must now generate the same reviewed procedures into downstream workspaces, add release-evidence and downstream-upgrade procedures, prefer framework-provided version-matched context over copied framework prose, and prove that at least two maintained agent hosts recognize the same canonical project-level location.
+P15-02 extends that contract by generating the same reviewed procedures into downstream workspaces, adding release-evidence and downstream-upgrade procedures, preferring framework-provided version-matched context over copied framework prose, and proving that at least two maintained agent hosts recognize the same canonical project-level location.
 
 ## Decision
 
