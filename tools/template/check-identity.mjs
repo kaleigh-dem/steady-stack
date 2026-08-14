@@ -34,12 +34,18 @@ const forbiddenPatterns = [
 ];
 
 const allowedTemplateSourcePaths = new Set([
+  'docs/agent-skills.md',
+  'docs/adr/0026-portable-agent-skills.md',
   'tools/workspace-plugin/src/generators/init/generator.ts',
   'tools/workspace-plugin/src/generators/init/generator.spec.ts',
   'tools/workspace-plugin/src/generators/init-output.integration.ts',
   'tools/workspace-plugin/src/generators/preset/generator.spec.ts',
   'tools/template/check-identity.mjs',
 ]);
+const allowedTemplateSourcePrefixes = [
+  '.agents/skills/',
+  'tools/agent-skills/',
+];
 const allowedUpstreamPaths = new Set([
   'README.md',
   'workspace.template.json',
@@ -79,9 +85,18 @@ async function listFiles(root, directory = '') {
   return files;
 }
 
+function isAllowedTemplateSource(normalizedPath) {
+  return (
+    allowedTemplateSourcePaths.has(normalizedPath) ||
+    allowedTemplateSourcePrefixes.some((prefix) =>
+      normalizedPath.startsWith(prefix),
+    )
+  );
+}
+
 function removeAllowedTemplateReferences(relativePath, content) {
   const normalizedPath = relativePath.split(path.sep).join('/');
-  if (allowedTemplateSourcePaths.has(normalizedPath)) return '';
+  if (isAllowedTemplateSource(normalizedPath)) return '';
   if (!allowedUpstreamPaths.has(normalizedPath)) return content;
 
   return content.replaceAll(upstreamUrl, '').replaceAll(upstreamRepository, '');

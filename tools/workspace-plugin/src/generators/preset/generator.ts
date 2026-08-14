@@ -7,7 +7,6 @@ import type { InitGeneratorSchema } from '../init/schema';
 import { formatGeneratorFiles } from '../shared';
 
 const templateMaintainerPaths = [
-  '.agents/skills',
   '.github/workflows/generated-workspace.yml',
   '.github/workflows/template-release.yml',
   'CHANGELOG.md',
@@ -19,6 +18,13 @@ const templateMaintainerPaths = [
   'tools/template/generated-workspace-e2e.mjs',
   'tools/template/release.mjs',
   'tools/template/smoke-release-artifact.mjs',
+] as const;
+
+const portableAgentContractPaths = [
+  '.agents/skills',
+  'docs/agent-skills.md',
+  'docs/adr/0026-portable-agent-skills.md',
+  'tools/agent-skills',
 ] as const;
 
 const templateMaintainerScripts = [
@@ -40,6 +46,11 @@ interface PackageJson {
   readonly scripts?: Record<string, string>;
 }
 
+interface TreeFileSnapshot {
+  readonly path: string;
+  readonly content: Buffer;
+}
+
 function removeTreePath(tree: Tree, path: string): void {
   if (tree.read(path) !== null) {
     tree.delete(path);
@@ -48,6 +59,32 @@ function removeTreePath(tree: Tree, path: string): void {
 
   for (const child of tree.children(path)) {
     removeTreePath(tree, `${path}/${child}`);
+  }
+}
+
+function captureTreePath(tree: Tree, path: string): TreeFileSnapshot[] {
+  const content = tree.read(path);
+  if (content !== null) {
+    return [{ path, content: Buffer.from(content) }];
+  }
+
+  return tree
+    .children(path)
+    .flatMap((child) => captureTreePath(tree, `${path}/${child}`));
+}
+
+function capturePortableAgentContract(tree: Tree): TreeFileSnapshot[] {
+  return portableAgentContractPaths.flatMap((path) =>
+    captureTreePath(tree, path),
+  );
+}
+
+function restorePortableAgentContract(
+  tree: Tree,
+  snapshots: readonly TreeFileSnapshot[],
+): void {
+  for (const snapshot of snapshots) {
+    tree.write(snapshot.path, snapshot.content);
   }
 }
 
@@ -99,6 +136,7 @@ export default async function presetGenerator(
   tree: Tree,
   schema: InitGeneratorSchema,
 ): Promise<void> {
+  const portableAgentContract = capturePortableAgentContract(tree);
   const options = normalizeInitOptions(schema);
   await initGenerator(tree, { ...schema, skipFormat: true });
   configureAiProfile(tree, {
@@ -112,4 +150,5 @@ export default async function presetGenerator(
   makeWorkspacePluginPrivate(tree);
 
   await formatGeneratorFiles(tree, schema.skipFormat);
+  restorePortableAgentContract(tree, portableAgentContract);
 }
