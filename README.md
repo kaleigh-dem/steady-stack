@@ -19,10 +19,13 @@ Contributors and coding agents should use the versioned repository controls that
 
 - `AGENTS.md` and the closest nested `AGENTS.md` for always-on rules;
 - `.agents/skills` for reviewed progressively disclosed procedures;
-- `docs/TODO.md` for the upstream roadmap and task control plane;
+- GitHub Issues for actionable work, with an explicitly assigned or explicitly selected open Issue required before an agent begins work;
+- GitHub Milestones, when useful, for releases or larger coordinated work rather than task identity;
 - `docs/adr/` for durable architecture and governance decisions;
 - `docs/documentation-integrity.md` for executable documentation checks and ownership rules;
 - executable contracts, generated evidence, and runbooks under `docs/`, `tools/`, and the Nx project graph when a change needs implementation-level detail.
+
+Pull requests normally use `Closes #<issue>` so actionable work, implementation, review, and completed history remain connected. Git history, closed Issues, and merged PRs retain completed-work evidence; historical task identifiers may remain where they are genuinely historical.
 
 Human-facing explanation belongs in the Wiki. Do not create a second onboarding, operator, product, or explanatory manual under root Markdown or `docs/` unless the repository copy has an explicit implementation, automation, governance, review, or machine-consumption reason and is accepted by the documentation-surface gate.
 
@@ -37,4 +40,4 @@ npx create-nx-workspace@23.1.1 my-workspace \
 
 ## Repository status
 
-Phase 15 is complete through P15-03. Portable agent procedures live in the canonical `.agents/skills` tree, maintained hosts discover the same project-level skill root, and human-facing documentation has a single reviewed Wiki home while repository controls remain versioned beside the code.
+Phase 15 is complete through the historical task P15-03. Portable agent procedures live in the canonical `.agents/skills` tree, maintained hosts discover the same project-level skill root, and human-facing documentation has a single reviewed Wiki home while repository controls remain versioned beside the code. New actionable work is tracked in GitHub Issues rather than a repository Markdown roadmap.

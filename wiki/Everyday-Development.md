@@ -7,6 +7,7 @@ This page documents the repository-level commands humans and AI agents use durin
 - Dependencies installed with `pnpm install --frozen-lockfile`.
 - A local `.env` file for application and database work.
 - Docker running for PostgreSQL-backed flows and integration tests.
+- An open GitHub Issue for actionable upstream work. Coding agents require that Issue to be explicitly assigned or explicitly selected before they begin.
 
 ## Use repository commands instead of underlying tools
 
@@ -16,16 +17,19 @@ Run all commands from the workspace root.
 
 ## Standard agent iteration loop
 
-For each scoped task:
+For each scoped Issue:
 
-1. Read the root and closest nested `AGENTS.md`.
-2. Inspect the target with `pnpm nx show project <PROJECT_NAME>` and the project graph.
-3. Identify the source of truth and use a local generator for repeated structure.
-4. Make the smallest coherent change through public package boundaries.
-5. Run focused type checking, tests, and builds.
-6. Run `pnpm affected` while iterating across dependent projects.
-7. Run `pnpm format` and `pnpm check` before handoff.
-8. Review the diff, generated files, migrations, and remaining human decisions.
+1. Confirm the explicitly assigned or explicitly selected GitHub Issue is open, then read its full scope and acceptance criteria.
+2. Read the root and closest nested `AGENTS.md`.
+3. Inspect the target with `pnpm nx show project <PROJECT_NAME>` and the project graph.
+4. Identify the source of truth and use a local generator for repeated structure.
+5. Make the smallest coherent change through public package boundaries.
+6. Run focused type checking, tests, and builds.
+7. Run `pnpm affected` while iterating across dependent projects.
+8. Run `pnpm format` and `pnpm check` before handoff.
+9. Review the diff, generated files, migrations, acceptance-criteria evidence, and remaining human decisions.
+
+If no Issue is explicitly selected or assigned, an agent does not search repository prose or a milestone for the next task. New actionable work must first exist as a GitHub Issue.
 
 See [Agentic Development Model](Agentic-Development-Model) for the complete operating model and approval boundaries.
 
@@ -217,7 +221,9 @@ The named PostgreSQL volume is retained. Use the destructive volume-removal proc
 
 ## Prepare a reviewable agent handoff
 
-Before opening a pull request, an agent should summarize the intended behavior, projects changed, boundaries affected, validation run, and any production or human follow-up. The summary complements the diff; it does not replace review.
+Before opening a pull request, an agent should summarize the selected Issue, intended behavior, projects changed, boundaries affected, validation run, and any production or human follow-up. The summary complements the diff; it does not replace review.
+
+When the local reviewer bridge is used, the handoff carries `TASK: #<issue>` and the exact full PR head SHA. A new head requires a new review state.
 
 ## Prepare a pull request
 
@@ -236,7 +242,7 @@ git diff --stat
 git diff
 ```
 
-For generated-workspace application teams, update relevant product documentation. The upstream `docs/TODO.md` process applies to maintainers of the template itself, not automatically to every generated product repository.
+For upstream SteadyStack work, PRs normally use `Closes #<issue>` and map evidence to the selected Issue acceptance criteria. Generated-workspace application teams may define their own planning policy, but the upstream template does not copy a maintainer Markdown roadmap into initialized products.
 
 ## Focused iteration guide
 

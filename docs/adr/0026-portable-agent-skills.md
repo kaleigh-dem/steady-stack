@@ -2,8 +2,8 @@
 
 - Status: Accepted
 - Date: 2026-08-12
-- Last updated: 2026-08-14
-- Tasks: P15-01, P15-02
+- Last updated: 2026-08-15
+- Tasks: P15-01, P15-02 (historical task identifiers)
 
 ## Context
 
@@ -19,10 +19,11 @@ P15-02 extends that contract by generating the same reviewed procedures into dow
 
 Root and nested `AGENTS.md` remain concise, always-on, agent-agnostic rules. Skills are loaded only when relevant and supplement but never override, weaken, or replace:
 
-1. root and closest nested `AGENTS.md`;
-2. executable repository contracts and generated sources of truth;
-3. ADRs and `docs/TODO.md`;
-4. protected GitHub/environment controls and human approval.
+1. the explicitly selected open GitHub Issue for actionable-work scope and acceptance criteria;
+2. root and closest nested `AGENTS.md`;
+3. executable repository contracts and generated sources of truth;
+4. applicable ADRs;
+5. protected GitHub/environment controls and human approval.
 
 ### Canonical location and format
 
@@ -43,6 +44,8 @@ Conceptual capabilities express least-privilege expectations rather than host-sp
 ### Provenance and third-party review
 
 `.agents/skills/provenance.json` remains the reviewed registry for every canonical skill. It records stable name/origin, source and immutable source reference, reviewed license, bundled-script review state, and a SHA-256 digest of the complete committed skill tree.
+
+Repository-owned historical `sourceRef` values such as `P15-01` and `P15-02` are provenance for the work that introduced or materially revised a skill. They are not current task-selection identity. New actionable work uses its GitHub Issue number.
 
 There is no runtime auto-install path for third-party skills. Importing or updating one is a normal reviewed repository change. Bundled scripts are rejected until provenance explicitly records script review.
 
@@ -98,6 +101,7 @@ None contains bundled scripts or requires runtime skill downloads.
 - Identity initialization cannot silently invalidate Agent Skills hashes or policy metadata.
 - Release and upgrade procedures become discoverable without granting production authority or an alternate path around human approval.
 - Host-support evidence is intentionally reviewed and pinned; changing maintained hosts or their discovery contract requires a repository change rather than a runtime fetch.
+- Actionable skill changes require an explicitly selected open GitHub Issue; historical provenance identifiers do not authorize new work.
 
 ## Rejected alternatives
 

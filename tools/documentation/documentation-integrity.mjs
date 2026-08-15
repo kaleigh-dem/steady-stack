@@ -663,20 +663,15 @@ export function auditChangeEvidence({ changes, boundaryChanges = new Set() }) {
   );
   if (!generatorChanged && !architectureChanged) return [];
 
-  const failures = [];
-  if (!changed.has('docs/TODO.md')) {
-    failures.push('generator or architecture changes require docs/TODO.md');
-  }
   if (
-    ![...changed].some(
+    [...changed].some(
       (file) => file.startsWith('docs/adr/') && file.endsWith('.md'),
     )
   ) {
-    failures.push(
-      'generator or architecture changes require a docs/adr/*.md update',
-    );
+    return [];
   }
-  return failures;
+
+  return ['generator or architecture changes require a docs/adr/*.md update'];
 }
 
 function resolveDiffRange(root) {

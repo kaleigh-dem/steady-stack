@@ -22,20 +22,21 @@ pnpm graph
 
 The repository exposes its operating rules through several complementary surfaces:
 
-| Surface                            | Purpose                                                                                                     |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `AGENTS.md`                        | Repository-wide instructions and subsystem-specific rules.                                                  |
-| `.agents/skills/<name>/SKILL.md`   | Canonical progressively disclosed repository procedures loaded only when relevant.                          |
-| `.agents/skills/provenance.json`   | Reviewed skill origin, license, script-review state, and complete-tree content hashes.                      |
-| `.mcp.json`                        | Starts the Nx MCP server so compatible agent clients can query workspace context.                           |
-| `project.json` and Nx graph        | Project ownership, tags, targets, dependencies, and affected analysis.                                      |
-| `src/index.ts` public entry points | Supported cross-project APIs.                                                                               |
-| `docs/adr`                         | Durable reasons for architectural decisions.                                                                |
-| Root `package.json` scripts        | Stable, copyable development and validation commands, including `pnpm agent-skills:check` in the root gate. |
-| `workspace.template.json`          | Generated repository identity, profile choices, provenance, and upgrade metadata.                           |
-| Local generators                   | Approved write paths for repeated architectural structures.                                                 |
+- **GitHub Issues:** actionable-work scope and acceptance criteria; one open Issue must be explicitly assigned or selected.
+- **`AGENTS.md`:** repository-wide instructions and subsystem-specific rules.
+- **`.agents/skills/<name>/SKILL.md`:** canonical progressively disclosed repository procedures loaded only when relevant.
+- **`.agents/skills/provenance.json`:** reviewed skill origin, license, script-review state, and complete-tree content hashes.
+- **`.mcp.json`:** starts the Nx MCP server so compatible agent clients can query workspace context.
+- **`project.json` and the Nx graph:** project ownership, tags, targets, dependencies, and affected analysis.
+- **`src/index.ts` public entry points:** supported cross-project APIs.
+- **`docs/adr`:** durable reasons for architectural decisions.
+- **Root `package.json` scripts:** stable, copyable development and validation commands, including `pnpm agent-skills:check` in the root gate.
+- **`workspace.template.json`:** generated repository identity, profile choices, provenance, and upgrade metadata.
+- **Local generators:** approved write paths for repeated architectural structures.
 
-Authority remains explicit. Root and closest nested `AGENTS.md` come first, followed by executable repository contracts and generated sources of truth, then applicable ADRs and `docs/TODO.md`. A relevant `.agents/skills` procedure can supplement those sources but cannot override them, weaken validation, grant credentials or production authority, approve an architecture exception, or bypass a human approval gate.
+Authority remains explicit. The explicitly selected open GitHub Issue defines actionable-work scope and acceptance criteria. Root and closest nested `AGENTS.md`, executable repository contracts/generated sources of truth, and applicable ADRs then constrain how that work is performed. A relevant `.agents/skills` procedure can supplement those sources but cannot override them, weaken validation, grant credentials or production authority, approve an architecture exception, or bypass a human approval gate.
+
+If no open Issue is explicitly assigned or selected, a coding agent remains idle rather than scanning repository prose, Milestones, or historical task sequences for work.
 
 P15-02 distributes the validated portable skill set into initialized products. Generated workspaces receive the same canonical `.agents/skills` tree and provenance registry, and `pnpm agent-skills:check` verifies both the skill contract and maintained-host discovery without creating vendor-specific copies.
 
@@ -108,15 +109,17 @@ Use the root scripts rather than copying structures manually.
 
 ## Documentation and decisions
 
+- GitHub Issues contain upstream actionable work and acceptance criteria; PRs normally link implementation with `Closes #<issue>`.
+- GitHub Milestones may group releases or coordinated work but do not replace Issue identity.
 - `AGENTS.md` at the root defines repository-wide development rules; nested `AGENTS.md` files add subsystem-specific instructions.
 - `.agents/skills/<name>/SKILL.md` is the canonical progressively disclosed procedure layer in both the upstream template and initialized products, with `.agents/skills/provenance.json` providing reviewed origin and complete-tree integrity records.
 - `docs/agent-skills.md` and ADR 0026 define the Agent Skills metadata, authority, provenance, command, generation, and maintained-host discovery contract.
 - `docs/adr` contains architectural decision records.
-- `docs/TODO.md` is the upstream template roadmap, primarily relevant to template maintainers.
 - `docs/runbooks` contains release rollback, disaster recovery, and degraded-dependency procedures.
 - `docs/security` contains threat-model and identity operations guidance.
+- closed Issues, merged PRs, and Git history retain completed-work history; historical `Pxx-xx` identifiers may remain in genuine historical evidence.
 
-Generated application teams should distinguish upstream roadmap processes from their own product backlog. P15-02-generated products contain the canonical portable skill registry and validate the same host-discovery contract as the upstream template.
+Generated application teams may define their own product backlog. P15-02-generated products contain the canonical portable skill registry and validate the same host-discovery contract as the upstream template, but the upstream maintainer task-control plane is not copied into them.
 
 ## Architectural tags
 

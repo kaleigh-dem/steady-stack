@@ -10,11 +10,11 @@ metadata:
 
 # Architecture discovery
 
-Use this skill after reading the root and closest `AGENTS.md`. It provides the repeatable discovery procedure; `AGENTS.md`, ADRs, executable contracts, and the roadmap remain authoritative.
+Use this skill after reading the root and closest `AGENTS.md`. It provides the repeatable discovery procedure; the explicitly selected open GitHub Issue, `AGENTS.md`, ADRs, and executable contracts remain authoritative.
 
 ## Procedure
 
-1. Read the active task in `docs/TODO.md` and the relevant records under `docs/adr/`.
+1. Read the explicitly selected open GitHub Issue completely, including relevant comments, and read the relevant records under `docs/adr/`.
 2. Prefer live, version-matched workspace and framework context over copied prose:
    - when the host supports MCP, use the Nx server configured in `.mcp.json` for project and dependency context;
    - inspect the installed Nx project graph and targets rather than inferring boundaries from folders;
@@ -40,4 +40,4 @@ pnpm graph
 
 ## Authority boundary
 
-This skill does not override `AGENTS.md`, ADRs, contracts, `docs/TODO.md`, branch protection, validation, or human approval. It grants no credentials, production authority, architecture exception, or permission to weaken a repository check.
+This skill does not override the selected GitHub Issue, `AGENTS.md`, ADRs, contracts, branch protection, validation, or human approval. It grants no credentials, production authority, architecture exception, or permission to weaken a repository check.

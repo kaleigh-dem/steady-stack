@@ -8,4 +8,4 @@
 - Put transaction boundaries in application use cases and pass transaction-scoped database handles to repositories.
 - Preserve outbox leasing, ownership-token fencing, retry, replay, and rate-limit atomicity when changing adapters.
 - Integration tests must own their PostgreSQL container lifecycle and use the supported PostgreSQL major version.
-- Update `docs/TODO.md` when a change affects roadmap status, sequencing, scope, or exit criteria.
+- Keep database changes scoped to the explicitly selected open GitHub Issue; create or identify a separate Issue for newly discovered future work rather than extending scope silently.

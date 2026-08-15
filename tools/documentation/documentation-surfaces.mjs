@@ -15,7 +15,6 @@ const ROOT_REPOSITORY_MARKDOWN = new Map([
 
 const TOP_LEVEL_DOCS = new Map([
   ['docs/AUTOMATION_WORKFLOW.md', 'automation-control'],
-  ['docs/TODO.md', 'roadmap-control'],
   ['docs/agent-safety-and-governance.md', 'governance-contract'],
   ['docs/agent-skills.md', 'agent-contract'],
   ['docs/agentic-development.md', 'agent-workflow'],
@@ -75,7 +74,7 @@ const README_REQUIRED_SNIPPETS = [
   'https://github.com/kaleigh-dem/steady-stack/wiki',
   '`AGENTS.md`',
   '`.agents/skills`',
-  '`docs/TODO.md`',
+  'GitHub Issues',
   '`docs/adr/`',
   '`docs/documentation-integrity.md`',
 ];
