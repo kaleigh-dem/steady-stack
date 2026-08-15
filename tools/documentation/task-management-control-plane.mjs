@@ -15,11 +15,12 @@ const HISTORICAL_PREFIXES = ['docs/adr/', 'docs/evaluations/evidence/'];
 
 const SELF_REFERENCE_PATHS = new Set([
   'docs/documentation-integrity.md',
+  'tools/documentation/documentation-surfaces.spec.mjs',
   'tools/documentation/task-management-control-plane.mjs',
   'tools/documentation/task-management-control-plane.spec.mjs',
+  'tools/template/generated-workspace-e2e.mjs',
 ]);
 
-const LEGACY_PATH_SURFACE_EXTENSIONS = new Set(['.md', '.json', '.yaml', '.yml']);
 const ACTIVE_TEXT_EXTENSIONS = new Set([
   '.cjs',
   '.js',
@@ -42,7 +43,7 @@ const FORBIDDEN_DISCOVERY_PATTERNS = [
     message: 'discovers the next task from the retired TODO model',
   },
   {
-    pattern: /\b(?:read|scan|inspect|walk)\b[^\n.]{0,120}\b(?:markdown|todo|roadmap)\b[^\n.]{0,120}\b(?:choose|discover|find|select|start)\b[^\n.]{0,80}\b(?:task|work)\b/i,
+    pattern: /(?<!not )(?<!never )\b(?:read|scan|inspect|walk)\b[^\n.]{0,120}\b(?:markdown|todo|roadmap)\b[^\n.]{0,120}\b(?:choose|discover|find|select|start)\b[^\n.]{0,80}\b(?:task|work)\b/i,
     message: 'discovers actionable work from a Markdown roadmap',
   },
   {
@@ -94,11 +95,7 @@ export function auditTaskControlPlane(files) {
     }
 
     const content = entry.content ?? '';
-    const extension = path.posix.extname(file);
-    if (
-      LEGACY_PATH_SURFACE_EXTENSIONS.has(extension) &&
-      content.includes(RETIRED_ROADMAP_PATH)
-    ) {
+    if (content.includes(RETIRED_ROADMAP_PATH)) {
       failures.push(
         `${file}: active control/documentation surface references the retired Markdown roadmap`,
       );
@@ -138,7 +135,10 @@ export function auditTaskControlPlane(files) {
         'docs/AUTOMATION_WORKFLOW.md: reviewer handoff examples must use GitHub Issue task identity',
       );
     }
-    if (!/exact[- ]head/i.test(automation) || !/fail(?:s|ed)? closed/i.test(automation)) {
+    if (
+      !/exact[- ]head/i.test(automation) ||
+      !/fail(?:s|ed)? closed/i.test(automation)
+    ) {
       failures.push(
         'docs/AUTOMATION_WORKFLOW.md: exact-head and fail-closed reviewer semantics must remain explicit',
       );

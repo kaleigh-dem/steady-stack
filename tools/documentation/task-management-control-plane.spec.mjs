@@ -39,6 +39,20 @@ test('rejects recreation of the retired roadmap', () => {
   );
 });
 
+test('rejects active code that reads the retired roadmap path', () => {
+  const failures = auditTaskControlPlane(
+    files({
+      'tools/automation/scheduler.mjs':
+        "export const roadmap = 'docs/TODO.md';\n",
+    }),
+  );
+  assert(
+    failures.some((failure) =>
+      failure.includes('references the retired Markdown roadmap'),
+    ),
+  );
+});
+
 test('rejects agent instructions that select the next unchecked task', () => {
   const failures = auditTaskControlPlane(
     files({
@@ -63,6 +77,23 @@ test('rejects automation that discovers the next eligible TODO', () => {
       failure.includes('discovers the next task from the retired TODO model'),
     ),
   );
+});
+
+test('allows explicit prohibitions against roadmap discovery', () => {
+  const result = auditTaskControlPlane(
+    files({
+      'docs/AUTOMATION_WORKFLOW.md': [
+        '# Automation',
+        'Use exact-head review and fail closed on invalid state.',
+        'Do not scan a Markdown roadmap to select work.',
+        'Never inspect a TODO roadmap to discover a task.',
+        '```text',
+        'TASK: #88',
+        '```',
+      ].join('\n'),
+    }),
+  );
+  assert.deepEqual(result, []);
 });
 
 test('rejects roadmap task IDs as active reviewer identity', () => {
