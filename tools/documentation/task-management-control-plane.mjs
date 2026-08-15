@@ -76,10 +76,7 @@ function shouldScanActiveText(file) {
 function stripKnownInertGeneratedReference(file, content) {
   if (file !== INERT_GENERATED_REFERENCE_PATH) return content;
 
-  return content.replace(
-    /^\s*`\/docs\/TODO\.md \$\{owners\}`,\s*$/gm,
-    '',
-  );
+  return content.replace(/^\s*`\/docs\/TODO\.md \$\{owners\}`,\s*$/gm, '');
 }
 
 export function shouldAuditTaskControlPlane(packageJson) {
@@ -105,7 +102,10 @@ export function auditTaskControlPlane(files) {
       continue;
     }
 
-    const content = stripKnownInertGeneratedReference(file, entry.content ?? '');
+    const content = stripKnownInertGeneratedReference(
+      file,
+      entry.content ?? '',
+    );
     if (content.includes(RETIRED_ROADMAP_PATH)) {
       failures.push(
         `${file}: active control/documentation surface references the retired Markdown roadmap`,

@@ -159,8 +159,14 @@ test(
 );
 
 test('runs only in the upstream source repository', () => {
-  assert.equal(shouldAuditTaskControlPlane({ name: '@steadystack/source' }), true);
-  assert.equal(shouldAuditTaskControlPlane({ name: '@product/example' }), false);
+  assert.equal(
+    shouldAuditTaskControlPlane({ name: '@steadystack/source' }),
+    true,
+  );
+  assert.equal(
+    shouldAuditTaskControlPlane({ name: '@product/example' }),
+    false,
+  );
 });
 
 test('enforces the tracked upstream repository', async () => {

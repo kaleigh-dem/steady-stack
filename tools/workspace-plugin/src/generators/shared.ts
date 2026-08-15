@@ -188,9 +188,7 @@ function removeRetiredTaskControlOwnership(tree: Tree): void {
   const content = tree.read(codeownersPath, 'utf-8') ?? '';
   const retiredPath = ['docs', 'TODO.md'].join('/');
   const lines = content.split('\n');
-  const retained = lines.filter(
-    (line) => !line.startsWith(`/${retiredPath} `),
-  );
+  const retained = lines.filter((line) => !line.startsWith(`/${retiredPath} `));
 
   if (retained.length !== lines.length) {
     tree.write(codeownersPath, retained.join('\n'));
