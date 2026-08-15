@@ -183,6 +183,16 @@ async function assertGeneratedContract(workspace, expectedVersion) {
   assert.match(projectChecklist, /## Branch protection and required checks/);
   assert.match(projectChecklist, /## Secrets and application configuration/);
 
+  const preservedWikiPaths = [
+    '.github/workflows/wiki-publish.yml',
+    'docs/wiki-publication.md',
+    'wiki/Home.md',
+    'wiki/Quick-Start.md',
+  ];
+  for (const relativePath of preservedWikiPaths) {
+    await stat(path.join(workspace, relativePath));
+  }
+
   const removedPaths = [
     '.github/workflows/generated-workspace.yml',
     '.github/workflows/template-release.yml',
