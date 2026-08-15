@@ -84,9 +84,9 @@ The documentation-integrity commands below are **SteadyStack/template-maintainer
 pnpm docs:check
 ```
 
-In the upstream `@steadystack/source` template, this validates internal links, repository paths, root and Nx commands, documented environment-variable names, current SteadyStack identity and authentication descriptions, the committed Nx project-graph diagram, and required roadmap-plus-ADR evidence for generator or architectural-boundary changes.
+In the upstream `@steadystack/source` template, this validates internal links, repository paths, root and Nx commands, documented environment-variable names, current SteadyStack identity and authentication descriptions, the committed Nx project-graph diagram, and required roadmap-plus-ADR evidence for generator or architectural-boundary changes. P15-03 also makes documentation-surface ownership part of the same gate: tracked root, `docs/`, and `wiki/` Markdown are inventoried and classified by audience and authority; core reviewed Wiki sources are required; unclassified repository prose and duplicated human-facing onboarding are rejected; and README is constrained to its landing-and-routing role instead of becoming a second manual.
 
-After initialization, the root package is no longer `@steadystack/source`. An initialized product still runs the checker’s deterministic unit tests through `pnpm docs:check`, but it intentionally skips the upstream repository topology/content audit because initialization changes identity, can remove projects, and removes maintainer-only material. Adopters that want equivalent enforcement should add product-specific documentation-integrity rules for their own repository structure, commands, identity, and content.
+After initialization, the root package is no longer `@steadystack/source`. An initialized product still runs the checker’s deterministic unit tests through `pnpm docs:check`, but it intentionally skips the upstream content, topology, and documentation-surface ownership audits because initialization changes identity, can remove projects, and removes maintainer-only material. Adopters that want equivalent enforcement should add product-specific documentation-integrity rules for their own repository structure, commands, identity, content, and documentation ownership.
 
 Template maintainers should regenerate and review the upstream architecture diagram after changing the Nx project inventory or dependency graph:
 
@@ -230,7 +230,7 @@ pnpm docs:architecture
 pnpm agent-skills:check
 ```
 
-For initialized products, `pnpm docs:check` retains the checker unit tests but skips the upstream `@steadystack/source` content/topology audit. P15-02-generated workspaces retain the canonical Agent Skills registry and run the same `pnpm agent-skills:check` contract, including maintained-host discovery. Add product-specific documentation rules if the initialized workspace should enforce an equivalent documentation contract.
+For initialized products, `pnpm docs:check` retains the checker unit tests but skips the upstream `@steadystack/source` content, topology, and documentation-surface ownership audits. P15-02-generated workspaces retain the canonical Agent Skills registry and run the same `pnpm agent-skills:check` contract, including maintained-host discovery. Add product-specific documentation rules if the initialized workspace should enforce an equivalent documentation contract.
 
 Optional AI runtime and evaluation projects:
 
