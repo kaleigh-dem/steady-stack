@@ -16,13 +16,13 @@ The documentation model is:
 - ADRs retain durable architecture and governance decisions;
 - closed Issues, merged PRs, and Git history retain completed-work history.
 
-The retired `docs/TODO.md` file must not exist or be recreated as an authoritative task source.
+The retired docs/TODO.md file must not exist or be recreated as an authoritative task source.
 
 ## Task-management control-plane gate
 
 The task-control regression audit scans the tracked upstream repository and fails when the old model returns in an active surface. It detects:
 
-- recreation of `docs/TODO.md`;
+- recreation of the retired docs/TODO.md roadmap;
 - active Markdown or workflow guidance that references the retired roadmap as a task source;
 - instructions to select the first or next unchecked task/TODO item;
 - automation that discovers the next task from a Markdown roadmap;
