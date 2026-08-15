@@ -1,35 +1,27 @@
 ## Summary
+<!-- 1–3 bullets describing what changed and why. -->
 
-## Why
+## Issue
+<!-- Actionable work should be backed by the explicitly selected GitHub Issue. Example: Closes #88 -->
+Closes #
 
 ## Scope
+<!-- List the projects, packages, docs, workflows, or control surfaces changed. -->
 
-- Issue or TODO task:
-- Explicitly out of scope:
-
-## Architecture and boundaries
-
-- [ ] New or changed projects have the correct Nx scope, runtime, and project-type tags
-- [ ] No dependency boundary was weakened without an ADR or explicit rationale
-- [ ] Generated files and downstream ownership rules are preserved
-- [ ] No secret, production environment file, or sensitive log output is included
+## Acceptance Criteria
+<!-- Map evidence to the selected Issue's acceptance criteria. -->
+- [ ] Issue acceptance criteria are satisfied with reviewable evidence.
 
 ## Validation
+<!-- List exact commands and results. Call out anything that could not run in this environment. -->
 
-- [ ] `pnpm install --frozen-lockfile`
-- [ ] `pnpm format:check`
-- [ ] `pnpm nx affected -t lint typecheck test build`
-- [ ] Relevant contract, security, delivery, database, preview, or generated-workspace checks
-- [ ] Any unavailable local validation is documented below and covered by exact-head CI
+## Risk & Rollback
+<!-- Describe migration, rollout, compatibility, or rollback risk. Use "None" only when genuinely absent. -->
 
-Validation notes:
-
-## Documentation and roadmap
-
-- [ ] Documentation was updated, or no documentation change is needed
-- [ ] `docs/TODO.md` was updated when roadmap status, scope, sequencing, or exit criteria changed
-- [ ] No roadmap task is marked complete before implementation, documentation, applicable CI, and required review pass
-
-## Rollout, migration, and risk
-
-Describe compatibility impact, migrations, configuration changes, security boundaries, deployment sequencing, rollback, and any required operator action.
+## Reviewer Verification
+- [ ] The PR is scoped to the selected open GitHub Issue.
+- [ ] The PR normally uses `Closes #<issue>` or explains why it intentionally does not close the Issue.
+- [ ] Required CI and affected validation are green for the current head.
+- [ ] Exact-head reviewer semantics and fail-closed behavior are preserved where applicable.
+- [ ] Documentation, ADRs, generated output, and migration evidence are updated when required.
+- [ ] Any unavailable external/local reviewer-bridge validation is explicitly identified rather than assumed.

@@ -26,7 +26,7 @@ function files(overrides = {}) {
         '',
         '- `AGENTS.md`',
         '- `.agents/skills`',
-        '- `docs/TODO.md`',
+        '- GitHub Issues',
         '- `docs/adr/`',
         '- `docs/documentation-integrity.md`',
       ].join('\n'),
@@ -34,7 +34,6 @@ function files(overrides = {}) {
       'CHANGELOG.md': '# Changelog\n',
       'CONTRIBUTING.md': '# Contributing\n',
       'SECURITY.md': '# Security\n',
-      'docs/TODO.md': '# Roadmap\n',
       'docs/adr/0027-documentation-surface-ownership.md': '# ADR\n',
       'wiki/Home.md':
         '# Home\n\nThis Wiki is the primary human-facing documentation surface.\n',
@@ -60,6 +59,7 @@ test('classifies documentation surfaces', () => {
     'repository-control',
   );
   assert.equal(classifyDocumentationSurface('docs/getting-started.md'), null);
+  assert.equal(classifyDocumentationSurface('docs/TODO.md'), null);
 });
 
 test('rejects duplicate and unclassified prose', () => {
@@ -81,7 +81,7 @@ test('keeps README as a routing surface', () => {
     [
       '# SteadyStack',
       'https://github.com/kaleigh-dem/steady-stack/wiki',
-      '`AGENTS.md` `.agents/skills` `docs/TODO.md` `docs/adr/` `docs/documentation-integrity.md`',
+      '`AGENTS.md` `.agents/skills` GitHub Issues `docs/adr/` `docs/documentation-integrity.md`',
       '## Local development',
     ].join('\n'),
   );
@@ -89,7 +89,7 @@ test('keeps README as a routing surface', () => {
   assert(failures.some((failure) => failure.includes('Local development')));
 });
 
-test('accepts a classified inventory', () => {
+test('accepts a classified inventory without a Markdown roadmap exception', () => {
   assert.deepEqual(auditDocumentationSurfaces(files()), []);
 });
 
