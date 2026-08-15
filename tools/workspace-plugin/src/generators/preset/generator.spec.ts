@@ -53,13 +53,13 @@ describe('preset generator', () => {
     );
     tree.write('.github/workflows/generated-workspace.yml', 'name: e2e\n');
     tree.write('.github/workflows/template-release.yml', 'name: release\n');
+    tree.write('.github/workflows/wiki-publish.yml', 'name: wiki\n');
     tree.write('CHANGELOG.md', '# Changelog\n');
     tree.write('docs/agent-skills.md', '# Portable skill contract\n');
     tree.write(
       'docs/adr/0026-portable-agent-skills.md',
       '# ADR\nSteadyStack kaleigh-dem/steady-stack\n',
     );
-    tree.write('docs/getting-started.md', '# Generated workspace onboarding\n');
     tree.write(
       'docs/generated-project-checklist.md',
       '# Generated project checklist\n',
@@ -67,6 +67,9 @@ describe('preset generator', () => {
     tree.write('docs/template-releases.md', '# Releases\n');
     tree.write('docs/template-validation.md', '# Validation\n');
     tree.write('docs/template-upgrades.md', '# Upgrades\n');
+    tree.write('docs/wiki-publication.md', '# Wiki publication\n');
+    tree.write('wiki/Home.md', '# Human documentation\n');
+    tree.write('wiki/Quick-Start.md', '# Quick Start\n');
     tree.write('tools/template/fixtures/upgrade-0.1.0/package.json', '{}\n');
     tree.write('tools/template/ai-profile-isolation-check.mjs', 'export {};\n');
     tree.write('tools/template/generated-ai-profile-e2e.mjs', 'export {};\n');
@@ -138,9 +141,17 @@ describe('preset generator', () => {
       false,
     );
     expect(tree.exists('.github/workflows/template-release.yml')).toBe(false);
+    expect(tree.read('.github/workflows/wiki-publish.yml', 'utf-8')).toBe(
+      'name: wiki\n',
+    );
     expect(tree.exists('CHANGELOG.md')).toBe(false);
     expect(tree.exists('docs/template-releases.md')).toBe(false);
     expect(tree.exists('docs/template-validation.md')).toBe(false);
+    expect(tree.read('docs/wiki-publication.md', 'utf-8')).toBe(
+      '# Wiki publication\n',
+    );
+    expect(tree.read('wiki/Home.md', 'utf-8')).toBe('# Human documentation\n');
+    expect(tree.read('wiki/Quick-Start.md', 'utf-8')).toBe('# Quick Start\n');
     expect(tree.exists('tools/template/fixtures')).toBe(false);
     expect(tree.exists('tools/template/ai-profile-isolation-check.mjs')).toBe(
       false,
@@ -156,7 +167,6 @@ describe('preset generator', () => {
       false,
     );
 
-    expect(tree.exists('docs/getting-started.md')).toBe(true);
     expect(tree.exists('docs/generated-project-checklist.md')).toBe(true);
     expect(tree.exists('docs/template-upgrades.md')).toBe(true);
     expect(tree.exists('tools/template/upgrade.mjs')).toBe(true);
