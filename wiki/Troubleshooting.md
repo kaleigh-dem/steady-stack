@@ -7,6 +7,33 @@ This page is organized by observable symptom. Each entry includes likely causes,
 - Run diagnostics from the workspace root unless stated otherwise.
 - Preserve logs and the working tree before destructive recovery.
 
+## `pnpm docs:check` fails
+
+**Symptom:** `pnpm docs:check` exits non-zero, or CI fails the documentation-integrity step.
+
+**Likely causes:** A Markdown link, repository path, command, environment-variable name, identity/authentication description, project graph, or required roadmap/ADR change evidence is stale. In the upstream template, P15-03 adds documentation-ownership failures too: tracked Markdown may be unclassified, duplicate human-facing onboarding may have returned to repository controls, a required Wiki source may be missing, or README may have drifted beyond its landing-and-routing role.
+
+**Diagnose:**
+
+```bash
+pnpm docs:check
+git status --short
+git diff -- README.md docs wiki
+```
+
+Read the first checker message literally. In the upstream `@steadystack/source` template, the audit covers content, topology, and documentation-surface ownership for tracked root, `docs/`, and `wiki/` Markdown. Initialized products retain the deterministic checker tests but intentionally skip those upstream-specific audits.
+
+**Resolve:** Correct broken references and documented names at their source. Regenerate the architecture diagram with `pnpm docs:architecture` when the project graph changed, and add required roadmap/ADR evidence for generator or architectural-boundary changes. For ownership failures, move human-first product, onboarding, operator, or explanatory prose to `wiki/`, keep README routing-only, restore required reviewed Wiki sources, and remove duplicated repository onboarding instead of creating a second human manual under root Markdown or `docs/`.
+
+**Verify:**
+
+```bash
+pnpm docs:check
+pnpm check
+```
+
+See [Validation and Testing](Validation-and-Testing) for the full documentation-integrity contract and downstream skip behavior.
+
 ## CI failed but the console log is insufficient
 
 **Symptom:** A required workflow failed, was superseded, or ended without enough evidence in the visible step log.
