@@ -150,9 +150,7 @@ describe('preset generator', () => {
     expect(tree.read('docs/wiki-publication.md', 'utf-8')).toBe(
       '# Wiki publication\n',
     );
-    expect(tree.read('wiki/Home.md', 'utf-8')).toBe(
-      '# Human documentation\n',
-    );
+    expect(tree.read('wiki/Home.md', 'utf-8')).toBe('# Human documentation\n');
     expect(tree.read('wiki/Quick-Start.md', 'utf-8')).toBe('# Quick Start\n');
     expect(tree.exists('tools/template/fixtures')).toBe(false);
     expect(tree.exists('tools/template/ai-profile-isolation-check.mjs')).toBe(
