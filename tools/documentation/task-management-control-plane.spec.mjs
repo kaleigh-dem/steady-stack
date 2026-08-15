@@ -96,6 +96,37 @@ test('allows explicit prohibitions against roadmap discovery', () => {
   assert.deepEqual(result, []);
 });
 
+test('allows only the inert generated CODEOWNERS template reference', () => {
+  const generatedPath =
+    'tools/workspace-plugin/src/generators/init/generator.ts';
+  const result = auditTaskControlPlane(
+    files({
+      [generatedPath]: [
+        'const lines = [',
+        '  `/docs/TODO.md ${owners}`,',
+        '];',
+      ].join('\n'),
+    }),
+  );
+  assert.deepEqual(result, []);
+
+  const failures = auditTaskControlPlane(
+    files({
+      [generatedPath]: [
+        'const lines = [',
+        '  `/docs/TODO.md ${owners}`,',
+        '];',
+        "export const roadmap = 'docs/TODO.md';",
+      ].join('\n'),
+    }),
+  );
+  assert(
+    failures.some((failure) =>
+      failure.includes('references the retired Markdown roadmap'),
+    ),
+  );
+});
+
 test('rejects roadmap task IDs as active reviewer identity', () => {
   const failures = auditTaskControlPlane(
     files({
@@ -120,9 +151,12 @@ test('allows historical roadmap references and task IDs', () => {
   assert.deepEqual(result, []);
 });
 
-test('requires explicit open-Issue guidance and Issue-backed reviewer examples', () => {
-  assert.deepEqual(auditTaskControlPlane(files()), []);
-});
+test(
+  'requires explicit open-Issue guidance and Issue-backed reviewer examples',
+  () => {
+    assert.deepEqual(auditTaskControlPlane(files()), []);
+  },
+);
 
 test('runs only in the upstream source repository', () => {
   assert.equal(shouldAuditTaskControlPlane({ name: '@steadystack/source' }), true);

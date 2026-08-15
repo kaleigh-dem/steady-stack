@@ -22,19 +22,17 @@ pnpm graph
 
 The repository exposes its operating rules through several complementary surfaces:
 
-| Surface                            | Purpose                                                                                                     |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| GitHub Issues                      | Actionable-work scope and acceptance criteria; one open Issue must be explicitly assigned or selected.     |
-| `AGENTS.md`                        | Repository-wide instructions and subsystem-specific rules.                                                  |
-| `.agents/skills/<name>/SKILL.md`   | Canonical progressively disclosed repository procedures loaded only when relevant.                          |
-| `.agents/skills/provenance.json`   | Reviewed skill origin, license, script-review state, and complete-tree content hashes.                      |
-| `.mcp.json`                        | Starts the Nx MCP server so compatible agent clients can query workspace context.                           |
-| `project.json` and Nx graph        | Project ownership, tags, targets, dependencies, and affected analysis.                                      |
-| `src/index.ts` public entry points | Supported cross-project APIs.                                                                               |
-| `docs/adr`                         | Durable reasons for architectural decisions.                                                                |
-| Root `package.json` scripts        | Stable, copyable development and validation commands, including `pnpm agent-skills:check` in the root gate. |
-| `workspace.template.json`          | Generated repository identity, profile choices, provenance, and upgrade metadata.                           |
-| Local generators                   | Approved write paths for repeated architectural structures.                                                 |
+- **GitHub Issues:** actionable-work scope and acceptance criteria; one open Issue must be explicitly assigned or selected.
+- **`AGENTS.md`:** repository-wide instructions and subsystem-specific rules.
+- **`.agents/skills/<name>/SKILL.md`:** canonical progressively disclosed repository procedures loaded only when relevant.
+- **`.agents/skills/provenance.json`:** reviewed skill origin, license, script-review state, and complete-tree content hashes.
+- **`.mcp.json`:** starts the Nx MCP server so compatible agent clients can query workspace context.
+- **`project.json` and the Nx graph:** project ownership, tags, targets, dependencies, and affected analysis.
+- **`src/index.ts` public entry points:** supported cross-project APIs.
+- **`docs/adr`:** durable reasons for architectural decisions.
+- **Root `package.json` scripts:** stable, copyable development and validation commands, including `pnpm agent-skills:check` in the root gate.
+- **`workspace.template.json`:** generated repository identity, profile choices, provenance, and upgrade metadata.
+- **Local generators:** approved write paths for repeated architectural structures.
 
 Authority remains explicit. The explicitly selected open GitHub Issue defines actionable-work scope and acceptance criteria. Root and closest nested `AGENTS.md`, executable repository contracts/generated sources of truth, and applicable ADRs then constrain how that work is performed. A relevant `.agents/skills` procedure can supplement those sources but cannot override them, weaken validation, grant credentials or production authority, approve an architecture exception, or bypass a human approval gate.
 

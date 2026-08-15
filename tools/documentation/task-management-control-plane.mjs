@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const UPSTREAM_PACKAGE_NAME = '@steadystack/source';
 const RETIRED_ROADMAP_PATH = 'docs/TODO.md';
+const INERT_GENERATED_REFERENCE_PATH =
+  'tools/workspace-plugin/src/generators/init/generator.ts';
 
 const HISTORICAL_PATHS = new Set([
   'CHANGELOG.md',
@@ -71,6 +73,15 @@ function shouldScanActiveText(file) {
   return ACTIVE_TEXT_EXTENSIONS.has(path.posix.extname(file));
 }
 
+function stripKnownInertGeneratedReference(file, content) {
+  if (file !== INERT_GENERATED_REFERENCE_PATH) return content;
+
+  return content.replace(
+    /^\s*`\/docs\/TODO\.md \$\{owners\}`,\s*$/gm,
+    '',
+  );
+}
+
 export function shouldAuditTaskControlPlane(packageJson) {
   return packageJson.name === UPSTREAM_PACKAGE_NAME;
 }
@@ -94,7 +105,7 @@ export function auditTaskControlPlane(files) {
       continue;
     }
 
-    const content = entry.content ?? '';
+    const content = stripKnownInertGeneratedReference(file, entry.content ?? '');
     if (content.includes(RETIRED_ROADMAP_PATH)) {
       failures.push(
         `${file}: active control/documentation surface references the retired Markdown roadmap`,

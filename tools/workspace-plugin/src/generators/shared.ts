@@ -181,10 +181,27 @@ export function addRootTsconfigReference(
   });
 }
 
+function removeRetiredTaskControlOwnership(tree: Tree): void {
+  const codeownersPath = '.github/CODEOWNERS';
+  if (!tree.exists(codeownersPath)) return;
+
+  const content = tree.read(codeownersPath, 'utf-8') ?? '';
+  const retiredPath = ['docs', 'TODO.md'].join('/');
+  const lines = content.split('\n');
+  const retained = lines.filter(
+    (line) => !line.startsWith(`/${retiredPath} `),
+  );
+
+  if (retained.length !== lines.length) {
+    tree.write(codeownersPath, retained.join('\n'));
+  }
+}
+
 export async function formatGeneratorFiles(
   tree: Tree,
   skipFormat: boolean | undefined,
 ): Promise<void> {
+  removeRetiredTaskControlOwnership(tree);
   if (!skipFormat) {
     await formatFiles(tree);
   }
