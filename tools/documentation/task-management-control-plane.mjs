@@ -45,7 +45,8 @@ const FORBIDDEN_DISCOVERY_PATTERNS = [
     message: 'discovers the next task from the retired TODO model',
   },
   {
-    pattern: /(?<!not )(?<!never )\b(?:read|scan|inspect|walk)\b[^\n.]{0,120}\b(?:markdown|todo|roadmap)\b[^\n.]{0,120}\b(?:choose|discover|find|select|start)\b[^\n.]{0,80}\b(?:task|work)\b/i,
+    pattern:
+      /(?<!not )(?<!never )\b(?:read|scan|inspect|walk)\b[^\n.]{0,120}\b(?:markdown|todo|roadmap)\b[^\n.]{0,120}\b(?:choose|discover|find|select|start)\b[^\n.]{0,80}\b(?:task|work)\b/i,
     message: 'discovers actionable work from a Markdown roadmap',
   },
   {

@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import './format-diagnostic.mjs';
 import {
   auditTaskControlPlane,
   checkTaskControlPlane,
@@ -62,7 +61,9 @@ test('rejects agent instructions that select the next unchecked task', () => {
     }),
   );
   assert(
-    failures.some((failure) => failure.includes('unchecked Markdown task list')),
+    failures.some((failure) =>
+      failure.includes('unchecked Markdown task list'),
+    ),
   );
 });
 
@@ -144,7 +145,8 @@ test('rejects roadmap task IDs as active reviewer identity', () => {
 test('allows historical roadmap references and task IDs', () => {
   const result = auditTaskControlPlane(
     files({
-      'CHANGELOG.md': 'P14-07 completed under the former docs/TODO.md process.\n',
+      'CHANGELOG.md':
+        'P14-07 completed under the former docs/TODO.md process.\n',
       'docs/adr/0099-history.md':
         'Historical decision record: P14-07 was selected from docs/TODO.md.\n',
     }),
@@ -152,12 +154,9 @@ test('allows historical roadmap references and task IDs', () => {
   assert.deepEqual(result, []);
 });
 
-test(
-  'requires explicit open-Issue guidance and Issue-backed reviewer examples',
-  () => {
-    assert.deepEqual(auditTaskControlPlane(files()), []);
-  },
-);
+test('requires explicit open-Issue guidance and Issue-backed reviewer examples', () => {
+  assert.deepEqual(auditTaskControlPlane(files()), []);
+});
 
 test('runs only in the upstream source repository', () => {
   assert.equal(
