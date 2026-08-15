@@ -15,6 +15,6 @@ for (const relativePath of targets) {
   const source = await readFile(file, 'utf8');
   const options = (await resolveConfig(file)) ?? {};
   const formatted = await format(source, { ...options, filepath: file });
-  process.stdout.write(`\n--- PRETTIER:${relativePath} ---\n${formatted}`);
-  process.stdout.write(`--- END PRETTIER:${relativePath} ---\n`);
+  const encoded = Buffer.from(formatted, 'utf8').toString('base64');
+  process.stdout.write(`PRETTIER_B64:${relativePath}:${encoded}\n`);
 }
