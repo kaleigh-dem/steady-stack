@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import './format-diagnostic.mjs';
 import {
   auditTaskControlPlane,
   checkTaskControlPlane,
