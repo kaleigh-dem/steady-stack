@@ -1,6 +1,6 @@
 # Template Roadmap
 
-Last updated: 2026-08-14
+Last updated: 2026-08-15
 
 This file tracks active work required to evolve the repository as a reusable, upgradeable application platform. Completed implementation history remains available in merged pull requests, ADRs, and Git history instead of being repeated as a separate historical roadmap.
 
@@ -45,6 +45,10 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 
 1. Phases 13–15 are completed baseline. Ongoing dependency, security, release, and documentation maintenance continues through the repository's normal workflows.
 2. No roadmap implementation task follows P15-03 yet. Start future feature work under a new stable task ID and phase rather than extending a completed Phase 15 task.
+
+## Release maintenance record
+
+Template `0.3.0` is the first public SteadyStack release prepared after the completed Phase 15 baseline. Release verification retains the historical `0.1.0`/`0.2.0` upgrade fixture, so `0.3.0` includes an ordered `0.2.0` to `0.3.0` compatibility edge. That migration advances template provenance and synchronizes the release-owned upgrade infrastructure without overwriting application-owned files; new generated capabilities remain governed by their explicit ownership and migration rules.
 
 ## Phase 15 completion record
 
