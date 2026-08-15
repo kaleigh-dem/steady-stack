@@ -1,1 +1,1 @@
-export const templateVersion = '0.2.0';
+export const templateVersion = '0.3.0';
