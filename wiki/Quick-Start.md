@@ -100,11 +100,13 @@ Expected result: the identity check exits successfully and reports no unapproved
 
 ## 5. Confirm the agent-facing workspace map
 
-Review the repository-level instructions and project graph before assigning implementation work:
+Review the repository-level instructions, portable Agent Skills, and project graph before assigning implementation work:
 
 ```bash
 cat AGENTS.md
 find apps packages tools -name AGENTS.md -print
+find .agents/skills -maxdepth 2 -name SKILL.md -print
+cat .agents/skills/provenance.json
 pnpm nx show projects
 pnpm nx show project web
 cat .mcp.json
@@ -114,10 +116,11 @@ Expected result:
 
 - the root `AGENTS.md` defines repository-wide rules;
 - nested files identify more specific subsystem rules;
+- `.agents/skills` contains the generated, reviewed portable procedures and `.agents/skills/provenance.json` records their reviewed provenance;
 - Nx lists the selected projects and their targets;
 - `.mcp.json` configures the Nx MCP server as `pnpm nx mcp` for compatible agent clients.
 
-An agent should read the root and closest nested instructions, then inspect the relevant project and graph before editing. See [Agentic Development Model](Agentic-Development-Model).
+An agent should read the root and closest nested instructions, inspect the relevant progressively disclosed skill when one applies, then inspect the relevant project and graph before editing. Maintained coding-agent hosts discover the same project-level `.agents/skills` tree rather than independent vendor-specific copies. See [Agentic Development Model](Agentic-Development-Model).
 
 ## 6. Create the local environment file
 
@@ -191,7 +194,7 @@ pnpm template:identity:check
 git status --short
 ```
 
-`pnpm check` validates synchronization, generated contracts, compatibility, formatting, security policy, delivery configuration, performance budgets, linting, type checking, tests, and production builds. The identity check is separate. `git status --short` should be empty after validation.
+`pnpm check` validates synchronization, generated contracts, compatibility, formatting, documentation integrity through `pnpm docs:check`, portable Agent Skills through `pnpm agent-skills:check`, AI evaluation evidence through `pnpm agent-eval:check`, security policy, delivery configuration, performance budgets, linting, type checking, tests, and production builds. See [Validation and Testing](Validation-and-Testing) for the stage-by-stage contract and the upstream/downstream scope of each specialized gate. The identity check is separate. `git status --short` should be empty after validation.
 
 ## 11. Stop services
 
