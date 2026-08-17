@@ -36,11 +36,11 @@
     "@steadystack/backend-rate-limit": "workspace:*",
     "@steadystack/contracts": "workspace:*",
     "drizzle-orm": "0.45.2",
-    "pg": "8.22.0"
+    "pg": "8.23.0"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "12.1.0",
-    "@types/pg": "8.20.4",
+    "@types/pg": "8.21.0",
     "node-pg-migrate": "9.0.0"
   }
 }
