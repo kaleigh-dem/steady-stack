@@ -97,7 +97,7 @@
     "@nx/workspace": "23.1.1",
     "@playwright/test": "^1.62.1",
     "@swc-node/register": "~1.12.1",
-    "@swc/core": "~1.15.5",
+    "@swc/core": "~1.16.1",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
