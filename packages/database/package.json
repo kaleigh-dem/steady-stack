@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@testcontainers/postgresql": "12.1.0",
-    "@types/pg": "8.21.0",
+    "@types/pg": "8.23.1",
     "node-pg-migrate": "9.0.0"
   }
 }
