@@ -21,14 +21,15 @@ The workflow may also be run manually with **Publish reviewed wiki** in GitHub A
 
 ## Documentation ownership
 
-P15-03 separates audiences instead of duplicating prose:
+P15-03 established the audience split; the Issue #88 control-plane migration removes the former Markdown-roadmap exception:
 
 - `wiki/*.md` is the reviewed primary human-facing surface;
 - root `README.md` is the repository landing exception and routes readers to the Wiki;
 - root and `docs/` Markdown remains only when it has an implementation, automation, governance, review, generated-evidence, executable-runbook, release, security, compatibility, or agent/machine reason to live beside the code;
-- `docs/TODO.md` remains the roadmap/control-plane exception.
+- GitHub Issues are the source of truth for actionable work, and agents require an explicitly assigned or explicitly selected open Issue before starting work;
+- Milestones may group releases or larger coordinated work, while ADRs retain durable architecture and governance decisions.
 
-`pnpm docs:check` enforces this inventory through the documentation-surface ownership suite. A new human guide belongs under `wiki/`; a new root or `docs/` Markdown document must declare a repository-control reason in the gate.
+`pnpm docs:check` enforces this inventory through the documentation-surface ownership and task-control suites. A new human guide belongs under `wiki/`; a new root or `docs/` Markdown document must declare a repository-control reason in the gate. The retired Markdown roadmap must not be recreated as an active task source.
 
 ## Review a page deletion
 

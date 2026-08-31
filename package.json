@@ -21,7 +21,7 @@
     "format": "nx format:write",
     "format:check": "nx format:check",
     "docs:architecture": "node tools/documentation/documentation-integrity.mjs write-architecture",
-    "docs:check": "node --test tools/documentation/documentation-integrity.spec.mjs && node tools/documentation/documentation-integrity.mjs check",
+    "docs:check": "node --test tools/documentation/documentation-integrity.spec.mjs tools/documentation/task-management-control-plane.spec.mjs && node tools/documentation/documentation-integrity.mjs check && node tools/documentation/task-management-control-plane.mjs",
     "agent-skills:check": "node --test tools/agent-skills/validate-agent-skills.spec.mjs tools/agent-skills/verify-host-discovery.spec.mjs && node tools/agent-skills/validate-agent-skills.mjs && node tools/agent-skills/verify-host-discovery.mjs",
     "agent-eval:check": "nx run backend-agent-eval:evidence-check",
     "security:secrets": "node tools/security/check-secrets.mjs",

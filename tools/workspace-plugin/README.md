@@ -81,5 +81,5 @@ The initialization contract and compatibility rules are documented in `docs/temp
 4. Assign scope, type, and runtime tags to every generated project.
 5. Generate a public entry point, focused tests, README, and local `AGENTS.md` when the new structure owns a subsystem boundary.
 6. Add the command and output contract to this README.
-7. Update `docs/TODO.md` when the generator changes upstream roadmap status, sequencing, scope, or exit criteria.
+7. Update the selected GitHub Issue evidence and relevant ADR/documentation when the generator changes accepted scope or a durable contract; create a separate Issue for newly discovered future work.
 8. Run `pnpm check`.

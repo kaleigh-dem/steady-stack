@@ -115,8 +115,7 @@ describe('CI cancellation, caching, and diagnostics', () => {
     expect(performance).toContain('PERFORMANCE_REPORT_PATH');
   });
 
-  it('retains P13-03 evidence after completed-phase compaction', async () => {
-    const roadmap = await repositoryFile('docs/TODO.md');
+  it('retains durable P13-03 evidence after task-control migration', async () => {
     const adr = await repositoryFile(
       'docs/adr/0015-ci-cancellation-caching-and-diagnostics.md',
     );
@@ -124,10 +123,8 @@ describe('CI cancellation, caching, and diagnostics', () => {
       'docs/delivery/containers-and-configuration.md',
     );
 
-    expect(roadmap).toContain('- Phase 13 (P13-01–P13-07):');
-    expect(roadmap).toContain('CI cancellation/caching/diagnostics');
-    expect(roadmap).toContain('cache-input and affected-execution auditing');
     expect(adr).toContain('cancel superseded pull-request runs');
+    expect(adr).toContain('BuildKit cache');
     expect(documentation).toContain('BuildKit cache');
     expect(documentation).toContain('deterministic local fallback');
   });

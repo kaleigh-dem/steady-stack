@@ -197,6 +197,7 @@ async function assertGeneratedContract(workspace, expectedVersion) {
     '.github/workflows/generated-workspace.yml',
     '.github/workflows/template-release.yml',
     'CHANGELOG.md',
+    'docs/TODO.md',
     'docs/getting-started.md',
     'docs/template-releases.md',
     'docs/template-validation.md',

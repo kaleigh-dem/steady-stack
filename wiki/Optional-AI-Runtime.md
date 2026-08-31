@@ -26,7 +26,7 @@ Phase 14 status:
 - **P14-06 — complete:** input/output governance hooks, classification-aware sensitive-data handling, server-owned tool allowlists, approval authorization, payload-safe audit events, and bounded compatible provider/model fallback policy.
 - **P14-07 — complete:** generated optional AI-profile composition, deterministic reference workflow/tests, default-profile isolation proof, and generated-workspace lifecycle coverage.
 
-The repository roadmap in `docs/TODO.md` is authoritative for future sequencing.
+Future actionable AI-runtime work is tracked in GitHub Issues. The P14 identifiers above remain historical evidence of completed Phase 14 work.
 
 ## Generated AI profile
 

@@ -11,7 +11,7 @@ This page is organized by observable symptom. Each entry includes likely causes,
 
 **Symptom:** `pnpm docs:check` exits non-zero, or CI fails the documentation-integrity step.
 
-**Likely causes:** A Markdown link, repository path, command, environment-variable name, identity/authentication description, project graph, or required roadmap/ADR change evidence is stale. In the upstream template, P15-03 adds documentation-ownership failures too: tracked Markdown may be unclassified, duplicate human-facing onboarding may have returned to repository controls, a required Wiki source may be missing, or README may have drifted beyond its landing-and-routing role.
+**Likely causes:** A Markdown link, repository path, command, environment-variable name, identity/authentication description, project graph, required ADR change evidence, documentation-surface classification, or task-control rule is stale. In the upstream template, the task-control gate also rejects recreation of the retired Markdown roadmap, active unchecked-task discovery, or reviewer guidance that requires a historical roadmap ID instead of a GitHub Issue number.
 
 **Diagnose:**
 
@@ -21,9 +21,9 @@ git status --short
 git diff -- README.md docs wiki
 ```
 
-Read the first checker message literally. In the upstream `@steadystack/source` template, the audit covers content, topology, and documentation-surface ownership for tracked root, `docs/`, and `wiki/` Markdown. Initialized products retain the deterministic checker tests but intentionally skip those upstream-specific audits.
+Read the first checker message literally. In the upstream `@steadystack/source` template, the audit covers content, topology, documentation-surface ownership, and the GitHub-Issues task-control model for tracked repository guidance. Initialized products retain deterministic checker tests but intentionally skip upstream-specific topology/content/task-control audits.
 
-**Resolve:** Correct broken references and documented names at their source. Regenerate the architecture diagram with `pnpm docs:architecture` when the project graph changed, and add required roadmap/ADR evidence for generator or architectural-boundary changes. For ownership failures, move human-first product, onboarding, operator, or explanatory prose to `wiki/`, keep README routing-only, restore required reviewed Wiki sources, and remove duplicated repository onboarding instead of creating a second human manual under root Markdown or `docs/`.
+**Resolve:** Correct broken references and documented names at their source. Regenerate the architecture diagram with `pnpm docs:architecture` when the project graph changed, and add required ADR evidence for generator or architectural-boundary changes. For task-control failures, keep actionable work in GitHub Issues, require an explicitly assigned or selected open Issue before agent work, and remove Markdown-roadmap discovery rather than weakening the checker. For ownership failures, move human-first product, onboarding, operator, or explanatory prose to `wiki/`, keep README routing-only, restore required reviewed Wiki sources, and remove duplicated repository onboarding instead of creating a second human manual under root Markdown or `docs/`.
 
 **Verify:**
 

@@ -6,13 +6,14 @@ SteadyStack uses the open Agent Skills format for detailed, progressively disclo
 
 Skills are procedure packages, not policy or authorization. Use repository context in this order:
 
-1. root and closest nested `AGENTS.md`;
-2. executable contracts, generated sources of truth, and project boundaries;
-3. applicable ADRs and `docs/TODO.md`;
-4. a relevant repository-owned skill under `.agents/skills/`;
-5. transient chat context.
+1. the explicitly selected open GitHub Issue for actionable-work scope and acceptance criteria;
+2. root and closest nested `AGENTS.md`;
+3. executable contracts, generated sources of truth, and project boundaries;
+4. applicable ADRs;
+5. a relevant repository-owned skill under `.agents/skills/`;
+6. transient chat context.
 
-A skill cannot override an `AGENTS.md` rule, weaken validation, grant credentials or production authority, approve an architecture exception, or bypass a human approval gate.
+A skill cannot override an Issue's accepted scope, an `AGENTS.md` rule, validation, credentials/production authority, an architecture decision, or a human approval gate.
 
 ## Canonical generated layout
 
@@ -93,7 +94,7 @@ SteadyStack intentionally rejects the experimental top-level Agent Skills `allow
 
 `contentSha256` covers the complete sorted skill tree, not only frontmatter. A content change without a matching reviewed provenance update fails validation.
 
-Repository-owned skills use `kaleigh-dem/steady-stack` as `source` and the stable roadmap task ID that introduced or materially revised the skill as `sourceRef`.
+Repository-owned skills may retain historical `sourceRef` values such as `P15-01` or `P15-02` when they identify the completed work that introduced or materially revised the skill. Those identifiers are provenance only, not current task-selection identity. New actionable work is identified by its GitHub Issue number.
 
 Third-party imports require an HTTPS source, immutable source reference, explicit license review, and matching content hash. Moving refs such as `main`, `master`, `latest`, and `HEAD` are rejected. Importing is a normal reviewed repository change; there is no runtime download-or-install path for unreviewed skills.
 
@@ -111,7 +112,7 @@ Shell examples are constrained. Use reviewed root/Nx commands or a tracked Node 
 
 ### `architecture-discovery`
 
-Use before editing when ownership, dependency direction, source of truth, applicable instructions, or version-matched framework context is unclear. It uses root/closest `AGENTS.md`, roadmap/ADRs, Nx MCP/project graph context, reviewed Nx commands, and packaged Next.js docs when relevant.
+Use before editing when ownership, dependency direction, source of truth, applicable instructions, or version-matched framework context is unclear. It starts from the explicitly selected open GitHub Issue, root/closest `AGENTS.md`, applicable ADRs, Nx MCP/project graph context, reviewed Nx commands, and packaged Next.js docs when relevant.
 
 ### `validation-debugging`
 
@@ -156,12 +157,13 @@ pnpm check
 ## Changing or importing a skill
 
 1. Confirm the procedure belongs in a skill rather than concise `AGENTS.md` policy or human-facing Wiki prose.
-2. Create or update only `.agents/skills/<name>/`.
-3. Keep required tools least-privilege and `steadystack-authority: none`.
-4. For third-party content, pin the reviewed source and immutable revision; inspect the license and every bundled script before copying it into the repository.
-5. Recompute and update the provenance hash in the same reviewed change.
-6. Update `host-discovery.json` only when maintained host support or evidence changes; evidence refs must remain immutable.
-7. Run `pnpm agent-skills:check`, focused validation, and the full repository contract required by the task.
-8. Update the relevant ADR and roadmap status when the skill contract, capability model, generation model, or maintained-host proof changes.
+2. Confirm the actionable change is within the explicitly selected open GitHub Issue.
+3. Create or update only `.agents/skills/<name>/`.
+4. Keep required tools least-privilege and `steadystack-authority: none`.
+5. For third-party content, pin the reviewed source and immutable revision; inspect the license and every bundled script before copying it into the repository.
+6. Recompute and update the provenance hash in the same reviewed change.
+7. Update `host-discovery.json` only when maintained host support or evidence changes; evidence refs must remain immutable.
+8. Run `pnpm agent-skills:check`, focused validation, and the full repository contract required by the Issue.
+9. Update the relevant ADR when the skill contract, capability model, generation model, or maintained-host proof changes. Record newly discovered future actionable work in a GitHub Issue rather than a repository roadmap.
 
 See ADR 0026 for the architectural decision and P15-01/P15-02 rollout history.

@@ -30,22 +30,24 @@ This Wiki is the **primary human-facing documentation** surface for SteadyStack.
 
 Detailed implementation contracts live beside the code only when they need to remain version-matched to automation, validation, governance, review, generated evidence, or executable runbooks. Human-first explanation lives here in the Wiki.
 
-## Documentation ownership
+## Documentation and work ownership
 
-P15-03 makes the audience split explicit:
+P15-03 established the audience split; Issue #88 moves actionable-work authority from the former Markdown roadmap to GitHub Issues:
 
 - **Wiki:** primary human-facing documentation, reviewed under `wiki/` and published after merge.
 - **README:** repository-site landing page that routes people to the Wiki and contributors/agents to controls.
-- **Repository controls:** `AGENTS.md`, `.agents/skills`, `docs/TODO.md`, ADRs, contracts, generated evidence, security/delivery controls, and executable runbooks.
-- **Roadmap:** `docs/TODO.md` remains the authoritative task ledger; the Wiki mirrors status but does not maintain an independent backlog.
+- **Repository controls:** `AGENTS.md`, `.agents/skills`, ADRs, contracts, generated evidence, security/delivery controls, and executable runbooks.
+- **Actionable work:** GitHub Issues. Coding agents require an explicitly assigned or explicitly selected open Issue and do not invent or discover roadmap work when none is selected.
+- **Coordination:** GitHub Milestones may group releases or larger bodies of work without becoming task identity.
+- **Decisions and history:** ADRs retain durable decisions; closed Issues, merged PRs, and Git history retain completed-work history.
 
-The documentation-integrity suite inventories root Markdown plus `docs/` and `wiki/`, rejects unclassified repository prose, prevents the migrated onboarding duplicate from returning, and keeps README constrained to a routing role.
+The documentation-integrity suite inventories root Markdown plus `docs/` and `wiki/`, rejects unclassified repository prose, prevents the migrated onboarding duplicate from returning, keeps README constrained to a routing role, and prevents the retired Markdown task-control model from silently returning.
 
-## Current roadmap status
+## Current status
 
-Phases 13 and 14 are completed baseline. **Phase 15 is complete through P15-03:** the repository owns a canonical portable Agent Skills contract, generates it into initialized products, verifies maintained-host discovery for the same project-level skill root, and now separates human-facing Wiki documentation from repository control surfaces with deterministic ownership checks.
+Phases 13 and 14 are completed baseline. **Phase 15 is complete through the historical task P15-03:** the repository owns a canonical portable Agent Skills contract, generates it into initialized products, verifies maintained-host discovery for the same project-level skill root, and separates human-facing Wiki documentation from repository control surfaces with deterministic ownership checks.
 
-Use the repository roadmap for future sequencing and acceptance criteria.
+Future actionable work is tracked in GitHub Issues. Historical `Pxx-xx` identifiers may remain in completed evidence, but new work uses its Issue number as task identity.
 
 ## Common tasks
 

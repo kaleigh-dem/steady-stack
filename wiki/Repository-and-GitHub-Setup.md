@@ -1,6 +1,6 @@
 # Repository and GitHub Setup
 
-This page guides repository administrators through human and agent access, branch protection, required checks, GitHub Environments, release permissions, secrets, and evidence retention for a generated workspace.
+This page guides repository administrators through human and agent access, GitHub work tracking, branch protection, required checks, GitHub Environments, release permissions, secrets, and evidence retention for a generated workspace.
 
 ## Prerequisites
 
@@ -40,7 +40,20 @@ When coding agents receive repository access:
 
 Agent speed does not change the repository's approval or least-privilege requirements. See [Agentic Development Model](Agentic-Development-Model).
 
-## 2. Configure the default branch
+## 2. Configure work tracking
+
+For the upstream SteadyStack repository, GitHub Issues are the source of truth for actionable work.
+
+- Create or identify an Issue before implementation, maintenance, documentation, governance, or proposal work begins.
+- Coding agents act only on an explicitly assigned or explicitly selected **open** Issue. With no selected Issue, they remain idle rather than searching for roadmap work.
+- Use the Issue number, such as `#88`, as task identity. Historical identifiers may remain in old evidence but are not required for new work.
+- PRs normally use `Closes #<issue>` so merge history and Issue history stay connected.
+- Use Milestones only when release or larger coordinated-work grouping is useful; do not use them as a substitute task queue.
+- Keep durable architectural decisions in ADRs rather than Issue bodies alone.
+
+Generated products may choose their own planning practices, but upstream maintainer roadmap files are not copied as an active work-control surface.
+
+## 3. Configure the default branch
 
 Use `main` as the protected default branch unless the adopting organization deliberately changes both repository configuration and workflow assumptions.
 
@@ -55,7 +68,7 @@ Configure:
 
 Required checks should include the blocking CI, Security, Delivery, and Generated workspace jobs produced by the repository. Do not make the non-blocking Node-current compatibility lane a required check.
 
-## 3. Create GitHub Environments
+## 4. Create GitHub Environments
 
 Create environments named exactly:
 
@@ -83,7 +96,7 @@ Configure `production` with:
 
 The `Promote release digests` workflow has read-only repository, package, workflow-artifact, and attestation permissions. It verifies already-published evidence and emits an approved production plan. It does not build, retag, push, or deploy images.
 
-## 4. Store the production environment contract
+## 5. Store the production environment contract
 
 Create an environment-scoped, masked multiline secret named:
 
@@ -102,7 +115,7 @@ The promotion workflow materializes it in a permission-restricted temporary file
 
 Do not commit `infra/environments/production.env`.
 
-## 5. Keep permissions least privilege
+## 6. Keep permissions least privilege
 
 The two-stage release model separates authority:
 
@@ -115,7 +128,7 @@ The read-only production workflow ensures approval cannot silently change the ar
 
 Prefer cloud workload identity or another short-lived federated credential for the deployment platform. Do not use long-lived personal access tokens for routine releases.
 
-## 6. Configure evidence retention
+## 7. Configure evidence retention
 
 The baseline retains:
 
@@ -124,9 +137,9 @@ The baseline retains:
 
 The production promotion artifact contains the source-run metadata, release manifest, digest environment file, and production release plan. Preserve it according to the organization's audit, incident, rollback, and regulatory requirements.
 
-Longer-term automated evidence retention is not yet implemented by the template and remains future P13-06 work. Until then, copy approved artifacts to an owned evidence store before GitHub retention expires.
+Longer-term automated evidence retention is not yet implemented by the template. Future work is tracked in GitHub Issue #89; `P13-06` is retained there only as historical traceability. Until that Issue is implemented, copy approved artifacts to an owned evidence store before GitHub retention expires.
 
-## 7. Verify the setup
+## 8. Verify the setup
 
 Before the first release:
 
@@ -139,7 +152,7 @@ Before the first release:
 7. Confirm no image was rebuilt, retagged, or pushed during promotion.
 8. Confirm the deployment platform receives only the approved artifact and exact digest references.
 
-## 8. Review ongoing administration
+## 9. Review ongoing administration
 
 At a defined cadence, review:
 
