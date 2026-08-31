@@ -51,6 +51,12 @@ async function insertMessage(
   return id;
 }
 
+function tolerateExpectedContainerShutdown(error: Error): void {
+  if (!('code' in error) || error.code !== '57P01') {
+    throw error;
+  }
+}
+
 describe('PostgresOutboxDelivery', () => {
   let connectionString = '';
   let primary: DatabaseConnection;
@@ -88,6 +94,8 @@ describe('PostgresOutboxDelivery', () => {
   });
 
   afterAll(async () => {
+    primary?.pool.on('error', tolerateExpectedContainerShutdown);
+    secondary?.pool.on('error', tolerateExpectedContainerShutdown);
     await primary?.close();
     await secondary?.close();
     await stopContainer?.();
