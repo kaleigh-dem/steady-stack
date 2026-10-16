@@ -106,7 +106,7 @@ describe('immutable release promotion', () => {
     expect(workflow).not.toContain('id-token: write');
     expect(workflow).not.toContain('attestations: write');
     expect(workflow).toContain(
-      'actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8',
+      'actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8',
     );
     expect(workflow).toContain('run-id: ${{ inputs.source_run_id }}');
     expect(workflow).toContain("workflowName: 'Release images'");
