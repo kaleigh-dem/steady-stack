@@ -1,12 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import {
-  chmodSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { chmodSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { delimiter, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,9 +9,7 @@ import test from 'node:test';
 const auditScript = fileURLToPath(
   new URL('./check-audit.mjs', import.meta.url),
 );
-const baseline = JSON.parse(
-  readFileSync(new URL('./audit-baseline.json', import.meta.url), 'utf8'),
-);
+const baseline = { expiresOn: '2099-12-31', advisories: [] };
 
 function runAudit(report, baselineOverride = baseline) {
   const fixtureDir = mkdtempSync(join(tmpdir(), 'steadystack-audit-'));
@@ -131,6 +123,63 @@ test('rejects duplicate audit baseline entries', () => {
   );
 });
 
+test('rejects an expired baseline before invoking the audit', () => {
+  const result = runAudit(
+    { vulnerabilities: {} },
+    { expiresOn: '2026-09-01', advisories: [] },
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /audit baseline expired on 2026-09-01/);
+});
+
+test('does not accept an advisory for a different package', () => {
+  const advisoryId = 'GHSA-aaaa-bbbb-cccc';
+  const result = runAudit(
+    {
+      vulnerabilities: {
+        'new-package': {
+          name: 'new-package',
+          severity: 'high',
+          via: [{ url: `https://github.com/advisories/${advisoryId}` }],
+        },
+      },
+    },
+    {
+      expiresOn: '2099-12-31',
+      advisories: [
+        { id: advisoryId, package: 'old-package', reason: 'test fixture' },
+      ],
+    },
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(
+    result.stderr,
+    /Unexpected high or critical dependency advisories:/,
+  );
+  assert.match(result.stderr, /new-package, high/);
+});
+
+test('rejects obsolete accepted advisories', () => {
+  const result = runAudit(
+    { vulnerabilities: {} },
+    {
+      expiresOn: '2099-12-31',
+      advisories: [
+        {
+          id: 'GHSA-aaaa-bbbb-cccc',
+          package: 'fixed-package',
+          reason: 'test fixture',
+        },
+      ],
+    },
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Obsolete security audit baseline entries:/);
+});
+
 test('rejects unidentified nested high or critical findings', () => {
   const result = runAudit({
     vulnerabilities: {
@@ -144,4 +193,11 @@ test('rejects unidentified nested high or critical findings', () => {
 
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /unidentified \(demo-package, critical\)/);
+});
+
+test('rejects an audit service error instead of treating it as no findings', () => {
+  const result = runAudit({ error: { code: 'ERR_PNPM_AUDIT_BAD_RESPONSE' } });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /invalid findings report/);
 });

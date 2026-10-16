@@ -14,7 +14,7 @@ if (!Number.isFinite(expiresAt) || expiresAt < Date.now()) {
   process.exit(1);
 }
 
-const baselineEntries = new Set();
+const baselineEntries = new Map();
 for (const advisory of baseline.advisories) {
   const key = `${advisory.id}\0${advisory.package}`;
   if (baselineEntries.has(key)) {
@@ -23,7 +23,7 @@ for (const advisory of baseline.advisories) {
     );
     process.exit(1);
   }
-  baselineEntries.add(key);
+  baselineEntries.set(key, advisory);
 }
 
 const audit = spawnSync('pnpm', ['audit', '--json'], {
@@ -42,6 +42,14 @@ try {
 } catch (error) {
   process.stderr.write(audit.stderr);
   console.error('Unable to parse pnpm audit JSON.', error);
+  process.exit(1);
+}
+if (
+  report?.error ||
+  ((!report?.advisories || typeof report.advisories !== 'object') &&
+    (!report?.vulnerabilities || typeof report.vulnerabilities !== 'object'))
+) {
+  console.error('pnpm audit returned an error or an invalid findings report.');
   process.exit(1);
 }
 
@@ -110,7 +118,7 @@ function visit(value, path = []) {
       });
     }
     for (const id of ids) {
-      highSeverity.set(id, { id, packageName, severity });
+      highSeverity.set(`${id}\0${packageName}`, { id, packageName, severity });
     }
   }
 
@@ -120,15 +128,12 @@ function visit(value, path = []) {
 }
 visit(report);
 
-const allowed = new Map(
-  baseline.advisories.map((advisory) => [advisory.id, advisory]),
-);
 const unexpected = [...highSeverity.values()].filter(
-  (finding) => !allowed.has(finding.id),
+  (finding) => !baselineEntries.has(`${finding.id}\0${finding.packageName}`),
 );
 
 for (const finding of highSeverity.values()) {
-  const accepted = allowed.get(finding.id);
+  const accepted = baselineEntries.get(`${finding.id}\0${finding.packageName}`);
   if (accepted) {
     console.warn(
       `Accepted until ${baseline.expiresOn}: ${finding.id} (${accepted.package}) — ${accepted.reason}`,
@@ -142,6 +147,15 @@ if (unexpected.length > 0) {
     console.error(
       `- ${finding.id} (${finding.packageName}, ${finding.severity})`,
     );
+  }
+  process.exit(1);
+}
+
+const obsolete = [...baselineEntries].filter(([key]) => !highSeverity.has(key));
+if (obsolete.length > 0) {
+  console.error('Obsolete security audit baseline entries:');
+  for (const [, advisory] of obsolete) {
+    console.error(`- ${advisory.id} (${advisory.package})`);
   }
   process.exit(1);
 }

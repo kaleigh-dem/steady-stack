@@ -46,6 +46,10 @@ Detailed completed-phase task lists are intentionally omitted. Relevant implemen
 1. Phases 13–15 are completed baseline. Ongoing dependency, security, release, and documentation maintenance continues through the repository's normal workflows.
 2. No roadmap implementation task follows P15-03 yet. Start future feature work under a new stable task ID and phase rather than extending a completed Phase 15 task.
 
+## Active security maintenance
+
+- [!] SEC-115 ([Issue #115](https://github.com/kaleigh-dem/steady-stack/issues/115)): dependency audit remediation is in review. The updated lockfile removes all critical findings, but `braces` GHSA-vfj7-8cjw-p6xm remains high with no published fixed version. An accountable security owner must decide whether to approve an exact, time-bound exception after reviewing exposure and mitigation, or keep the gate failing until an upstream fix is available. Required exact-head CI and generated-workspace validation are still pending.
+
 ## Phase 15 completion record
 
 Phase 15 is complete as of 2026-08-14.

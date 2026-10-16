@@ -1,0 +1,45 @@
+# Issue 115 dependency remediation evidence
+
+- Review date: 2026-10-16
+- Source `main`: `0fb7ce01491f88d4f0a948061b9b14f5fb9ce9e0`
+- Runtime and package manager: Node 24.18.1, pnpm 10.13.1
+- Before lockfile SHA-256: `532e0eb975999848c5e3bc6f8c2643fd988271ddaff7ec3e55c909cbaf76a028`
+- Audit source: `pnpm audit --json` against each exact lockfile. Counts are pnpm advisory findings, including separate findings for affected versions of the same advisory.
+
+| Severity | Before | After | Resolved | Remaining |
+| -------- | -----: | ----: | -------: | --------: |
+| Critical |      4 |     0 |        4 |         0 |
+| High     |     37 |     1 |       36 |         1 |
+| Moderate |     27 |     4 |       23 |         4 |
+| Low      |      6 |     0 |        6 |         0 |
+
+## Remediation decisions
+
+| Package and use                                                                            | Before                                       | Locked after            | Advisory or group                                                                  | Decision                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `next`, production direct                                                                  | 16.3.1                                       | 16.3.8                  | GHSA-p293-qw3h-jr36, GHSA-2xp9-vwfh-vxw4, GHSA-vcvr-r3jv-pc5j, GHSA-cjq9-62q9-8jv4 | Raise the direct minimum within Next 16.3. The web build passes with the CI authentication profile.                                                                             |
+| `proxy-addr`, production through NestJS → Express and development through Nx → Express     | 2.0.7                                        | 2.0.8                   | GHSA-jqcg-44mw-7w3h                                                                | The refreshed lockfile resolves the patched version within the parent dependency ranges. No override is needed.                                                                 |
+| `multer`, production through `@nestjs/platform-express`                                    | 2.2.0                                        | 2.4.0                   | GHSA-wc9g-mqfw-jrwm, GHSA-qfvm-cv95-jqjf, GHSA-535w-7cp7-47q4                      | Raise the coordinated NestJS direct minimum to 11.2.3; the lockfile selects 11.2.7.                                                                                             |
+| `sharp`, production through Next                                                           | 0.35.3                                       | 0.35.5                  | GHSA-rgj7-g3m4-5g8c, GHSA-wq5f-xc86-pv6w                                           | Resolved within the upgraded Next dependency graph.                                                                                                                             |
+| `nx`, development direct                                                                   | 23.1.1                                       | 23.2.1                  | GHSA-w3vv-58gj-gw77                                                                | Upgrade the full Nx package family together.                                                                                                                                    |
+| `axios` and `smol-toml`, development through Nx                                            | 1.18.1 / 1.6.1                               | 1.20.0 / 1.9.1          | Seven axios high advisories; GHSA-7w5x-hrqm-74c2                                   | Nx 23.2.1 still pins vulnerable versions. Parent-scoped `nx>` overrides supply patched releases. Remove the overrides when a validated Nx release carries fixed versions.       |
+| `brace-expansion`, development through Nx and other tools                                  | 1.1.18 / 2.1.4 / 5.0.9                       | 1.1.21 / 2.1.7 / 5.0.11 | GHSA-qhr7-859c-m2p7 and GHSA-6j4f-fj2g-mc7p                                        | Refresh compatible transitives and raise the pre-existing version-scoped override for the 5.x line. Remove it when no parent selects the vulnerable range.                      |
+| `js-yaml`, development through ESLint and schema tools                                     | 3.15.1 / 4.3.1                               | 3.15.2 / 4.3.2          | GHSA-2883-xcg3-v3hh                                                                | Refresh the 3.x transitive and raise the pre-existing version-scoped 4.x override.                                                                                              |
+| `@grpc/grpc-js`, production through OpenTelemetry and development through Testcontainers   | 1.14.4                                       | 1.14.6                  | GHSA-m9gg-hp2v-232j                                                                | The parent packages still select an old compatible version. Override only versions below the patched 1.14.5; remove when both parent chains resolve a fixed version without it. |
+| `fast-uri`, `svgo`, `probe-image-size`, `source-map-js`, `undici`, development transitives | Vulnerable versions in the original lockfile | Patched versions        | Eleven high findings across these packages                                         | A compatible transitive refresh resolved these paths without further overrides.                                                                                                 |
+
+The `@testcontainers/postgresql` direct development dependency advances from 12.1.0 to 12.2.0 to keep its Docker dependency path current. Other direct production and GitHub Actions updates in Dependabot PRs #112 and #114 are outside this remediation. PR #113's Nx family is incorporated, while its other development updates remain separate. PR #101's NestJS change is incorporated and advanced to the current compatible patch.
+
+## Remaining high finding and decision boundary
+
+`braces` 3.0.3 remains affected by [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm). The audited path is root development dependency `@next/eslint-plugin-next` → `fast-glob` → `micromatch` → `braces`. Nx's development graph also uses `braces` through `http-proxy-middleware` → `micromatch`. The package registry lists 3.0.3 as the latest published `braces` release, and the advisory lists no patched version. These paths process repository-controlled patterns during linting and development tooling; this reduces the apparent exposure to untrusted input, but does not remove the finding or establish that every consumer is unreachable.
+
+The proposed mitigation is to keep glob patterns under repository control, monitor the upstream advisory and fixed release, then refresh the lockfile when a compatible patch exists. An accountable security owner must explicitly approve any exception, name the owner, document the rationale, and set a review and expiry date before the baseline may accept this high finding. No exception has been added. Until that decision or a fixed upstream release, `pnpm security:audit`, `package-policy`, and the security portion of the release gate must remain red.
+
+The audit baseline has no accepted advisories. It expires on 2026-11-16 following the live audit and lockfile reconciliation. The checker still fails on expiry or a newly detected high/critical advisory, and now rejects a package mismatch, an obsolete accepted entry, or an audit-service error. This date does not approve the remaining high finding.
+
+## Validation boundary
+
+`pnpm install --frozen-lockfile` and the audit checker tests pass locally. The live audit reports the counts above and the package policy fails on `braces`, as required. Nx affected lint, typecheck, test, and build completed 68 tasks; `database:test` could not start because the local host has no container runtime. The first `web:build` lacked the CI-required `NEXT_PUBLIC_AUTHENTICATION_PROFILE`; rerunning its Nx target with `none` passed. A temporary local 0.2.0 test artifact initialized a generated workspace, whose frozen installation and identity check passed. Its own live audit also reports 0 critical, 1 high, and 4 moderate findings, and its `pnpm check` stops at the same `braces` advisory before later lifecycle checks. Exact-head GitHub CI evidence must be recorded before merge. No 0.3.0 release was prepared or published.
+
+The separate `pnpm audit --prod --json` reports zero findings at every severity for the root workspace. The required policy still audits the complete development and production graph.
