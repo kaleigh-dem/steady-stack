@@ -35,8 +35,8 @@
     "@steadystack/backend-agent-task": "workspace:*",
     "@steadystack/backend-rate-limit": "workspace:*",
     "@steadystack/contracts": "workspace:*",
-    "drizzle-orm": "0.45.2",
-    "pg": "8.23.0"
+    "drizzle-orm": "0.45.4",
+    "pg": "8.23.1"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "12.1.0",
